@@ -201,7 +201,41 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
       throw new Error("Amount mismatch");
     }
 
-    const purpose: "deposit" | "bonus" | "subscription" = order.purpose ?? "deposit";
+    const purpose: "deposit" | "bonus" | "subscription" | "batch" = order.purpose ?? "deposit";
+
+    if (purpose === "batch") {
+      // Activate premium for batch duration; mark purchase active; redeem coupon.
+      const { data: batch } = await (supabaseAdmin as any).from("batches").select("id, title, duration_days").eq("id", order.batch_id).maybeSingle();
+      if (!batch) throw new Error("Batch missing");
+      const expires = new Date(Date.now() + batch.duration_days * 86400000).toISOString();
+      await (supabaseAdmin as any).from("subscriptions").insert({
+        user_id: userId, plan: "monthly", status: "active",
+        started_at: new Date().toISOString(), expires_at: expires,
+        razorpay_payment_id: data.razorpay_payment_id, razorpay_order_id: data.razorpay_order_id,
+        source: "batch", source_batch_id: batch.id,
+      });
+      await (supabaseAdmin as any).from("batch_purchases")
+        .update({ status: "active", razorpay_payment_id: data.razorpay_payment_id })
+        .eq("razorpay_order_id", data.razorpay_order_id);
+      if (order.coupon_id) {
+        const { data: purch } = await (supabaseAdmin as any).from("batch_purchases").select("id").eq("razorpay_order_id", data.razorpay_order_id).maybeSingle();
+        await (supabaseAdmin as any).from("coupon_redemptions").insert({
+          coupon_id: order.coupon_id, user_id: userId, purchase_id: purch?.id ?? null,
+        });
+        await (supabaseAdmin as any).rpc("exec_sql"); // noop; increment below
+        await (supabaseAdmin as any).from("coupons").update({ used_count: ((await (supabaseAdmin as any).from("coupons").select("used_count").eq("id", order.coupon_id).single()).data?.used_count ?? 0) + 1 }).eq("id", order.coupon_id);
+      }
+      try {
+        const { pushNotification } = await import("@/lib/notifications.functions");
+        await pushNotification({
+          user_id: userId, kind: "deposit",
+          title: `${batch.title} activated 👑`,
+          body: `Premium valid till ${new Date(expires).toLocaleDateString()}.`,
+          link: "/premium",
+        });
+      } catch (e) { console.error("notify batch failed", e); }
+      return { success: true, credited: true, amount: Number(order.amount), purpose, expires_at: expires } as any;
+    }
 
     if (purpose === "subscription") {
       const plan = (order.plan ?? "monthly") as "monthly" | "yearly";
@@ -217,11 +251,12 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
           user_id: userId, kind: "deposit",
           title: `Premium ${plan} activated 👑`,
           body: `Valid till ${new Date(expires_at).toLocaleDateString()}.`,
-          link: "/subscription",
+          link: "/premium",
         });
       } catch (e) { console.error("notify sub failed", e); }
       return { success: true, credited: true, amount: Number(order.amount), purpose, plan, expires_at } as any;
     }
+
 
     if (purpose === "bonus") {
       const bonusAmount = Number(order.bonus_amount ?? Number(order.amount) * BONUS_PER_RUPEE);
