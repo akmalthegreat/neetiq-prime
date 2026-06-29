@@ -17,6 +17,7 @@ import { Route as PyqsRouteImport } from './routes/pyqs'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as NcertHighlightsRouteImport } from './routes/ncert-highlights'
 import { Route as MocksRouteImport } from './routes/mocks'
 import { Route as LoginRouteImport } from './routes/login'
@@ -104,6 +105,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NcertHighlightsRoute = NcertHighlightsRouteImport.update({
@@ -379,6 +385,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -437,6 +444,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -496,6 +504,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -556,6 +565,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/premium'
     | '/privacy'
     | '/profile'
     | '/progress'
@@ -614,6 +624,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/premium'
     | '/privacy'
     | '/profile'
     | '/progress'
@@ -672,6 +683,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/premium'
     | '/privacy'
     | '/profile'
     | '/progress'
@@ -731,6 +743,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MocksRoute: typeof MocksRoute
   NcertHighlightsRoute: typeof NcertHighlightsRoute
+  PremiumRoute: typeof PremiumRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
@@ -815,6 +828,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ncert-highlights': {
@@ -1221,6 +1241,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MocksRoute: MocksRoute,
   NcertHighlightsRoute: NcertHighlightsRoute,
+  PremiumRoute: PremiumRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
