@@ -90,11 +90,9 @@ const NOTES: Record<string, ReactNode> = {
   ),
 };
 
-function ChemTopic() {
-  const { topic } = Route.useParams();
+export function ChemTopic({ topic }: { topic: string }) {
   const t = chemistryTopics.find((x) => x.slug === topic);
-  if (!t) throw notFound();
-
+  if (!t) return <div className="p-6 text-sm text-muted-foreground">Topic not found.</div>;
   const renderBody = () => {
     const key = MODEL_FOR[topic];
     if (key) return <SketchfabEmbed model={sketchfabModels[key]} />;
@@ -104,7 +102,6 @@ function ChemTopic() {
     if (topic === "labGame") return <ChemLabGame />;
     return <ReactionQuiz />;
   };
-
   return (
     <TopicShell subject="chemistry" title={t.title} tag={t.tag} blurb={t.blurb} notes={NOTES[topic]}>
       {renderBody()}
