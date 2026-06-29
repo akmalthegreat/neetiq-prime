@@ -131,6 +131,9 @@ function AdminPanel() {
         <TabsContent value="overview"><Overview /></TabsContent>
         <TabsContent value="userReport"><UserReportPanel /></TabsContent>
         <TabsContent value="payments"><WithdrawalsPanel /></TabsContent>
+        <TabsContent value="batches"><AdminBatchesTab /></TabsContent>
+        <TabsContent value="coupons"><AdminCouponsTab /></TabsContent>
+        <TabsContent value="grantPremium"><AdminGrantPremium /></TabsContent>
         <TabsContent value="topWallets"><TopWalletsPanel /></TabsContent>
         <TabsContent value="battleBots"><BattleBotsManager /></TabsContent>
         <TabsContent value="contestAi"><AiContestWizard /></TabsContent>
