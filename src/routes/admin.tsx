@@ -34,6 +34,9 @@ import { adminListBattleBots, adminAddBattleBot, adminToggleBattleBot, adminDele
 
 import { MockTestWizard } from "@/components/mock-test-wizard";
 import { AiMockBatch } from "@/components/ai-mock-batch";
+import { AdminBatchesTab } from "@/components/admin-batches";
+import { AdminCouponsTab } from "@/components/admin-coupons";
+import { AdminGrantPremium } from "@/components/admin-grant-premium";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — NEETIQ Prime" }] }),
