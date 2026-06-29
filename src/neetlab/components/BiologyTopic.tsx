@@ -109,11 +109,9 @@ const MODEL_FOR: Partial<Record<string, ModelKey>> = {
   sperm: "sperm",
 };
 
-function BioTopic() {
-  const { topic } = Route.useParams();
+export function BioTopic({ topic }: { topic: string }) {
   const t = biologyTopics.find((x) => x.slug === topic);
-  if (!t) throw notFound();
-
+  if (!t) return <div className="p-6 text-sm text-muted-foreground">Topic not found.</div>;
   const renderBody = () => {
     if (topic === "dna") return <DNAHelixAnim />;
     if (topic === "mitosis") return <MitosisAnim />;
@@ -125,7 +123,6 @@ function BioTopic() {
     if (key) return <SketchfabEmbed model={sketchfabModels[key]} />;
     return null;
   };
-
   return (
     <TopicShell subject="biology" title={t.title} tag={t.tag} blurb={t.blurb} notes={NOTES[topic]}>
       {renderBody()}
