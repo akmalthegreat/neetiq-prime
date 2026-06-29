@@ -16,9 +16,11 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z
       .object({
-        amount: z.number().int().min(MIN_AMOUNT).max(MAX_AMOUNT),
-        purpose: z.enum(["deposit", "bonus", "subscription"]).default("deposit"),
+        amount: z.number().min(MIN_AMOUNT).max(MAX_AMOUNT),
+        purpose: z.enum(["deposit", "bonus", "subscription", "batch"]).default("deposit"),
         plan: z.enum(["monthly", "yearly"]).optional(),
+        batch_id: z.string().uuid().optional(),
+        coupon_code: z.string().min(1).max(40).optional(),
       })
       .parse(input),
   )
