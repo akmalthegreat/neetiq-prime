@@ -1,28 +1,13 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { TopicShell } from "../components/TopicShell";
+import { TopicShell } from "./TopicShell";
 import {
   ProjectileSim, TensionSim, PendulumSim, CircularMotionSim, RotationalMotionSim,
   SpringSHMSim, InclinedPlaneSim, CollisionSim,
-} from "../components/sims/PhysicsSims";
+} from "../sims/PhysicsSims";
 import { physicsTopics } from "../data/topics";
 
-export const Route = createFileRoute("/physics/$topic")({
-  head: ({ params }) => {
-    const t = physicsTopics.find((x) => x.slug === params.topic);
-    return {
-      meta: [
-        { title: t ? `${t.title} — Simulation | NEETLab` : "Physics | NEETLab" },
-        { name: "description", content: t?.blurb ?? "Physics simulation for NEET." },
-      ],
-    };
-  },
-  component: PhyTopic,
-});
-
-function PhyTopic() {
-  const { topic } = Route.useParams();
+export function PhyTopic({ topic }: { topic: string }) {
   const t = physicsTopics.find((x) => x.slug === topic);
-  if (!t) throw notFound();
+  if (!t) return <div className="p-6 text-sm text-muted-foreground">Topic not found.</div>;
 
   const Sim =
     topic === "projectile" ? ProjectileSim :
