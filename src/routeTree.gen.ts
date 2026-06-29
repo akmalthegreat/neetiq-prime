@@ -17,6 +17,8 @@ import { Route as PyqsRouteImport } from './routes/pyqs'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PremiumRouteImport } from './routes/premium'
+import { Route as NeetlabRouteImport } from './routes/neetlab'
 import { Route as NcertHighlightsRouteImport } from './routes/ncert-highlights'
 import { Route as MocksRouteImport } from './routes/mocks'
 import { Route as LoginRouteImport } from './routes/login'
@@ -104,6 +106,16 @@ const ProfileRoute = ProfileRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NeetlabRoute = NeetlabRouteImport.update({
+  id: '/neetlab',
+  path: '/neetlab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NcertHighlightsRoute = NcertHighlightsRouteImport.update({
@@ -379,6 +391,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/neetlab': typeof NeetlabRoute
+  '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -437,6 +451,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/neetlab': typeof NeetlabRoute
+  '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -496,6 +512,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/neetlab': typeof NeetlabRoute
+  '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -556,6 +574,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/neetlab'
+    | '/premium'
     | '/privacy'
     | '/profile'
     | '/progress'
@@ -614,6 +634,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/neetlab'
+    | '/premium'
     | '/privacy'
     | '/profile'
     | '/progress'
@@ -672,6 +694,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/neetlab'
+    | '/premium'
     | '/privacy'
     | '/profile'
     | '/progress'
@@ -731,6 +755,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MocksRoute: typeof MocksRoute
   NcertHighlightsRoute: typeof NcertHighlightsRoute
+  NeetlabRoute: typeof NeetlabRoute
+  PremiumRoute: typeof PremiumRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
@@ -815,6 +841,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/neetlab': {
+      id: '/neetlab'
+      path: '/neetlab'
+      fullPath: '/neetlab'
+      preLoaderRoute: typeof NeetlabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ncert-highlights': {
@@ -1221,6 +1261,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MocksRoute: MocksRoute,
   NcertHighlightsRoute: NcertHighlightsRoute,
+  NeetlabRoute: NeetlabRoute,
+  PremiumRoute: PremiumRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
@@ -1252,13 +1294,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

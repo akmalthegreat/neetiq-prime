@@ -174,7 +174,7 @@ function Dashboard() {
           <div className="grid grid-cols-2 gap-3">
             <SmallTool to="/generate" title="Generate Test" subtitle="Custom DPP wizard" icon={FileText} bonus={5} tint="from-orange-500 to-rose-600" />
             <div className="grid gap-3">
-              <SmallTool to="/pyqs" title="NEET PYQs" subtitle="Year-wise practice" icon={BookMarked} tint="from-amber-500 to-yellow-600" />
+              <SmallTool to="/neetlab" title="NEETLab" subtitle="3D simulations & PYQs" icon={BookMarked} tint="from-amber-500 to-yellow-600" />
               <SmallTool to="/bookmarks" title="Bookmarks" subtitle="Saved questions" icon={RefreshCw} tint="from-pink-500 to-rose-600" />
             </div>
           </div>

@@ -34,6 +34,9 @@ import { adminListBattleBots, adminAddBattleBot, adminToggleBattleBot, adminDele
 
 import { MockTestWizard } from "@/components/mock-test-wizard";
 import { AiMockBatch } from "@/components/ai-mock-batch";
+import { AdminBatchesTab } from "@/components/admin-batches";
+import { AdminCouponsTab } from "@/components/admin-coupons";
+import { AdminGrantPremium } from "@/components/admin-grant-premium";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — NEETIQ Prime" }] }),
@@ -77,6 +80,9 @@ function AdminPanel() {
     { value: "overview", label: "Overview" },
     { value: "userReport", label: "User Report" },
     { value: "payments", label: "Payments" },
+    { value: "batches", label: "Batches" },
+    { value: "coupons", label: "Coupons" },
+    { value: "grantPremium", label: "Grant Premium" },
     { value: "topWallets", label: "Top Wallets" },
     { value: "battleBots", label: "Battle Bots" },
     { value: "contestAi", label: "AI Contest" },
@@ -125,6 +131,9 @@ function AdminPanel() {
         <TabsContent value="overview"><Overview /></TabsContent>
         <TabsContent value="userReport"><UserReportPanel /></TabsContent>
         <TabsContent value="payments"><WithdrawalsPanel /></TabsContent>
+        <TabsContent value="batches"><AdminBatchesTab /></TabsContent>
+        <TabsContent value="coupons"><AdminCouponsTab /></TabsContent>
+        <TabsContent value="grantPremium"><AdminGrantPremium /></TabsContent>
         <TabsContent value="topWallets"><TopWalletsPanel /></TabsContent>
         <TabsContent value="battleBots"><BattleBotsManager /></TabsContent>
         <TabsContent value="contestAi"><AiContestWizard /></TabsContent>
