@@ -151,7 +151,7 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
 
     const { data: order, error: orderErr } = await (supabaseAdmin as any)
       .from("payment_orders")
-      .select("id, user_id, amount, status, purpose, bonus_amount, plan")
+      .select("id, user_id, amount, status, purpose, bonus_amount, plan, batch_id, coupon_id")
       .eq("razorpay_order_id", data.razorpay_order_id)
       .maybeSingle();
     if (orderErr || !order) throw new Error("Order not found");
