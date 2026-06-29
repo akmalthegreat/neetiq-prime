@@ -1,23 +1,9 @@
 import type { ReactNode } from "react";
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { TopicShell } from "../components/TopicShell";
-import { SketchfabEmbed } from "../components/SketchfabEmbed";
+import { TopicShell } from "./TopicShell";
+import { SketchfabEmbed } from "./SketchfabEmbed";
 import { sketchfabModels, type ModelKey } from "../data/models";
-import { MitosisAnim, DNAReplicationAnim, DNAHelixAnim, MeiosisAnim, PhotosynthesisAnim, BloodCellsAnim } from "../components/sims/BiologyAnims";
+import { MitosisAnim, DNAReplicationAnim, DNAHelixAnim, MeiosisAnim, PhotosynthesisAnim, BloodCellsAnim } from "../sims/BiologyAnims";
 import { biologyTopics } from "../data/topics";
-
-export const Route = createFileRoute("/biology/$topic")({
-  head: ({ params }) => {
-    const t = biologyTopics.find((x) => x.slug === params.topic);
-    return {
-      meta: [
-        { title: t ? `${t.title} — NEETLab` : "Biology topic | NEETLab" },
-        { name: "description", content: t?.blurb ?? "Biology 3D model for NEET." },
-      ],
-    };
-  },
-  component: BioTopic,
-});
 
 const NOTES: Record<string, ReactNode> = {
   dna: (
