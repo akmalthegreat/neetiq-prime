@@ -1,25 +1,11 @@
 import type { ReactNode } from "react";
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { TopicShell } from "../components/TopicShell";
-import { SketchfabEmbed } from "../components/SketchfabEmbed";
+import { TopicShell } from "./TopicShell";
+import { SketchfabEmbed } from "./SketchfabEmbed";
 import { sketchfabModels, type ModelKey } from "../data/models";
-import { TitrationSim, CombustionSim, ElectrolysisSim } from "../components/sims/ChemSims";
-import { ReactionQuiz } from "../components/sims/ReactionQuiz";
-import { ChemLabGame } from "../components/sims/ChemLabGame";
+import { TitrationSim, CombustionSim, ElectrolysisSim } from "../sims/ChemSims";
+import { ReactionQuiz } from "../sims/ReactionQuiz";
+import { ChemLabGame } from "../sims/ChemLabGame";
 import { chemistryTopics } from "../data/topics";
-
-export const Route = createFileRoute("/chemistry/$topic")({
-  head: ({ params }) => {
-    const t = chemistryTopics.find((x) => x.slug === params.topic);
-    return {
-      meta: [
-        { title: t ? `${t.title} — Lab | NEETLab` : "Chemistry | NEETLab" },
-        { name: "description", content: t?.blurb ?? "Animated chemistry experiment for NEET." },
-      ],
-    };
-  },
-  component: ChemTopic,
-});
 
 const MODEL_FOR: Partial<Record<string, ModelKey>> = {
   water: "water",
