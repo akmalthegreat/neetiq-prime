@@ -222,8 +222,8 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
         await (supabaseAdmin as any).from("coupon_redemptions").insert({
           coupon_id: order.coupon_id, user_id: userId, purchase_id: purch?.id ?? null,
         });
-        await (supabaseAdmin as any).rpc("exec_sql"); // noop; increment below
-        await (supabaseAdmin as any).from("coupons").update({ used_count: ((await (supabaseAdmin as any).from("coupons").select("used_count").eq("id", order.coupon_id).single()).data?.used_count ?? 0) + 1 }).eq("id", order.coupon_id);
+        const cur = await (supabaseAdmin as any).from("coupons").select("used_count").eq("id", order.coupon_id).single();
+        await (supabaseAdmin as any).from("coupons").update({ used_count: (cur.data?.used_count ?? 0) + 1 }).eq("id", order.coupon_id);
       }
       try {
         const { pushNotification } = await import("@/lib/notifications.functions");
