@@ -18,6 +18,7 @@ import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PremiumRouteImport } from './routes/premium'
+import { Route as NeetlabRouteImport } from './routes/neetlab'
 import { Route as NcertHighlightsRouteImport } from './routes/ncert-highlights'
 import { Route as MocksRouteImport } from './routes/mocks'
 import { Route as LoginRouteImport } from './routes/login'
@@ -110,6 +111,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PremiumRoute = PremiumRouteImport.update({
   id: '/premium',
   path: '/premium',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NeetlabRoute = NeetlabRouteImport.update({
+  id: '/neetlab',
+  path: '/neetlab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NcertHighlightsRoute = NcertHighlightsRouteImport.update({
@@ -385,6 +391,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/neetlab': typeof NeetlabRoute
   '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -444,6 +451,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/neetlab': typeof NeetlabRoute
   '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -504,6 +512,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
+  '/neetlab': typeof NeetlabRoute
   '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
@@ -565,6 +574,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/neetlab'
     | '/premium'
     | '/privacy'
     | '/profile'
@@ -624,6 +634,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/neetlab'
     | '/premium'
     | '/privacy'
     | '/profile'
@@ -683,6 +694,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mocks'
     | '/ncert-highlights'
+    | '/neetlab'
     | '/premium'
     | '/privacy'
     | '/profile'
@@ -743,6 +755,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MocksRoute: typeof MocksRoute
   NcertHighlightsRoute: typeof NcertHighlightsRoute
+  NeetlabRoute: typeof NeetlabRoute
   PremiumRoute: typeof PremiumRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
@@ -835,6 +848,13 @@ declare module '@tanstack/react-router' {
       path: '/premium'
       fullPath: '/premium'
       preLoaderRoute: typeof PremiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/neetlab': {
+      id: '/neetlab'
+      path: '/neetlab'
+      fullPath: '/neetlab'
+      preLoaderRoute: typeof NeetlabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ncert-highlights': {
@@ -1241,6 +1261,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MocksRoute: MocksRoute,
   NcertHighlightsRoute: NcertHighlightsRoute,
+  NeetlabRoute: NeetlabRoute,
   PremiumRoute: PremiumRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
