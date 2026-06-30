@@ -1,5 +1,5 @@
-import diagramMap from "@/data/diagrams.json";
-import chapterMeta from "@/data/chapter-meta.json";
+import diagramMap from "./data/diagrams.json";
+import chapterMeta from "./data/chapter-meta.json";
 
 export function metaFor(cls: string, chapter: number): { important: boolean; expected_2027: number } {
   const k = `${classKey(cls)}-${chapter}`;
