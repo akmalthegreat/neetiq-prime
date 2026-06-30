@@ -24,6 +24,7 @@ import { Route as MocksRouteImport } from './routes/mocks'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as InfiniteRunRouteImport } from './routes/infinite-run'
+import { Route as HighlightedNcertRouteImport } from './routes/highlighted-ncert'
 import { Route as GenerateRouteImport } from './routes/generate'
 import { Route as FlashcardsRouteImport } from './routes/flashcards'
 import { Route as FeedbackRouteImport } from './routes/feedback'
@@ -141,6 +142,11 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
 const InfiniteRunRoute = InfiniteRunRouteImport.update({
   id: '/infinite-run',
   path: '/infinite-run',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HighlightedNcertRoute = HighlightedNcertRouteImport.update({
+  id: '/highlighted-ncert',
+  path: '/highlighted-ncert',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GenerateRoute = GenerateRouteImport.update({
@@ -386,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/feedback': typeof FeedbackRoute
   '/flashcards': typeof FlashcardsRoute
   '/generate': typeof GenerateRoute
+  '/highlighted-ncert': typeof HighlightedNcertRoute
   '/infinite-run': typeof InfiniteRunRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
@@ -446,6 +453,7 @@ export interface FileRoutesByTo {
   '/feedback': typeof FeedbackRoute
   '/flashcards': typeof FlashcardsRoute
   '/generate': typeof GenerateRoute
+  '/highlighted-ncert': typeof HighlightedNcertRoute
   '/infinite-run': typeof InfiniteRunRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
@@ -507,6 +515,7 @@ export interface FileRoutesById {
   '/feedback': typeof FeedbackRoute
   '/flashcards': typeof FlashcardsRoute
   '/generate': typeof GenerateRoute
+  '/highlighted-ncert': typeof HighlightedNcertRoute
   '/infinite-run': typeof InfiniteRunRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
@@ -569,6 +578,7 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/flashcards'
     | '/generate'
+    | '/highlighted-ncert'
     | '/infinite-run'
     | '/leaderboard'
     | '/login'
@@ -629,6 +639,7 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/flashcards'
     | '/generate'
+    | '/highlighted-ncert'
     | '/infinite-run'
     | '/leaderboard'
     | '/login'
@@ -689,6 +700,7 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/flashcards'
     | '/generate'
+    | '/highlighted-ncert'
     | '/infinite-run'
     | '/leaderboard'
     | '/login'
@@ -750,6 +762,7 @@ export interface RootRouteChildren {
   FeedbackRoute: typeof FeedbackRoute
   FlashcardsRoute: typeof FlashcardsRoute
   GenerateRoute: typeof GenerateRoute
+  HighlightedNcertRoute: typeof HighlightedNcertRoute
   InfiniteRunRoute: typeof InfiniteRunRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
@@ -890,6 +903,13 @@ declare module '@tanstack/react-router' {
       path: '/infinite-run'
       fullPath: '/infinite-run'
       preLoaderRoute: typeof InfiniteRunRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/highlighted-ncert': {
+      id: '/highlighted-ncert'
+      path: '/highlighted-ncert'
+      fullPath: '/highlighted-ncert'
+      preLoaderRoute: typeof HighlightedNcertRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/generate': {
@@ -1256,6 +1276,7 @@ const rootRouteChildren: RootRouteChildren = {
   FeedbackRoute: FeedbackRoute,
   FlashcardsRoute: FlashcardsRoute,
   GenerateRoute: GenerateRoute,
+  HighlightedNcertRoute: HighlightedNcertRoute,
   InfiniteRunRoute: InfiniteRunRoute,
   LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,

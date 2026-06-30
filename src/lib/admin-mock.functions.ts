@@ -192,8 +192,10 @@ export const generateAiMockBatch = createServerFn({ method: "POST" })
       }
     }
 
-    // Build N mocks, enforcing an equal per-subject quota so every mock spans
-    // ALL subjects (not just 2). Quota = floor(perMock / subjectCount).
+    // Build N mocks. Strategy: distribute per-subject quotas first, then top up
+    // any short bucket from a global remaining pool so EVERY mock ends with
+    // exactly `perMock` questions. If we cannot reach perMock for any bucket,
+    // fail loudly so the admin gets a clear error instead of silent 5-q mocks.
     const buckets: Array<PoolQ[]> = Array.from({ length: data.count }, () => []);
     const subjectIds = Array.from(bySubject.keys());
     const subjectCount = subjectIds.length || 1;
@@ -205,7 +207,6 @@ export const generateAiMockBatch = createServerFn({ method: "POST" })
       for (let sIdx = 0; sIdx < subjectIds.length; sIdx++) {
         const sid = subjectIds[sIdx];
         const arr = bySubject.get(sid)!;
-        // First `remainder` subjects get +1 to fill perMock exactly.
         const quota = baseQuota + (sIdx < remainder ? 1 : 0);
         let taken = 0;
         while (taken < quota) {
@@ -216,22 +217,34 @@ export const generateAiMockBatch = createServerFn({ method: "POST" })
           taken++;
         }
       }
-      // If a subject was exhausted, top up from any subject that still has stock
-      // so this mock still hits perMock.
-      while (buckets[mIdx].length < data.perMock) {
+    }
+
+    // Top-up phase: walk every subject in round-robin until each bucket reaches perMock.
+    for (let mIdx = 0; mIdx < data.count; mIdx++) {
+      let safety = 0;
+      while (buckets[mIdx].length < data.perMock && safety++ < 10000) {
         let placed = false;
         for (const sid of subjectIds) {
+          if (buckets[mIdx].length >= data.perMock) break;
           const arr = bySubject.get(sid)!;
           const c = cursors.get(sid)!;
           if (c < arr.length) {
             buckets[mIdx].push(arr[c]);
             cursors.set(sid, c + 1);
             placed = true;
-            break;
           }
         }
         if (!placed) break;
       }
+    }
+
+    // Hard-validate every bucket. Don't ship a mock with the wrong question count.
+    const short = buckets.findIndex((b) => b.length !== data.perMock);
+    if (short !== -1) {
+      throw new Error(
+        `Could not build ${data.count} mocks of ${data.perMock} questions — mock #${short + 1} only has ${buckets[short].length}. ` +
+        `Question pool exhausted. Reduce count/perMock or add more questions.`,
+      );
     }
 
 

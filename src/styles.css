@@ -234,3 +234,34 @@
   html { scroll-behavior: smooth; }
   button, a, [role="button"] { -webkit-tap-highlight-color: transparent; }
 }
+
+/* ── NCERT Explorer brand aliases + highlight utilities (theme-integrated) ── */
+:root {
+  --brand: var(--primary);
+  --brand-deep: oklch(0.32 0.14 260);
+  --brand-soft: oklch(0.95 0.04 245);
+  --hl-yellow: oklch(0.94 0.14 100);
+  --hl-green:  oklch(0.92 0.12 155);
+  --hl-pink:   oklch(0.92 0.09 10);
+  --hl-blue:   oklch(0.9  0.08 235);
+  --hl-orange: oklch(0.88 0.16 60);
+}
+.dark {
+  --brand-deep: oklch(0.85 0.10 240);
+  --brand-soft: oklch(0.30 0.07 260);
+  --hl-yellow: oklch(0.78 0.16 95);
+  --hl-green:  oklch(0.74 0.14 155);
+  --hl-pink:   oklch(0.72 0.12 10);
+  --hl-blue:   oklch(0.72 0.12 235);
+  --hl-orange: oklch(0.74 0.17 55);
+}
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+}
+@utility hl-yellow { background: color-mix(in oklab, var(--hl-yellow) 60%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+@utility hl-green  { background: color-mix(in oklab, var(--hl-green)  60%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+@utility hl-pink   { background: color-mix(in oklab, var(--hl-pink)   60%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+@utility hl-blue   { background: color-mix(in oklab, var(--hl-blue)   60%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+@utility hl-orange { background: color-mix(in oklab, var(--hl-orange) 65%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
