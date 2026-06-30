@@ -186,6 +186,14 @@ function Dashboard() {
           </div>
 
           <ToolCard
+            to="/highlighted-ncert"
+            title="Highlighted NCERT"
+            subtitle="Class 11 & 12 Biology · PYQ-coloured lines & diagrams"
+            icon={BookMarked}
+            tint="from-emerald-500 to-teal-600"
+          />
+
+          <ToolCard
             to="/ncert-highlights"
             title="NCERT Highlights"
             subtitle="Most-repeated NCERT lines for NEET"
