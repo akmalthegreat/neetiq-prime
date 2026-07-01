@@ -85,6 +85,7 @@ function Dashboard() {
 
   return (
     <PageShell>
+      <TrialBanner />
       {/* Top status strip */}
       <div className="-mt-2 mb-2 grid grid-cols-3 gap-1.5 sm:max-w-md">
         <StatPill icon={CalendarDays} label="NEET" value="2027" />
