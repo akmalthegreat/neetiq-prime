@@ -145,9 +145,7 @@ function MockCard({ t }: { t: Test }) {
   const handleStart = async () => {
     setStarting(true);
     try {
-      const r = await gate({ data: { test_id: t.id } });
-      if (r.charged > 0) toast.success(`−${r.charged} bonus · entry unlocked`);
-      else if (r.reason === "first_free") toast.success("First mock unlocked — free 🎉");
+      await gate({ data: { test_id: t.id } });
       nav({ to: "/quiz/$testId", params: { testId: t.id } });
     } catch (e: any) {
       toast.error(e?.message ?? "Could not start this mock");
