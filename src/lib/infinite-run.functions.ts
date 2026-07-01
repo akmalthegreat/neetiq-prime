@@ -55,6 +55,7 @@ export const startInfiniteRun = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "infinite_run");
     const modes = data.modes && data.modes.length > 0 ? data.modes : (["dpp", "diagram"] as RunMode[]);
     const per_tick_count = data.per_tick_count ?? 5;
     const now = new Date().toISOString();
