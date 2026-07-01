@@ -401,10 +401,8 @@ function ComingSoonTile({ title, subtitle, icon: Icon, onClick, tint = "from-pri
 }
 
 
-function BonusPill({ amount, className = "" }: { amount: number; className?: string }) {
-  return (
-    <span className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${className}`}>
-      <Coins className="h-3 w-3" /> {amount} bonus
-    </span>
-  );
+function BonusPill(_props: { amount: number; className?: string }) {
+  // Bonus system removed — pill is a no-op to preserve layout without any user-facing bonus wording.
+  return null;
 }
+
