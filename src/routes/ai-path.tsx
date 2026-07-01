@@ -9,10 +9,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { getCurrentPath, generateAiPath, updatePathProgress } from "@/lib/ai-path.functions";
 import { getAppSettings } from "@/lib/app-settings.functions";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/ai-path")({
   head: () => ({ meta: [{ title: "AI Path — NEETIQ Prime" }] }),
-  component: AiPathPage,
+  component: () => (<FeatureLock feature="ai_path"><AiPathPage/></FeatureLock>),
 });
 
 type Day = { day: number; focus_subject: string; topics: string[]; daily_tasks: string[]; time_min: number; motivation_note: string };

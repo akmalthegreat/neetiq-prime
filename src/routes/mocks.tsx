@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { startMockAttempt, MOCK_COST_BONUS } from "@/lib/mock-gate.functions";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 type SyllabusEntry = { subjectId: string; subjectName: string; chapters: { id: string; name: string }[] };
 
@@ -29,7 +30,7 @@ type Test = {
 
 export const Route = createFileRoute("/mocks")({
   head: () => ({ meta: [{ title: "Mock Tests — NEETIQ Prime" }, { name: "description", content: "Full-length NEET mock tests with detailed solutions and analytics." }] }),
-  component: MocksPage,
+  component: () => (<FeatureLock feature="ai_mock_tests"><MocksPage/></FeatureLock>),
 });
 
 function MocksPage() {

@@ -10,10 +10,11 @@ import { accessStudyFeature } from "@/lib/feature-gate.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { RichText } from "@/components/rich-text";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/flashcards")({
   head: () => ({ meta: [{ title: "Flashcards — NEETIQ Prime" }] }),
-  component: FlashcardsPage,
+  component: () => (<FeatureLock feature="flashcards"><FlashcardsPage/></FeatureLock>),
 });
 
 type Deck = { subject_id: string | null; subject_name: string; chapter_id: string | null; chapter_name: string; count: number };

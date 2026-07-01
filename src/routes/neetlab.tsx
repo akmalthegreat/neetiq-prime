@@ -9,10 +9,11 @@ import { BioTopic } from "@/neetlab/components/BiologyTopic";
 import { PhyTopic } from "@/neetlab/components/PhysicsTopic";
 import { ChemTopic } from "@/neetlab/components/ChemistryTopic";
 import { subjects } from "@/neetlab/data/topics";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/neetlab")({
   head: () => ({ meta: [{ title: "NEETLab — 3D Sims & PYQs" }] }),
-  component: NEETLabPage,
+  component: () => (<FeatureLock feature="neetlab"><NEETLabPage/></FeatureLock>),
 });
 
 function NEETLabPage() {

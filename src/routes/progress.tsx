@@ -11,10 +11,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({ meta: [{ title: "Weekly Progress — NEETIQ Prime" }] }),
-  component: ProgressPage,
+  component: () => (<FeatureLock feature="weekly_progress"><ProgressPage/></FeatureLock>),
 });
 
 type Attempt = { correct_count: number; wrong_count: number; unattempted_count: number; submitted_at: string };

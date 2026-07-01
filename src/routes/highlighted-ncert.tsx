@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, ArrowLeft, BookOpen } from "lucide-react";
+import { FeatureLock } from "@/components/feature-lock";
 
 const ncertQuery = queryOptions({
   queryKey: ["ncert-explorer"],
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/highlighted-ncert")({
     { name: "description", content: "NCERT Biology chapters with PYQ-highlighted lines and diagrams." },
   ] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(ncertQuery),
-  component: Page,
+  component: () => (<FeatureLock feature="ncert_highlights"><Page/></FeatureLock>),
   errorComponent: ({ error }) => (
     <Shell>
       <div className="py-10 text-center text-sm text-muted-foreground">Failed to load NCERT data. {error.message}</div>

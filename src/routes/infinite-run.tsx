@@ -11,10 +11,11 @@ import {
   getInfiniteRunStatus, startInfiniteRun, pauseInfiniteRun, stopInfiniteRun, tickInfiniteRun,
 } from "@/lib/infinite-run.functions";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/infinite-run")({
   head: () => ({ meta: [{ title: "Infinite Run — NEETIQ Prime" }] }),
-  component: InfiniteRunPage,
+  component: () => (<FeatureLock feature="battlegrounds"><InfiniteRunPage/></FeatureLock>),
 });
 
 type Status = Awaited<ReturnType<typeof getInfiniteRunStatus>>;
