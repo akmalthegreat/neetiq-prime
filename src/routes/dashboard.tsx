@@ -228,7 +228,7 @@ function Dashboard() {
       <Section title="More">
         <div className="grid grid-cols-2 gap-3">
           <SmallTool to="/community" title="Our Community" subtitle="WhatsApp & Telegram channels" icon={Users} tint="from-green-500 to-emerald-600" tall />
-          <SmallTool to="/referrals" title="Refer & Earn" subtitle="Invite friends, get bonus" icon={Gift} bonus={50} tint="from-yellow-500 to-amber-600" tall />
+          <SmallTool to="/referrals" title="Refer & Earn" subtitle="Invite friends, get rewards" icon={Gift} bonus={50} tint="from-yellow-500 to-amber-600" tall />
           <Link to="/feedback" className="col-span-2 block h-full">
             <div className="flex h-full min-h-[88px] items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft transition-transform hover:-translate-y-0.5">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-sm">
