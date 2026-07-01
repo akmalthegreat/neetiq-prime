@@ -7,12 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, Clock, FileText, CalendarDays } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { FeatureLock } from "@/components/feature-lock";
 
 type Test = { id: string; title: string; description: string | null; difficulty: string; duration_min: number; total_questions: number; source: string; created_at: string };
 
 export const Route = createFileRoute("/daily")({
   head: () => ({ meta: [{ title: "Daily Free Quiz — NEETIQ Prime" }, { name: "description", content: "A fresh free NEET quiz every day. 10 questions, 15 minutes." }] }),
-  component: DailyPage,
+  component: () => (<FeatureLock feature="daily_dpp"><DailyPage/></FeatureLock>),
 });
 
 function DailyPage() {

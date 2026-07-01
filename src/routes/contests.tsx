@@ -9,11 +9,12 @@ import { Loader2, Trophy, Timer, Users, IndianRupee, Sparkles, ArrowRight } from
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { listPastContests } from "@/lib/contests.functions";
+import { FeatureLock } from "@/components/feature-lock";
 
 
 export const Route = createFileRoute("/contests")({
   head: () => ({ meta: [{ title: "Contests — NEETIQ Prime" }] }),
-  component: ContestsPage,
+  component: () => (<FeatureLock feature="contests"><ContestsPage/></FeatureLock>),
 });
 
 type Contest = {

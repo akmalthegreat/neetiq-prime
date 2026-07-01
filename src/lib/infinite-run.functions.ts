@@ -2,18 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { isAdminUser } from "@/lib/admin-bypass.server";
+import { requireFeature } from "@/lib/access.server";
 
 export type RunMode = "dpp" | "diagram";
 const ALL_MODES: RunMode[] = ["dpp", "diagram"];
 
-// ---- Helpers ----
-async function getBonus(userId: string): Promise<number> {
-  // Admins have effectively-infinite bonus.
-  if (await isAdminUser(userId)) return Number.MAX_SAFE_INTEGER;
-  const { data } = await supabaseAdmin.from("profiles").select("bonus_balance").eq("id", userId).maybeSingle();
-  return Number((data as any)?.bonus_balance ?? 0);
+async function getBonus(_userId: string): Promise<number> {
+  // Bonus system removed. Entitlement is gated by batch feature; keep a large sentinel.
+  return Number.MAX_SAFE_INTEGER;
 }
+
 
 async function loadCosts(): Promise<Record<RunMode, number>> {
   const { data } = await supabaseAdmin.from("app_settings" as never).select("key,value");
@@ -57,6 +55,7 @@ export const startInfiniteRun = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
+    await requireFeature(context.userId, "infinite_run");
     const modes = data.modes && data.modes.length > 0 ? data.modes : (["dpp", "diagram"] as RunMode[]);
     const per_tick_count = data.per_tick_count ?? 5;
     const now = new Date().toISOString();
@@ -157,18 +156,9 @@ export async function tickOneUser(userId: string): Promise<{ status: string; ite
     runError = e instanceof Error ? e.message : String(e);
   }
 
-  // Charge bonus exactly tickCost (one batch). If error, do not charge.
-  const charge = runError ? 0 : tickCost;
-  if (charge > 0) {
-    const adminBypass = await isAdminUser(userId);
-    if (!adminBypass) {
-      await supabaseAdmin.from("profiles").update({ bonus_balance: bonus - charge }).eq("id", userId);
-    }
-    await supabaseAdmin.from("wallet_transactions").insert({
-      user_id: userId, amount: adminBypass ? 0 : -charge, type: "infinite_run", bucket: "bonus", status: "success",
-      reference: `${mode}:${new Date().toISOString().slice(0, 16)}`,
-    });
-  }
+  // Bonus charging removed; entitlement gated at startInfiniteRun.
+  const charge = 0;
+
 
   const now = new Date().toISOString();
   await supabaseAdmin.from("infinite_runs" as never).update({

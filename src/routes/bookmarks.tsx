@@ -10,10 +10,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { RichText } from "@/components/rich-text";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/bookmarks")({
   head: () => ({ meta: [{ title: "My Bookmarks — NEETIQ Prime" }] }),
-  component: BookmarksPage,
+  component: () => (<FeatureLock feature="bookmarks"><BookmarksPage/></FeatureLock>),
 });
 
 type Q = { id: string; text: string; options: string[]; difficulty: string; subject_id: string | null; chapter_id: string | null };

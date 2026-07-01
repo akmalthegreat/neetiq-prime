@@ -10,10 +10,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { startDppAttempt, DPP_PAST_COST_BONUS } from "@/lib/dpp-gate.functions";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/dpp")({
   head: () => ({ meta: [{ title: "DPP & Quiz — NEETIQ Prime" }] }),
-  component: DppPage,
+  component: () => (<FeatureLock feature="daily_dpp"><DppPage/></FeatureLock>),
 });
 
 type Test = { id: string; title: string; difficulty: string; total_questions: number; duration_min: number; marks_correct: number; created_at: string; starts_at: string | null; ends_at: string | null; type: string };

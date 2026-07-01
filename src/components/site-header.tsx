@@ -71,8 +71,7 @@ const GROUPS: Group[] = [
     label: "Wallet",
     items: [
       { to: "/wallet", label: "Wallet" },
-      { to: "/bonus", label: "Bonus" },
-      { to: "/subscription", label: "Subscription" },
+      { to: "/premium", label: "Batches" },
     ],
   },
   { label: "Refer & Earn", to: "/referrals" },

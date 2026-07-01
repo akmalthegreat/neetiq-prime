@@ -10,10 +10,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { createCustomTestWithBonus } from "@/lib/generate-test.functions";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/generate")({
   head: () => ({ meta: [{ title: "Generate Test — NEETIQ Prime" }] }),
-  component: GeneratePage,
+  component: () => (<FeatureLock feature="generate_test"><GeneratePage/></FeatureLock>),
 });
 
 type Subject = { id: string; name: string };

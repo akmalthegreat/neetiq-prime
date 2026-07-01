@@ -9,10 +9,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { getLatestPrediction, runScorePrediction } from "@/lib/score-predictor.functions";
 import { getAppSettings } from "@/lib/app-settings.functions";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/score-predictor")({
   head: () => ({ meta: [{ title: "Score Predictor — NEETIQ Prime" }] }),
-  component: ScorePredictorPage,
+  component: () => (<FeatureLock feature="score_predictor"><ScorePredictorPage/></FeatureLock>),
 });
 
 type Prediction = {

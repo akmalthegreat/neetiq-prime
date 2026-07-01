@@ -8,10 +8,11 @@ import { Loader2, BookMarked } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/pyqs")({
   head: () => ({ meta: [{ title: "NEET PYQs — NEETIQ Prime" }] }),
-  component: PyqPage,
+  component: () => (<FeatureLock feature="pyqs"><PyqPage/></FeatureLock>),
 });
 
 type Row = { year: number; count: number };

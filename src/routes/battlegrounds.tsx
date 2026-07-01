@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase as supabaseTyped } from "@/integrations/supabase/client";
 import { avatarUrl } from "@/lib/avatar";
 import { avatarForName } from "@/lib/neetiq-avatars";
+import { FeatureLock } from "@/components/feature-lock";
 // Cast away types — battle_* tables and bg_* RPCs are pending DB type regen.
 const supabase = supabaseTyped as unknown as {
   from: (t: string) => any;
@@ -18,7 +19,7 @@ const supabase = supabaseTyped as unknown as {
 
 export const Route = createFileRoute("/battlegrounds")({
   head: () => ({ meta: [{ title: "Battlegrounds — 1v1 Quiz Battles" }] }),
-  component: BattlegroundsPage,
+  component: () => (<FeatureLock feature="battlegrounds"><BattlegroundsPage/></FeatureLock>),
 });
 
 type Stake = 0 | 2 | 5 | 10 | 25;

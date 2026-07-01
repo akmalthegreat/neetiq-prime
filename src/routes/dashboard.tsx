@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { TrialBanner } from "@/components/dashboard/trial-banner";
 
 const comingSoon = (label: string) =>
   toast.info(`${label} — Coming Soon`, { description: "We're putting the final touches on it." });
@@ -85,6 +86,7 @@ function Dashboard() {
 
   return (
     <PageShell>
+      <TrialBanner />
       {/* Top status strip */}
       <div className="-mt-2 mb-2 grid grid-cols-3 gap-1.5 sm:max-w-md">
         <StatPill icon={CalendarDays} label="NEET" value="2027" />
@@ -226,7 +228,7 @@ function Dashboard() {
       <Section title="More">
         <div className="grid grid-cols-2 gap-3">
           <SmallTool to="/community" title="Our Community" subtitle="WhatsApp & Telegram channels" icon={Users} tint="from-green-500 to-emerald-600" tall />
-          <SmallTool to="/referrals" title="Refer & Earn" subtitle="Invite friends, get bonus" icon={Gift} bonus={50} tint="from-yellow-500 to-amber-600" tall />
+          <SmallTool to="/referrals" title="Refer & Earn" subtitle="Invite friends, get rewards" icon={Gift} bonus={50} tint="from-yellow-500 to-amber-600" tall />
           <Link to="/feedback" className="col-span-2 block h-full">
             <div className="flex h-full min-h-[88px] items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft transition-transform hover:-translate-y-0.5">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-sm">
@@ -399,10 +401,8 @@ function ComingSoonTile({ title, subtitle, icon: Icon, onClick, tint = "from-pri
 }
 
 
-function BonusPill({ amount, className = "" }: { amount: number; className?: string }) {
-  return (
-    <span className={`inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${className}`}>
-      <Coins className="h-3 w-3" /> {amount} bonus
-    </span>
-  );
+function BonusPill(_props: { amount: number; className?: string }) {
+  // Bonus system removed — pill is a no-op to preserve layout without any user-facing bonus wording.
+  return null;
 }
+
