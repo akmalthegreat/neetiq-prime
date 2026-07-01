@@ -2,18 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { isAdminUser } from "@/lib/admin-bypass.server";
+import { requireFeature } from "@/lib/access.server";
 
 export type RunMode = "dpp" | "diagram";
 const ALL_MODES: RunMode[] = ["dpp", "diagram"];
 
-// ---- Helpers ----
-async function getBonus(userId: string): Promise<number> {
-  // Admins have effectively-infinite bonus.
-  if (await isAdminUser(userId)) return Number.MAX_SAFE_INTEGER;
-  const { data } = await supabaseAdmin.from("profiles").select("bonus_balance").eq("id", userId).maybeSingle();
-  return Number((data as any)?.bonus_balance ?? 0);
+async function getBonus(_userId: string): Promise<number> {
+  // Bonus system removed. Entitlement is gated by batch feature; keep a large sentinel.
+  return Number.MAX_SAFE_INTEGER;
 }
+
 
 async function loadCosts(): Promise<Record<RunMode, number>> {
   const { data } = await supabaseAdmin.from("app_settings" as never).select("key,value");
