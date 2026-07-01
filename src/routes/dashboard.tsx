@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { TrialBanner } from "@/components/dashboard/trial-banner";
 
 const comingSoon = (label: string) =>
   toast.info(`${label} — Coming Soon`, { description: "We're putting the final touches on it." });
