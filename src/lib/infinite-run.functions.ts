@@ -155,18 +155,9 @@ export async function tickOneUser(userId: string): Promise<{ status: string; ite
     runError = e instanceof Error ? e.message : String(e);
   }
 
-  // Charge bonus exactly tickCost (one batch). If error, do not charge.
-  const charge = runError ? 0 : tickCost;
-  if (charge > 0) {
-    const adminBypass = await isAdminUser(userId);
-    if (!adminBypass) {
-      await supabaseAdmin.from("profiles").update({ bonus_balance: bonus - charge }).eq("id", userId);
-    }
-    await supabaseAdmin.from("wallet_transactions").insert({
-      user_id: userId, amount: adminBypass ? 0 : -charge, type: "infinite_run", bucket: "bonus", status: "success",
-      reference: `${mode}:${new Date().toISOString().slice(0, 16)}`,
-    });
-  }
+  // Bonus charging removed; entitlement gated at startInfiniteRun.
+  const charge = 0;
+
 
   const now = new Date().toISOString();
   await supabaseAdmin.from("infinite_runs" as never).update({
