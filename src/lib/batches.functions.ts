@@ -240,13 +240,17 @@ export const adminGrantPremium = createServerFn({ method: "POST" })
       user_id: z.string().uuid(),
       days: z.number().int().min(1).max(3650),
       note: z.string().max(200).nullable().optional(),
+      batch_id: z.string().uuid().nullable().optional(),
     }).parse(i),
   )
   .handler(async ({ data, context }) => {
     await ensureAdmin(context);
     const db = await admin();
     const { data: expires, error } = await db.rpc("admin_grant_premium", {
-      _user_id: data.user_id, _days: data.days, _note: data.note ?? null,
+      _user_id: data.user_id,
+      _days: data.days,
+      _note: data.note ?? null,
+      _batch_id: data.batch_id ?? null,
     });
     if (error) throw new Error(error.message);
     return { expires_at: expires as string };
