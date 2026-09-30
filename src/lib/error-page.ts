@@ -1,4 +1,20 @@
-export function renderErrorPage(): string {
+export function renderErrorPage(error?: unknown): string {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : "";
+  const stack = error instanceof Error && error.stack ? error.stack : "";
+
+  const errorDetails = message
+    ? `<details style="margin-top: 1rem; text-align: left; background: #fee2e2; border: 1px solid #f87171; border-radius: 0.375rem; padding: 0.75rem; font-size: 0.8125rem; color: #991b1b; overflow-x: auto;">
+        <summary style="cursor: pointer; font-weight: 600;">Error details</summary>
+        <p style="margin: 0.5rem 0 0 0; font-family: monospace; white-space: pre-wrap; word-break: break-word;">${message}</p>
+        ${stack ? `<pre style="margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto; white-space: pre-wrap; word-break: break-word;">${stack}</pre>` : ""}
+      </details>`
+    : "";
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -24,6 +40,7 @@ export function renderErrorPage(): string {
         <button class="primary" onclick="location.reload()">Try again</button>
         <a class="secondary" href="/">Go home</a>
       </div>
+      ${errorDetails}
     </div>
   </body>
 </html>`;

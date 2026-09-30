@@ -4,17 +4,17 @@
 // via vite.config.ts `define`. The service role key stays server-only (read from
 // MY_SUPABASE_SERVICE_ROLE_KEY in client.server.ts).
 
-declare const __MY_SUPABASE_URL__: string;
-declare const __MY_SUPABASE_ANON_KEY__: string;
+const DEFAULT_SUPABASE_URL = "https://cupvxfoikjkufudgehsr.supabase.co";
+const DEFAULT_SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1cHZ4Zm9pa2prdWZ1ZGdlaHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NTMwMjQsImV4cCI6MjA5NDIyOTAyNH0.nhbTRc6GrzWXOXkxbfNp9tVr1zYiOAXKG_mh2wQTpiA";
 
-export const SUPABASE_URL: string = __MY_SUPABASE_URL__;
-export const SUPABASE_PUBLISHABLE_KEY: string = __MY_SUPABASE_ANON_KEY__;
+declare const __MY_SUPABASE_URL__: string | undefined;
+declare const __MY_SUPABASE_ANON_KEY__: string | undefined;
 
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  // Surface a clear error at module load instead of cryptic Supabase failures later.
-  // eslint-disable-next-line no-console
-  console.error(
-    "[Supabase] Missing MY_SUPABASE_URL or MY_SUPABASE_ANON_KEY at build time. " +
-      "Add them in Project Settings → Secrets and rebuild.",
-  );
-}
+export const SUPABASE_URL: string =
+  (typeof __MY_SUPABASE_URL__ !== "undefined" && __MY_SUPABASE_URL__) ||
+  DEFAULT_SUPABASE_URL;
+
+export const SUPABASE_PUBLISHABLE_KEY: string =
+  (typeof __MY_SUPABASE_ANON_KEY__ !== "undefined" && __MY_SUPABASE_ANON_KEY__) ||
+  DEFAULT_SUPABASE_ANON_KEY;
