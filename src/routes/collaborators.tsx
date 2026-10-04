@@ -5,9 +5,9 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, IndianRupee, TrendingUp, Wallet, Crown, ArrowRight } from "lucide-react";
+import { Loader2, Users, IndianRupee, TrendingUp, Wallet, Crown, ArrowRight, Link2, Tag, Pencil, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
 import { getMyCollaboratorProgram } from "@/lib/collaborators.functions";
 
 export const Route = createFileRoute("/collaborators")({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/collaborators")({
 });
 
 function CollaboratorsPage() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
   const nav = useNavigate();
   const fetch = useServerFn(getMyCollaboratorProgram);
   const [data, setData] = useState<Awaited<ReturnType<typeof fetch>> | null>(null);
@@ -30,26 +30,6 @@ function CollaboratorsPage() {
       fetch().then((d) => { if (alive) setData(d); }).catch(() => {});
     };
     reload();
-    // Live updates: refresh whenever a new referral lands under me OR a new
-    // payment from one of my invitees completes.
-    const ch = supabase
-      .channel(`collab-${user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "referrals", filter: `referrer_id=eq.${user.id}` },
-        () => reload(),
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "payment_orders" },
-        () => reload(),
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "collaborator_programs", filter: `user_id=eq.${user.id}` },
-        () => reload(),
-      )
-      .subscribe();
     const onFocus = () => reload();
     const onVis = () => { if (!document.hidden) reload(); };
     window.addEventListener("focus", onFocus);
@@ -57,7 +37,6 @@ function CollaboratorsPage() {
     const poll = setInterval(reload, 30_000);
     return () => {
       alive = false;
-      supabase.removeChannel(ch);
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVis);
       clearInterval(poll);
@@ -97,6 +76,18 @@ function CollaboratorsPage() {
     p.status === "ended" ? "bg-zinc-500/15 text-zinc-700" :
     "bg-amber-500/15 text-amber-700";
 
+  const privateLink = data.link?.code ? `https://neettrack.com/c/${data.link.code}` : null;
+  const couponCode = data.coupon?.code ?? null;
+
+  const copyText = async (value: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success(`${label} copied`);
+    } catch {
+      toast.error("Could not copy");
+    }
+  };
+
   return (
     <PageShell
       eyebrow="Program"
@@ -106,7 +97,51 @@ function CollaboratorsPage() {
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Badge className={statusColor}>Status: {p.status}</Badge>
         <Badge variant="outline">Min withdrawal ₹{Number(p.min_withdrawal).toFixed(0)}</Badge>
+        {isAdmin && (
+          <Button asChild size="sm" variant="outline" className="ml-auto">
+            <Link to="/admin-collaborators"><Pencil className="mr-1.5 h-3.5 w-3.5" /> Manage link & coupon</Link>
+          </Button>
+        )}
       </div>
+
+      {(privateLink || couponCode) && (
+        <Card className="mb-5 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent">
+          <CardContent className="space-y-3 p-4">
+            <div>
+              <div className="text-sm font-bold">Your promotion details</div>
+              <div className="text-xs text-muted-foreground">Use these details when promoting the batch.</div>
+            </div>
+
+            {privateLink && (
+              <div className="rounded-xl border bg-background/50 p-3">
+                <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <Link2 className="h-3.5 w-3.5" /> Private collaborator link
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1 truncate text-sm font-medium">{privateLink}</div>
+                  <Button size="sm" variant="outline" onClick={() => copyText(privateLink, "Link")}>
+                    <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {couponCode && (
+              <div className="rounded-xl border bg-background/50 p-3">
+                <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <Tag className="h-3.5 w-3.5" /> Collaborator coupon
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1 text-base font-bold tracking-wider">{couponCode}</div>
+                  <Button size="sm" variant="outline" onClick={() => copyText(couponCode, "Coupon")}>
+                    <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={<Users className="h-4 w-4 text-blue-600" />} label="Users invited" value={String(s?.total_invited ?? 0)} />
@@ -119,7 +154,7 @@ function CollaboratorsPage() {
         Invited users ({data.invited.length})
       </h3>
       {data.invited.length === 0 ? (
-        <Card><CardContent className="p-6 text-center text-sm text-muted-foreground">No invited users yet. Share your referral code to start earning.</CardContent></Card>
+        <Card><CardContent className="p-6 text-center text-sm text-muted-foreground">No invited users yet. Share your collaborator link to start earning.</CardContent></Card>
       ) : (
         <div className="space-y-2">
           {data.invited.map((u: any) => (
