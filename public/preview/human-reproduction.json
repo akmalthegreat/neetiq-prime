@@ -1,0 +1,4796 @@
+[
+  {
+    "id": 113034,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Why are the testes of a human male located outside the abdominal cavity in a pouch called the scrotum?",
+    "options": [
+      {
+        "text": "Because sperm maturation requires a temperature higher than the normal body temperature",
+        "isCorrect": false
+      },
+      {
+        "text": "Because spermatogenesis requires a temperature 2-2.5 $^\\circ$C lower than the normal body temperature",
+        "isCorrect": true
+      },
+      {
+        "text": "Because the testes must be protected from the acidic environment of the abdominal cavity",
+        "isCorrect": false
+      },
+      {
+        "text": "Because the abdominal cavity cannot accommodate the testes after birth",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The scrotum helps in maintaining the low temperature of the testes, which is $2-2.5\\,^\\circ\\mathrm{C}$ lower than the normal internal body temperature. Spermatogenesis requires this lower temperature.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113035,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "The scrotum is divided internally into two chambers by:",
+    "options": [
+      {
+        "text": "Gubernaculum",
+        "isCorrect": false
+      },
+      {
+        "text": "Tunica albuginea",
+        "isCorrect": false
+      },
+      {
+        "text": "Septum scroti",
+        "isCorrect": true
+      },
+      {
+        "text": "Inguinal canal",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The scrotum is divided internally into two chambers by a muscular septum, the septum scroti. Each chamber contains one testis.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113036,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Which one of the following is <strong>not</strong> a male accessory gland?",
+    "options": [
+      {
+        "text": "Seminal vesicle",
+        "isCorrect": false
+      },
+      {
+        "text": "Bartholin's gland",
+        "isCorrect": true
+      },
+      {
+        "text": "Prostate gland",
+        "isCorrect": false
+      },
+      {
+        "text": "Bulbourethral gland",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Bartholin's glands (greater vestibular glands) are female accessory glands which open into the vestibule. The seminal vesicle, prostate gland and bulbourethral glands are the male accessory glands.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113037,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Seminal plasma is rich in:",
+    "options": [
+      {
+        "text": "Fructose, calcium and certain enzymes",
+        "isCorrect": true
+      },
+      {
+        "text": "Sucrose, iron and vitamins",
+        "isCorrect": false
+      },
+      {
+        "text": "Lactose, sodium and hormones",
+        "isCorrect": false
+      },
+      {
+        "text": "Glucose, potassium and amino acids",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The secretions of the seminal vesicles, prostate gland and bulbourethral glands together constitute the seminal plasma, which is rich in fructose, calcium and certain enzymes. Fructose serves as an energy source for the sperms.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113038,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The bulbourethral glands are also known as:",
+    "options": [
+      {
+        "text": "Cowper's glands",
+        "isCorrect": true
+      },
+      {
+        "text": "Skene's glands",
+        "isCorrect": false
+      },
+      {
+        "text": "Montgomery's glands",
+        "isCorrect": false
+      },
+      {
+        "text": "Bartholin's glands",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The bulbourethral glands, also called Cowper's glands, are situated below the prostate gland. Their secretion forms a part of the seminal plasma and helps in lubrication of the penis.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113039,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Identify the correct sequence of the male reproductive ducts through which the sperms pass from the testis to the outside of the body.",
+    "options": [
+      {
+        "text": "Vasa efferentia $\\rightarrow$ Rete testis $\\rightarrow$ Epididymis $\\rightarrow$ Ejaculatory duct $\\rightarrow$ Vas deferens $\\rightarrow$ Urethra",
+        "isCorrect": false
+      },
+      {
+        "text": "Rete testis $\\rightarrow$ Epididymis $\\rightarrow$ Vasa efferentia $\\rightarrow$ Vas deferens $\\rightarrow$ Urethra $\\rightarrow$ Ejaculatory duct",
+        "isCorrect": false
+      },
+      {
+        "text": "Seminiferous tubules $\\rightarrow$ Vas deferens $\\rightarrow$ Epididymis $\\rightarrow$ Rete testis $\\rightarrow$ Ejaculatory duct $\\rightarrow$ Urethra",
+        "isCorrect": false
+      },
+      {
+        "text": "Rete testis $\\rightarrow$ Vasa efferentia $\\rightarrow$ Epididymis $\\rightarrow$ Vas deferens $\\rightarrow$ Ejaculatory duct $\\rightarrow$ Urethra",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Sperms formed in the seminiferous tubules pass through the rete testis, vasa efferentia, epididymis and vas deferens. The vas deferens receives a duct from the seminal vesicle and forms the ejaculatory duct, which opens into the urethra.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113040,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "The glans penis is covered by a loose fold of skin called the:",
+    "options": [
+      {
+        "text": "Foreskin (prepuce)",
+        "isCorrect": true
+      },
+      {
+        "text": "Tunica vaginalis",
+        "isCorrect": false
+      },
+      {
+        "text": "Scrotum",
+        "isCorrect": false
+      },
+      {
+        "text": "Frenulum",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The enlarged end of the penis is called the glans penis and it is covered by a loose fold of skin called the foreskin or prepuce.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113041,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The ejaculatory duct is formed by the union of:",
+    "options": [
+      {
+        "text": "Vas deferens and the duct of the seminal vesicle",
+        "isCorrect": true
+      },
+      {
+        "text": "Epididymis and the duct of the bulbourethral gland",
+        "isCorrect": false
+      },
+      {
+        "text": "Rete testis and vasa efferentia",
+        "isCorrect": false
+      },
+      {
+        "text": "Vas deferens and the duct of the prostate gland",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The vas deferens receives the duct of the seminal vesicle and together they form the ejaculatory duct, which opens into the urethra.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113042,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Which of the following contributes the largest share of the volume of human semen?",
+    "options": [
+      {
+        "text": "Seminal vesicles",
+        "isCorrect": true
+      },
+      {
+        "text": "Testes (spermatozoa)",
+        "isCorrect": false
+      },
+      {
+        "text": "Bulbourethral glands",
+        "isCorrect": false
+      },
+      {
+        "text": "Prostate gland",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The seminal vesicles contribute the major part of the seminal plasma, whereas the spermatozoa themselves form only a very small fraction of the semen volume.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113043,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "In human males, the urethra serves as a common passage for:",
+    "options": [
+      {
+        "text": "Only urine",
+        "isCorrect": false
+      },
+      {
+        "text": "Both urine and semen",
+        "isCorrect": true
+      },
+      {
+        "text": "Urine, semen and faeces",
+        "isCorrect": false
+      },
+      {
+        "text": "Only semen",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The urethra originates from the urinary bladder and extends through the penis to its external opening. It serves as a common passage for both urine and semen.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113044,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Read the following statements regarding the male accessory glands and select the correct option.<br>I. The seminal vesicles are located at the base of the urinary bladder.<br>II. The prostate gland is located below the urinary bladder.<br>III. The bulbourethral glands are situated below the prostate gland.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": true
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "All three statements are correct. The seminal vesicles are paired glands located at the base of the urinary bladder; the prostate gland lies below the urinary bladder and the bulbourethral glands are situated below the prostate gland.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113045,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Which one of the following statements about the human male reproductive system is <strong>incorrect</strong>?",
+    "options": [
+      {
+        "text": "The vas deferens receives a duct from the seminal vesicle",
+        "isCorrect": false
+      },
+      {
+        "text": "The testes are located within the abdominal cavity in human males",
+        "isCorrect": true
+      },
+      {
+        "text": "The epididymis lies along the posterior surface of each testis",
+        "isCorrect": false
+      },
+      {
+        "text": "Each testis is oval in shape and about 4 to 5 cm in length",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The testes are not located inside the abdominal cavity; they are situated outside it, within the scrotum. This keeps the testicular temperature $2-2.5\\,^\\circ\\mathrm{C}$ lower than the body temperature, which is essential for spermatogenesis.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113046,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "The epididymis is mainly responsible for:",
+    "options": [
+      {
+        "text": "Storage and maturation of sperms",
+        "isCorrect": true
+      },
+      {
+        "text": "Nourishment of germ cells in the seminiferous tubules",
+        "isCorrect": false
+      },
+      {
+        "text": "Secretion of seminal plasma",
+        "isCorrect": false
+      },
+      {
+        "text": "Secretion of testosterone",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The epididymis is a long, coiled tube along the posterior surface of the testis in which sperms are stored, and in which they acquire the ability to move (maturation) before being transported through the vas deferens.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113047,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The seminiferous tubules of each testicular lobule open into the:",
+    "options": [
+      {
+        "text": "Vas deferens",
+        "isCorrect": false
+      },
+      {
+        "text": "Vasa efferentia",
+        "isCorrect": false
+      },
+      {
+        "text": "Epididymis",
+        "isCorrect": false
+      },
+      {
+        "text": "Rete testis",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The seminiferous tubules of each lobule open into the rete testis, a network of tubules present inside the testis. The rete testis in turn opens into the vasa efferentia, which lead into the epididymis.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113048,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Vasa efferentia connect the rete testis with the:",
+    "options": [
+      {
+        "text": "Urethra",
+        "isCorrect": false
+      },
+      {
+        "text": "Seminiferous tubules",
+        "isCorrect": false
+      },
+      {
+        "text": "Epididymis",
+        "isCorrect": true
+      },
+      {
+        "text": "Vas deferens",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The rete testis opens into the vasa efferentia, which leave the testis and open into the epididymis, a structure situated along the posterior surface of the testis.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113049,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Read the following statements and choose the correct option.<br>I. Fructose present in the seminal plasma is a source of energy for sperm motility.<br>II. Secretions of the bulbourethral glands contribute to the lubrication of the penis.<br>III. The prostate gland is a paired gland in human males.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Statements I and II are correct. The prostate gland is a single (unpaired) gland situated below the urinary bladder; the seminal vesicles and bulbourethral glands are paired.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113050,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "The male copulatory organ in humans is the:",
+    "options": [
+      {
+        "text": "Penis",
+        "isCorrect": true
+      },
+      {
+        "text": "Vas deferens",
+        "isCorrect": false
+      },
+      {
+        "text": "Scrotum",
+        "isCorrect": false
+      },
+      {
+        "text": "Epididymis",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The penis is the male copulatory organ. It is made up of special tissue that helps in the erection of the penis to facilitate insemination.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113051,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Which of the following functions is performed by the testes?",
+    "options": [
+      {
+        "text": "Production of sperms and secretion of testosterone",
+        "isCorrect": true
+      },
+      {
+        "text": "Storage of sperms and secretion of seminal plasma",
+        "isCorrect": false
+      },
+      {
+        "text": "Only production of sperms",
+        "isCorrect": false
+      },
+      {
+        "text": "Only secretion of testosterone",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The testes are the primary sex organs of the male; they produce spermatozoa and secrete the male sex hormone testosterone (an androgen).",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113052,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Which one of the following structures of the male reproductive system is <strong>paired</strong>?",
+    "options": [
+      {
+        "text": "Scrotum",
+        "isCorrect": false
+      },
+      {
+        "text": "Prostate gland",
+        "isCorrect": false
+      },
+      {
+        "text": "Urethra",
+        "isCorrect": false
+      },
+      {
+        "text": "Vas deferens",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The testes, epididymides, vasa deferentia, seminal vesicles and bulbourethral glands are paired. The prostate gland, scrotum and urethra are unpaired structures.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113053,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Identify the <strong>incorrect</strong> pairing.",
+    "options": [
+      {
+        "text": "Leydig cells &ndash; Secretion of androgens",
+        "isCorrect": false
+      },
+      {
+        "text": "Bulbourethral gland &ndash; Secretion of a lubricating fluid",
+        "isCorrect": false
+      },
+      {
+        "text": "Prostate gland &ndash; Nourishment and storage of sperms",
+        "isCorrect": true
+      },
+      {
+        "text": "Seminal vesicle &ndash; Secretion of fructose-rich seminal plasma",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The prostate gland does not store or nourish sperms. Sperms are stored and matured in the epididymis. The prostate contributes a milky, slightly alkaline secretion to the seminal plasma which enhances sperm motility.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113054,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "<strong>Assertion:</strong> The testes of a human male are located outside the abdominal cavity within the scrotum.<br><br><strong>Reason:</strong> Spermatogenesis requires a temperature lower than the normal internal body temperature.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Both the assertion and the reason are correct, and the reason correctly explains the assertion. The scrotum maintains the testicular temperature $2-2.5\\,^\\circ\\mathrm{C}$ lower than the normal body temperature, which is a prerequisite for spermatogenesis.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113055,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Match Column I (Organ) with Column II (Function) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Seminal vesicle<br>B. Epididymis<br>C. Sertoli cell<br>D. Leydig cell<br></div><div class=\"column-right\">P. Storage and maturation of sperms<br>Q. Secretion of androgens<br>R. Secretion of fructose-rich seminal plasma<br>S. Nourishment of developing germ cells<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  R, B  -  S, C  -  P, D  -  Q}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  R, B  -  P, C  -  S, D  -  Q}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  Q, B  -  P, C  -  S, D  -  R}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  Q, C  -  R, D  -  S}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "A. Seminal vesicle &ndash; Secretion of fructose-rich seminal plasma<br>B. Epididymis &ndash; Storage and maturation of sperms<br>C. Sertoli cell &ndash; Nourishment of developing germ cells<br>D. Leydig cell &ndash; Secretion of androgens",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113056,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Semen consists of:",
+    "options": [
+      {
+        "text": "Only seminal plasma",
+        "isCorrect": false
+      },
+      {
+        "text": "Sperms and seminal plasma",
+        "isCorrect": true
+      },
+      {
+        "text": "Only sperms",
+        "isCorrect": false
+      },
+      {
+        "text": "Sperms, seminal plasma and urine",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Semen is made up of sperms (spermatozoa) and the secretions of the accessory glands, i.e. seminal plasma.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113057,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Read the following statements about the male reproductive system and select the correct option.<br>I. The testes are situated outside the abdominal cavity within the scrotum.<br>II. The scrotum maintains the testicular temperature $2-2.5\\,^\\circ\\mathrm{C}$ lower than the body temperature.<br>III. The vas deferens emerges from the cauda epididymis and receives the duct of the seminal vesicle.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": true
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "All three statements are correct. The testes lie in the scrotum outside the abdominal cavity; the scrotum maintains a lower temperature necessary for spermatogenesis; and the vas deferens, arising from the cauda epididymis, receives the duct of the seminal vesicle to form the ejaculatory duct.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113058,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Each testicular lobule of the human testis contains:",
+    "options": [
+      {
+        "text": "Two to four seminiferous tubules",
+        "isCorrect": false
+      },
+      {
+        "text": "Three to five seminiferous tubules",
+        "isCorrect": false
+      },
+      {
+        "text": "One to three seminiferous tubules",
+        "isCorrect": true
+      },
+      {
+        "text": "Five to seven seminiferous tubules",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Each testis is covered by a dense covering and is internally divided into about 250 compartments called testicular lobules. Each lobule contains one to three highly coiled seminiferous tubules in which sperms are produced.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113059,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Sertoli cells of the seminiferous tubule are also known as:",
+    "options": [
+      {
+        "text": "Interstitial cells",
+        "isCorrect": false
+      },
+      {
+        "text": "Germ cells",
+        "isCorrect": false
+      },
+      {
+        "text": "Nurse cells",
+        "isCorrect": true
+      },
+      {
+        "text": "Leydig cells",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Sertoli cells are also called nurse cells. They provide nutrition to the developing germ cells present in the wall of the seminiferous tubule.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113060,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Leydig cells are found in the ______ of the testis and secrete ______.",
+    "options": [
+      {
+        "text": "Epididymis; progesterone",
+        "isCorrect": false
+      },
+      {
+        "text": "Rete testis; gonadotropins",
+        "isCorrect": false
+      },
+      {
+        "text": "Seminiferous tubules; oestrogens",
+        "isCorrect": false
+      },
+      {
+        "text": "Intertubular spaces; androgens",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Leydig cells (interstitial cells) are present in the intertubular spaces of the testis. They secrete androgens such as testosterone, which regulate the development and functions of the male accessory sex organs and secondary sexual characters.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113061,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The immature male germ cells present in the seminiferous tubules are called:",
+    "options": [
+      {
+        "text": "Sertoli cells",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogonia",
+        "isCorrect": true
+      },
+      {
+        "text": "Leydig cells",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatids",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The immature male germ cells are called spermatogonia. They are diploid and multiply by mitotic division to increase in number, and some of them differentiate into primary spermatocytes.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113062,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The androgens secreted by Leydig cells regulate:",
+    "options": [
+      {
+        "text": "Only the process of spermiogenesis",
+        "isCorrect": false
+      },
+      {
+        "text": "Secretion of gonadotropin releasing hormone",
+        "isCorrect": false
+      },
+      {
+        "text": "Growth of the mammary glands in males",
+        "isCorrect": false
+      },
+      {
+        "text": "Development, maturation and functions of the male accessory sex organs",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Androgens regulate the development, maturation and functions of the male accessory sex organs such as the epididymis, vas deferens, seminal vesicles, prostate gland and urethra, and also the secondary sexual characters of the male.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113063,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "In spermatogenesis, meiosis I takes place in the:",
+    "options": [
+      {
+        "text": "Spermatids",
+        "isCorrect": false
+      },
+      {
+        "text": "Secondary spermatocytes",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogonia",
+        "isCorrect": false
+      },
+      {
+        "text": "Primary spermatocytes",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The primary spermatocytes are diploid cells which undergo the first meiotic division to form two haploid secondary spermatocytes. Each secondary spermatocyte then undergoes the second meiotic division to form two haploid spermatids.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113065,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "Read the following statements regarding spermatogenesis and select the correct option.<br>I. Spermatogenesis starts at puberty due to a significant increase in the secretion of gonadotropin releasing hormone (GnRH).<br>II. Spermatogonia are diploid cells which multiply by mitotic division.<br>III. Primary spermatocytes are haploid cells.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Statements I and II are correct. Primary spermatocytes are diploid (46 chromosomes); they undergo the first meiotic division to form haploid secondary spermatocytes.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113066,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "The transformation of spermatids into spermatozoa is called:",
+    "options": [
+      {
+        "text": "Spermiogenesis",
+        "isCorrect": true
+      },
+      {
+        "text": "Spermatocytogenesis",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermiation",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogenesis",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The spermatids are transformed into spermatozoa (sperms) by the process called spermiogenesis. No cell division occurs during this transformation &ndash; it is purely a process of morphological differentiation.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113067,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "The release of sperms from the seminiferous tubules is known as:",
+    "options": [
+      {
+        "text": "Spermiogenesis",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogenesis",
+        "isCorrect": false
+      },
+      {
+        "text": "Capacitation",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermiation",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "After spermiogenesis, the sperm heads become embedded in the Sertoli cells and are finally released from the seminiferous tubules by the process called spermiation.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113068,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "Spermatogenesis in the human male is regulated by:",
+    "options": [
+      {
+        "text": "Only testosterone",
+        "isCorrect": false
+      },
+      {
+        "text": "Oestrogen and progesterone",
+        "isCorrect": false
+      },
+      {
+        "text": "Oxytocin and prolactin",
+        "isCorrect": false
+      },
+      {
+        "text": "LH and FSH",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Spermatogenesis is regulated by gonadotropins &ndash; LH and FSH. LH acts on the Leydig cells and stimulates the synthesis and secretion of androgens, while FSH acts on the Sertoli cells and stimulates the secretion of factors that help in spermatogenesis.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113069,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Which one of the following is a function of the Sertoli cells?",
+    "options": [
+      {
+        "text": "Secretion of androgens",
+        "isCorrect": false
+      },
+      {
+        "text": "Secretion of seminal plasma",
+        "isCorrect": false
+      },
+      {
+        "text": "Providing nutrition to the developing germ cells",
+        "isCorrect": true
+      },
+      {
+        "text": "Release of hyaluronidase for fertilisation",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Sertoli cells provide nutrition to the developing germ cells of the seminiferous tubule and secrete factors that help in the process of spermatogenesis.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113070,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Read the following statements and select the correct option.<br>I. Sertoli cells are present within the seminiferous tubules and provide nutrition to the germ cells.<br>II. Leydig cells lie in the intertubular spaces and secrete androgens.<br>III. Spermatogonia undergo meiosis to form spermatids directly.",
+    "options": [
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Statements I and II are correct. Spermatogonia multiply by mitosis; it is the primary spermatocytes which undergo meiosis I to give secondary spermatocytes, and each secondary spermatocyte undergoes meiosis II to give spermatids.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113071,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "<strong>Assertion:</strong> Sertoli cells are called nurse cells of the testis.<br><br><strong>Reason:</strong> Sertoli cells provide nutrition to the developing sperm cells.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Both the assertion and the reason are correct and the reason is the correct explanation of the assertion. It is because of their nutritive function that Sertoli cells are referred to as nurse cells.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113072,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "Match Column I (Cell) with Column II (Feature) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Spermatogonium<br>B. Primary spermatocyte<br>C. Sertoli cell<br>D. Leydig cell<br></div><div class=\"column-right\">P. Diploid germ cell that multiplies by mitosis<br>Q. Undergoes meiosis I to form two secondary spermatocytes<br>R. Provides nutrition to the developing germ cells<br>S. Secretes androgens<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  R, B  -  Q, C  -  P, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  Q, B  -  P, C  -  R, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  Q, C  -  R, D  -  S}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  R, C  -  Q, D  -  S}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "A. Spermatogonium &ndash; Diploid germ cell that multiplies by mitosis<br>B. Primary spermatocyte &ndash; Undergoes meiosis I to form two secondary spermatocytes<br>C. Sertoli cell &ndash; Provides nutrition to the developing germ cells<br>D. Leydig cell &ndash; Secretes androgens",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113073,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "The number of chromosomes present in a human primary spermatocyte and in a secondary spermatocyte respectively is:",
+    "options": [
+      {
+        "text": "23 and 46",
+        "isCorrect": false
+      },
+      {
+        "text": "46 and 23",
+        "isCorrect": true
+      },
+      {
+        "text": "23 and 23",
+        "isCorrect": false
+      },
+      {
+        "text": "46 and 46",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "A primary spermatocyte is diploid and contains 46 chromosomes. After meiosis I, the two daughter cells (secondary spermatocytes) are haploid and contain 23 chromosomes each.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113074,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "Read the following statements about the hormonal control of spermatogenesis and select the correct option.<br>I. FSH acts on the Sertoli cells and stimulates the secretion of factors which help in spermatogenesis.<br>II. LH acts on the Leydig cells and stimulates the synthesis and secretion of androgens.<br>III. Androgens stimulate the process of spermatogenesis.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": true
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "All three statements are correct. FSH acts on Sertoli cells, LH acts on Leydig cells, and the androgens secreted by Leydig cells in turn stimulate spermatogenesis.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113075,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "Which one of the following statements about spermatogenesis is <strong>incorrect</strong>?",
+    "options": [
+      {
+        "text": "Each primary spermatocyte divides to form four spermatids directly",
+        "isCorrect": true
+      },
+      {
+        "text": "Spermatids are transformed into spermatozoa by spermiogenesis",
+        "isCorrect": false
+      },
+      {
+        "text": "It begins at the age of puberty",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogonia multiply by mitotic division",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "A primary spermatocyte does not give rise to four spermatids directly. It completes meiosis I to form two secondary spermatocytes, and each secondary spermatocyte then undergoes meiosis II to form two spermatids. Thus one primary spermatocyte gives rise to four spermatids through two successive meiotic divisions.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113076,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The intertubular spaces of the testis contain:",
+    "options": [
+      {
+        "text": "Only Sertoli cells",
+        "isCorrect": false
+      },
+      {
+        "text": "Only spermatogonia",
+        "isCorrect": false
+      },
+      {
+        "text": "Rete testis and vasa efferentia",
+        "isCorrect": false
+      },
+      {
+        "text": "Leydig cells and small blood vessels",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The regions outside the seminiferous tubules, called interstitial spaces, contain small blood vessels and interstitial cells or Leydig cells, which secrete androgens.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113077,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Which of the following cell types present in the testis is somatic (non-germ) in nature?",
+    "options": [
+      {
+        "text": "Spermatogonium",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatid",
+        "isCorrect": false
+      },
+      {
+        "text": "Primary spermatocyte",
+        "isCorrect": false
+      },
+      {
+        "text": "Sertoli cell",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Sertoli cells are somatic (supporting) cells of the seminiferous tubule. Spermatogonia, primary spermatocytes, secondary spermatocytes and spermatids all belong to the germ cell line.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113078,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "<strong>Assertion:</strong> Leydig cells are located in the intertubular spaces of the testis.<br><br><strong>Reason:</strong> The interstitial cells secrete androgens that regulate the development of the male accessory sex organs.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Both the assertion and the reason are true, but the reason does not explain the assertion. The reason states the function of Leydig cells whereas the assertion is about their location; the two are independent facts.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113079,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "How many sperms are formed from one primary spermatocyte?",
+    "options": [
+      {
+        "text": "Two",
+        "isCorrect": false
+      },
+      {
+        "text": "One",
+        "isCorrect": false
+      },
+      {
+        "text": "Four",
+        "isCorrect": true
+      },
+      {
+        "text": "Eight",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "One primary spermatocyte undergoes meiosis I to form two secondary spermatocytes; each secondary spermatocyte undergoes meiosis II to form two spermatids. The four spermatids are then transformed into four spermatozoa by spermiogenesis.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113080,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1107,
+    "question_html": "Which one of the following gives the correct overall sequence of spermatogenesis from spermatogonia to mature spermatozoa?",
+    "options": [
+      {
+        "text": "Spermatogonia → Primary spermatocyte → Secondary spermatocytes → Spermatids → Spermatozoa",
+        "isCorrect": true
+      },
+      {
+        "text": "Spermatogonia → Secondary spermatocytes → Primary spermatocyte → Spermatids → Spermatozoa",
+        "isCorrect": false
+      },
+      {
+        "text": "Primary spermatocyte → Spermatogonia → Spermatids → Secondary spermatocytes → Spermatozoa",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogonia → Spermatids → Primary spermatocyte → Secondary spermatocytes → Spermatozoa",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Spermatogonia differentiate into primary spermatocytes. Primary spermatocytes undergo meiosis I to form secondary spermatocytes, which undergo meiosis II to form spermatids. Spermatids then differentiate into spermatozoa by spermiogenesis.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113082,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The acrosome of a human sperm is filled with:",
+    "options": [
+      {
+        "text": "Enzymes that help in penetrating the ovum",
+        "isCorrect": true
+      },
+      {
+        "text": "Hormones that trigger ovulation",
+        "isCorrect": false
+      },
+      {
+        "text": "Ribosomes for protein synthesis",
+        "isCorrect": false
+      },
+      {
+        "text": "Mitochondria that supply energy",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The acrosome is a cap-like structure over the anterior half of the sperm head. It is filled with enzymes that help the sperm to penetrate the layers surrounding the ovum during fertilisation.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113083,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The middle piece of a human sperm is packed with:",
+    "options": [
+      {
+        "text": "Ribosomes",
+        "isCorrect": false
+      },
+      {
+        "text": "Mitochondria",
+        "isCorrect": true
+      },
+      {
+        "text": "Lysosomes",
+        "isCorrect": false
+      },
+      {
+        "text": "Golgi bodies",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The middle piece of the sperm is packed with mitochondria, which provide the energy required for the movement of the tail, and hence for sperm motility.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113084,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "A mature human sperm is made up of:",
+    "options": [
+      {
+        "text": "Head and tail only",
+        "isCorrect": false
+      },
+      {
+        "text": "Head, neck and flagellum only",
+        "isCorrect": false
+      },
+      {
+        "text": "Head, neck, middle piece and tail",
+        "isCorrect": true
+      },
+      {
+        "text": "Head, middle piece and tail only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "A sperm is made up of a head, neck, a middle piece and a tail. The head contains the haploid nucleus and the acrosome; the middle piece provides energy; and the tail brings about movement.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113085,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Which one of the following statements about a human sperm is <strong>incorrect</strong>?",
+    "options": [
+      {
+        "text": "The middle piece of the sperm contains the acrosome",
+        "isCorrect": true
+      },
+      {
+        "text": "The acrosome is filled with enzymes",
+        "isCorrect": false
+      },
+      {
+        "text": "The head of the sperm contains the haploid nucleus",
+        "isCorrect": false
+      },
+      {
+        "text": "The tail is responsible for the movement of the sperm",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The acrosome lies in the head of the sperm, covering its anterior half &ndash; it is not present in the middle piece. The middle piece is characterised by the presence of mitochondria.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113086,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "For normal fertility, at least what percentage of sperms in a semen sample must have normal shape and size?",
+    "options": [
+      {
+        "text": "25 per cent",
+        "isCorrect": false
+      },
+      {
+        "text": "60 per cent",
+        "isCorrect": true
+      },
+      {
+        "text": "80 per cent",
+        "isCorrect": false
+      },
+      {
+        "text": "40 per cent",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "For normal fertility, at least 60 per cent of the sperms must have a normal shape and size, and at least 40 per cent of them must show vigorous motility.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113087,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Read the following statements regarding semen and select the correct option.<br>I. At least 40 per cent of the sperms in a normal semen sample must show vigorous motility.<br>II. Seminal plasma is rich in fructose, calcium and certain enzymes.<br>III. The head of a human sperm contains a diploid nucleus.",
+    "options": [
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Statements I and II are correct. The head of a sperm contains a haploid (n) nucleus, because it is formed after meiotic divisions.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113088,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Match Column I (Part of sperm) with Column II (Feature) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Acrosome<br>B. Middle piece<br>C. Nucleus<br>D. Tail<br></div><div class=\"column-right\">P. Contains hydrolytic enzymes<br>Q. Packed with mitochondria<br>R. Contains the haploid set of chromosomes<br>S. Brings about sperm motility<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  R, B  -  Q, C  -  P, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  Q, C  -  R, D  -  S}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  R, C  -  Q, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  Q, B  -  P, C  -  R, D  -  S}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "A. Acrosome &ndash; Contains hydrolytic enzymes which help in penetrating the ovum<br>B. Middle piece &ndash; Packed with mitochondria that supply energy<br>C. Nucleus &ndash; Contains the haploid set of chromosomes<br>D. Tail &ndash; Brings about the movement of the sperm",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113089,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "The enzymes present in the acrosome help the sperm to:",
+    "options": [
+      {
+        "text": "Produce energy for motility",
+        "isCorrect": false
+      },
+      {
+        "text": "Penetrate the layers surrounding the ovum",
+        "isCorrect": true
+      },
+      {
+        "text": "Move with the help of the tail",
+        "isCorrect": false
+      },
+      {
+        "text": "Fuse with the polar body",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The enzymes of the acrosome dissolve the layers (corona radiata and zona pellucida) surrounding the ovum, thereby helping the sperm to penetrate the ovum during fertilisation.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113090,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "<strong>Assertion:</strong> Fructose present in the seminal plasma serves as an energy source for the sperms.<br><br><strong>Reason:</strong> The seminal plasma is secreted by the testes.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": true
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The assertion is correct but the reason is incorrect. The seminal plasma is the combined secretion of the seminal vesicles, prostate gland and bulbourethral glands, and not of the testes.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113091,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Match Column I (Part of sperm) with Column II (Function) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Head<br>B. Middle piece<br>C. Acrosome<br>D. Tail<br></div><div class=\"column-right\">P. Enzymes<br>Q. Sperm motility<br>R. Energy<br>S. Genetic material<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  S, B  -  P, C  -  R, D  -  Q}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  S, B  -  R, C  -  P, D  -  Q}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  R, B  -  S, C  -  Q, D  -  P}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  Q, C  -  R, D  -  S}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "A. Head &ndash; Genetic material (the haploid nucleus)<br>B. Middle piece &ndash; Energy (it is packed with mitochondria)<br>C. Acrosome &ndash; Enzymes which help the sperm to penetrate the ovum<br>D. Tail &ndash; Sperm motility",
+    "difficulty": "Easy",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113092,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "Which one of the following is <strong>not</strong> a part of the female reproductive system in human beings?",
+    "options": [
+      {
+        "text": "Uterus",
+        "isCorrect": false
+      },
+      {
+        "text": "Vas deferens",
+        "isCorrect": true
+      },
+      {
+        "text": "Fallopian tube",
+        "isCorrect": false
+      },
+      {
+        "text": "Ovary",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The human female reproductive system consists of a pair of ovaries, a pair of oviducts, the uterus, the cervix, the vagina, external genitalia and a pair of mammary glands. The vas deferens is a part of the male reproductive system.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113093,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "The primary female sex organs are:",
+    "options": [
+      {
+        "text": "Oviducts",
+        "isCorrect": false
+      },
+      {
+        "text": "Uterus",
+        "isCorrect": false
+      },
+      {
+        "text": "Mammary glands",
+        "isCorrect": false
+      },
+      {
+        "text": "Ovaries",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The ovaries are the primary female sex organs. They produce the female gamete (ovum) and several steroid hormones such as oestrogen and progesterone.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113095,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "The finger-like projections present at the edges of the infundibulum are called fimbriae. Their function is to:",
+    "options": [
+      {
+        "text": "Produce the secondary oocyte",
+        "isCorrect": false
+      },
+      {
+        "text": "Collect the ovum after ovulation",
+        "isCorrect": true
+      },
+      {
+        "text": "Provide nutrition to the ovum",
+        "isCorrect": false
+      },
+      {
+        "text": "Secrete oestrogen",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The fimbriae are finger-like projections at the edges of the infundibulum. They help in the collection of the ovum after ovulation and guide it into the fallopian tube.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113096,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "Identify the correct sequence of the parts of the human oviduct (fallopian tube) from the ovary towards the uterus.",
+    "options": [
+      {
+        "text": "Infundibulum $\\rightarrow$ Ampulla $\\rightarrow$ Isthmus",
+        "isCorrect": true
+      },
+      {
+        "text": "Isthmus $\\rightarrow$ Ampulla $\\rightarrow$ Infundibulum",
+        "isCorrect": false
+      },
+      {
+        "text": "Ampulla $\\rightarrow$ Infundibulum $\\rightarrow$ Isthmus",
+        "isCorrect": false
+      },
+      {
+        "text": "Infundibulum $\\rightarrow$ Isthmus $\\rightarrow$ Ampulla",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Each fallopian tube has three parts: the infundibulum (funnel-shaped, bearing fimbriae) near the ovary, then the wider ampulla, and finally the narrow isthmus which joins the uterus.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113097,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "In the human female, fertilisation normally takes place at the:",
+    "options": [
+      {
+        "text": "Ampullary&ndash;isthmic junction",
+        "isCorrect": true
+      },
+      {
+        "text": "Infundibulum",
+        "isCorrect": false
+      },
+      {
+        "text": "Uterine cavity",
+        "isCorrect": false
+      },
+      {
+        "text": "Isthmus",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Fertilisation takes place at the ampullary&ndash;isthmic junction of the fallopian tube. This is the site where the ovum and the sperms are transported simultaneously, allowing the fusion of the male and female gametes.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113098,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "The wall of the human uterus is made up of three layers. The correct sequence from outside to inside is:",
+    "options": [
+      {
+        "text": "Perimetrium $\\rightarrow$ Endometrium $\\rightarrow$ Myometrium",
+        "isCorrect": false
+      },
+      {
+        "text": "Endometrium $\\rightarrow$ Myometrium $\\rightarrow$ Perimetrium",
+        "isCorrect": false
+      },
+      {
+        "text": "Myometrium $\\rightarrow$ Perimetrium $\\rightarrow$ Endometrium",
+        "isCorrect": false
+      },
+      {
+        "text": "Perimetrium $\\rightarrow$ Myometrium $\\rightarrow$ Endometrium",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The wall of the uterus has three layers of tissue &ndash; the perimetrium (outermost, thin), the myometrium (middle, thick and muscular) and the endometrium (innermost, glandular layer that lines the uterine cavity).",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113099,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "Read the following statements about the human uterus and select the correct option.<br>I. The uterus is a pear-shaped, muscular organ which opens into the vagina through the cervix.<br>II. The myometrium is the thick, muscular middle layer of the uterine wall.<br>III. The endometrium is the outermost layer of the uterus and does not undergo cyclic changes.",
+    "options": [
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Statements I and II are correct. The endometrium is the innermost glandular layer lining the uterine cavity, and it undergoes cyclic changes during the menstrual cycle to receive the implanting blastocyst.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113100,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "The layer of the uterus that undergoes cyclic changes during the menstrual cycle and in which the blastocyst implants is the:",
+    "options": [
+      {
+        "text": "Peritoneum",
+        "isCorrect": false
+      },
+      {
+        "text": "Endometrium",
+        "isCorrect": true
+      },
+      {
+        "text": "Perimetrium",
+        "isCorrect": false
+      },
+      {
+        "text": "Myometrium",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The endometrium is the innermost glandular layer of the uterus. It proliferates during each cycle to receive the blastocyst, and it is this layer that breaks down during menstruation in the absence of fertilisation.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113101,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "The narrow opening of the uterus into the vagina is called the:",
+    "options": [
+      {
+        "text": "Isthmus",
+        "isCorrect": false
+      },
+      {
+        "text": "Ampulla",
+        "isCorrect": false
+      },
+      {
+        "text": "Fimbriae",
+        "isCorrect": false
+      },
+      {
+        "text": "Cervix",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The uterus opens into the vagina through the cervix. The cervical canal along with the vagina forms the birth canal through which the baby is delivered.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113102,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "The ovaries in the human female are held in position by:",
+    "options": [
+      {
+        "text": "The myometrium",
+        "isCorrect": false
+      },
+      {
+        "text": "The cervix",
+        "isCorrect": false
+      },
+      {
+        "text": "Fimbriae",
+        "isCorrect": false
+      },
+      {
+        "text": "Ligaments",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The ovaries are located one on each side of the lower abdomen and are connected to the pelvic wall and the uterus by ligaments, which hold them in position.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113103,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1106,
+    "question_html": "<strong>Assertion:</strong> In the human female, fertilisation takes place at the ampullary&ndash;isthmic junction.<br><br><strong>Reason:</strong> The ovum and the sperms must be transported simultaneously to this region for fertilisation to occur.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Both the assertion and the reason are correct and the reason correctly explains the assertion. Fertilisation occurs only when both the ovum and sperms reach the ampullary&ndash;isthmic junction simultaneously.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113106,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": null,
+    "question_html": "Each primary oocyte gets surrounded by a layer of granulosa cells and is then called a:",
+    "options": [
+      {
+        "text": "Graafian follicle",
+        "isCorrect": false
+      },
+      {
+        "text": "Primary follicle",
+        "isCorrect": true
+      },
+      {
+        "text": "Tertiary follicle",
+        "isCorrect": false
+      },
+      {
+        "text": "Secondary follicle",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "In the foetal ovary, each primary oocyte gets surrounded by a layer of granulosa cells. This structure is called the primary follicle. Subsequently, more layers of granulosa cells are added and a theca is formed, converting it into a secondary follicle.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113107,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": null,
+    "question_html": "The fluid-filled cavity characteristically present in a tertiary follicle is called the:",
+    "options": [
+      {
+        "text": "Antrum",
+        "isCorrect": true
+      },
+      {
+        "text": "Ampulla",
+        "isCorrect": false
+      },
+      {
+        "text": "Archenteron",
+        "isCorrect": false
+      },
+      {
+        "text": "Blastocoel",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The tertiary follicle is characterised by a fluid-filled cavity called the antrum. The primary oocyte within the tertiary follicle grows in size and completes its first meiotic division, after which the follicle becomes the mature Graafian follicle.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113108,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": null,
+    "question_html": "Read the following statements about ovarian follicles and select the correct option.<br>I. The primary follicle consists of a primary oocyte surrounded by a layer of granulosa cells.<br>II. The tertiary follicle is characterised by the presence of a fluid-filled cavity called the antrum.<br>III. The antrum is present in the primary follicle.",
+    "options": [
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Statements I and II are correct. The antrum appears only in the tertiary follicle and is further enlarged in the mature Graafian follicle; it is absent in the primary and secondary follicles.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113109,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "In the human female, oogenesis is initiated:",
+    "options": [
+      {
+        "text": "At puberty",
+        "isCorrect": false
+      },
+      {
+        "text": "At the time of menarche",
+        "isCorrect": false
+      },
+      {
+        "text": "During embryonic (foetal) development",
+        "isCorrect": true
+      },
+      {
+        "text": "After the first ovulation",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Oogenesis is initiated during the embryonic development stage, when a couple of million gamete mother cells (oogonia) are formed within each foetal ovary. No further oogonia are formed after birth.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113110,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "At the time of puberty, each ovary of a human female contains about:",
+    "options": [
+      {
+        "text": "60,000 to 80,000 primary follicles",
+        "isCorrect": true
+      },
+      {
+        "text": "5,000 to 6,000 primary follicles",
+        "isCorrect": false
+      },
+      {
+        "text": "400 to 500 primary follicles",
+        "isCorrect": false
+      },
+      {
+        "text": "1 to 2 million primary follicles",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "At puberty, each ovary contains about 60,000 to 80,000 primary follicles. Only 400 to 500 of these mature and release ova during the entire reproductive life of a female.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113111,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "How many ova are released by the two ovaries of a human female during her entire reproductive life?",
+    "options": [
+      {
+        "text": "400 to 500",
+        "isCorrect": true
+      },
+      {
+        "text": "60,000 to 80,000",
+        "isCorrect": false
+      },
+      {
+        "text": "365 to 400",
+        "isCorrect": false
+      },
+      {
+        "text": "1 to 2 million",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "A human female is born with about a million primary oocytes in each ovary, but only 400 to 500 follicles mature and release ova (one ovum per cycle) during the reproductive life span of about 30 to 35 years.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113112,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "The primary oocyte of the human female remains arrested for years in which stage of meiosis?",
+    "options": [
+      {
+        "text": "Diplotene stage of prophase I",
+        "isCorrect": true
+      },
+      {
+        "text": "Metaphase I",
+        "isCorrect": false
+      },
+      {
+        "text": "Anaphase I",
+        "isCorrect": false
+      },
+      {
+        "text": "Metaphase II",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The primary oocyte begins meiosis I during foetal life but gets arrested in the diplotene stage of prophase I and remains in this stage for years, until it is induced to complete the first meiotic division before ovulation.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113113,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "Read the following statements about oogenesis and select the correct option.<br>I. The first meiotic division of the primary oocyte is unequal, forming one large secondary oocyte and one tiny first polar body.<br>II. The secondary oocyte retains the bulk of the nutrient-rich cytoplasm of the primary oocyte.<br>III. The first polar body develops into a functional ovum.",
+    "options": [
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Statements I and II are correct. The first meiotic division is unequal and produces a large secondary oocyte and a small first polar body, while the secondary oocyte retains most of the cytoplasm. The first polar body does not develop into a functional ovum; it may divide further or degenerate.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113114,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "The secondary oocyte is released from the ovary at ovulation. It is arrested at:",
+    "options": [
+      {
+        "text": "Metaphase II",
+        "isCorrect": true
+      },
+      {
+        "text": "Prophase I",
+        "isCorrect": false
+      },
+      {
+        "text": "Metaphase I",
+        "isCorrect": false
+      },
+      {
+        "text": "Anaphase II",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "At ovulation the secondary oocyte is released from the Graafian follicle. It is arrested at metaphase II. It completes meiosis II only when a sperm enters it during fertilisation.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113115,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "The number of functional ova formed from one primary oocyte is:",
+    "options": [
+      {
+        "text": "One",
+        "isCorrect": true
+      },
+      {
+        "text": "Three",
+        "isCorrect": false
+      },
+      {
+        "text": "Four",
+        "isCorrect": false
+      },
+      {
+        "text": "Two",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "One primary oocyte produces one functional ovum. The other meiotic products are polar bodies and do not develop into functional ova.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113116,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "The diploid number of chromosomes in humans is 46. The number of chromosomes present in a human secondary oocyte is:",
+    "options": [
+      {
+        "text": "92",
+        "isCorrect": false
+      },
+      {
+        "text": "23",
+        "isCorrect": true
+      },
+      {
+        "text": "46",
+        "isCorrect": false
+      },
+      {
+        "text": "12",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The secondary oocyte is formed after meiosis I (a reductional division) and is therefore haploid, containing 23 chromosomes. It is arrested at metaphase II and completes the second meiotic division only after sperm entry.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113117,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "Read the following statements about the formation of gametes in humans and select the correct option.<br>I. Spermatogenesis starts only at puberty.<br>II. Oogenesis begins during foetal life but is completed only after fertilisation.<br>III. The secondary oocyte completes meiosis II after the entry of the sperm.",
+    "options": [
+      {
+        "text": "I and II only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": true
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "All three statements are correct. Spermatogenesis begins at puberty, whereas oogenesis begins during embryonic development; the ovum is formed only after the sperm enters the secondary oocyte and meiosis II is completed.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113118,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "<strong>Assertion:</strong> The primary oocyte remains arrested for years in the diplotene stage of prophase I.<br><br><strong>Reason:</strong> The primary oocyte completes its first meiotic division only before ovulation.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Both the assertion and the reason are true, but the reason does not explain the assertion. The assertion states the long arrest of the primary oocyte, whereas the reason only describes when the arrest is released; the reason is not the cause of the arrest.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113119,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "Match Column I (Stage of oogenesis) with Column II (Characteristic) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Oogonium<br>B. Primary oocyte<br>C. Secondary oocyte<br>D. Polar body<br></div><div class=\"column-right\">P. Multiplies by mitosis in the foetal ovary<br>Q. Arrested in the diplotene stage of prophase I<br>R. Arrested at metaphase II<br>S. Tiny non-functional haploid cell<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  P, B  -  R, C  -  Q, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  S, B  -  Q, C  -  P, D  -  R}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  Q, C  -  R, D  -  S}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  Q, B  -  P, C  -  R, D  -  S}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "A. Oogonium &ndash; Multiplies by mitosis in the foetal ovary<br>B. Primary oocyte &ndash; Remains arrested in the diplotene stage of prophase I<br>C. Secondary oocyte &ndash; Remains arrested at metaphase II till sperm entry<br>D. Polar body &ndash; A tiny, non-functional haploid cell",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113120,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "After ovulation, the secondary oocyte released from the ovary is surrounded by which of the following layers?",
+    "options": [
+      {
+        "text": "Only the zona pellucida",
+        "isCorrect": false
+      },
+      {
+        "text": "Only the corona radiata",
+        "isCorrect": false
+      },
+      {
+        "text": "Zona pellucida and corona radiata",
+        "isCorrect": true
+      },
+      {
+        "text": "Theca interna and theca externa",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "At ovulation, the secondary oocyte is released from the ovary surrounded by the zona pellucida and corona radiata. It completes meiosis II only after sperm entry.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113121,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "The first polar body formed during oogenesis is:",
+    "options": [
+      {
+        "text": "Haploid and non-functional",
+        "isCorrect": true
+      },
+      {
+        "text": "Diploid and functional",
+        "isCorrect": false
+      },
+      {
+        "text": "Diploid and non-functional",
+        "isCorrect": false
+      },
+      {
+        "text": "Haploid and functional",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The first polar body is a small haploid cell formed during the unequal first meiotic division. It does not develop into a functional ovum; it may divide further or degenerate.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113122,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "Which one of the following statements about the differences between spermatogenesis and oogenesis is <strong>incorrect</strong>?",
+    "options": [
+      {
+        "text": "Oogenesis involves meiosis whereas spermatogenesis does not",
+        "isCorrect": true
+      },
+      {
+        "text": "The ovum is much larger than the sperm because it retains most of the cytoplasm",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogenesis yields four functional gametes, whereas oogenesis yields only one",
+        "isCorrect": false
+      },
+      {
+        "text": "Spermatogenesis begins at puberty, whereas oogenesis begins during foetal life",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Spermatogenesis produces four functional sperms from one primary spermatocyte, whereas oogenesis produces only one functional ovum from one primary oocyte (the other three meiotic products being polar bodies). Both processes, however, involve meiosis.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113123,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "The secondary oocyte completes the second meiotic division:",
+    "options": [
+      {
+        "text": "During the luteal phase of the menstrual cycle",
+        "isCorrect": false
+      },
+      {
+        "text": "After the entry of the sperm during fertilisation",
+        "isCorrect": true
+      },
+      {
+        "text": "At the time of ovulation",
+        "isCorrect": false
+      },
+      {
+        "text": "Just before ovulation",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The secondary oocyte is arrested at metaphase II and completes meiosis II only after a sperm enters it during fertilisation. This results in the formation of the ovum and the second polar body.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113124,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "The first menstruation in a human female begins at puberty and is called:",
+    "options": [
+      {
+        "text": "Ovulation",
+        "isCorrect": false
+      },
+      {
+        "text": "Menarche",
+        "isCorrect": true
+      },
+      {
+        "text": "Parturition",
+        "isCorrect": false
+      },
+      {
+        "text": "Menopause",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The first menstruation begins at puberty and is called menarche. Menstrual cycles cease between the age of 45 and 50 years, and the cessation of the cycle is called menopause.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113125,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "The permanent cessation of the menstrual cycle in a human female is called:",
+    "options": [
+      {
+        "text": "Menarche",
+        "isCorrect": false
+      },
+      {
+        "text": "Puberty",
+        "isCorrect": false
+      },
+      {
+        "text": "Menstruation",
+        "isCorrect": false
+      },
+      {
+        "text": "Menopause",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Menstrual cycles cease around the age of 50 years, and this is termed menopause. It marks the end of the reproductive phase of a female's life.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113126,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "The menstrual cycle in the human female is repeated at an interval of about:",
+    "options": [
+      {
+        "text": "45 days",
+        "isCorrect": false
+      },
+      {
+        "text": "28/29 days",
+        "isCorrect": true
+      },
+      {
+        "text": "14 days",
+        "isCorrect": false
+      },
+      {
+        "text": "35 days",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "In humans, the menstrual cycle is of about 28/29 days. It comprises the menstrual phase, the follicular (proliferative) phase, the ovulatory phase and the luteal (secretory) phase.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113127,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "The cycle of events starting from one menstruation till the next one is called the:",
+    "options": [
+      {
+        "text": "Menstrual cycle",
+        "isCorrect": true
+      },
+      {
+        "text": "Ovarian cycle",
+        "isCorrect": false
+      },
+      {
+        "text": "Lunar cycle",
+        "isCorrect": false
+      },
+      {
+        "text": "Oestrous cycle",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The cycle of events starting from one menstruation till the next one is called the menstrual cycle. Cyclic menstruation is an indicator of normal reproductive phase.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113128,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "The menstrual phase of the human menstrual cycle lasts for about:",
+    "options": [
+      {
+        "text": "8 to 10 days",
+        "isCorrect": false
+      },
+      {
+        "text": "3 to 5 days",
+        "isCorrect": true
+      },
+      {
+        "text": "12 to 14 days",
+        "isCorrect": false
+      },
+      {
+        "text": "15 to 20 days",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The menstrual phase lasts for about 3 to 5 days. During this phase, the endometrium of the uterus breaks down and is shed along with blood and mucus, causing menstrual flow.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113129,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "During the follicular phase (proliferative phase) of the menstrual cycle:",
+    "options": [
+      {
+        "text": "The Graafian follicle ruptures and releases the ovum",
+        "isCorrect": false
+      },
+      {
+        "text": "The primary follicles grow into the Graafian follicle and the endometrium regenerates",
+        "isCorrect": true
+      },
+      {
+        "text": "The endometrium breaks down and is shed",
+        "isCorrect": false
+      },
+      {
+        "text": "The corpus luteum secretes progesterone",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "During the follicular or proliferative phase, which lasts from about day 5 to day 13, the primary follicles in the ovary grow and become a fully mature Graafian follicle, while the endometrium regenerates through proliferation.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113130,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "The rapid surge in the secretion of LH around the mid-cycle (about the 14th day) causes:",
+    "options": [
+      {
+        "text": "Secretion of human chorionic gonadotropin",
+        "isCorrect": false
+      },
+      {
+        "text": "Breakdown of the endometrium",
+        "isCorrect": false
+      },
+      {
+        "text": "Rupture of the Graafian follicle and release of the ovum",
+        "isCorrect": true
+      },
+      {
+        "text": "Formation of the primary follicles",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "A rapid secretion of LH called the LH surge induces the rupture of the Graafian follicle, thereby releasing the secondary oocyte. This process is called ovulation.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113131,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "The luteal phase of the menstrual cycle is characterised by:",
+    "options": [
+      {
+        "text": "Growth of the primary follicles",
+        "isCorrect": false
+      },
+      {
+        "text": "Formation of the corpus luteum and secretion of progesterone",
+        "isCorrect": true
+      },
+      {
+        "text": "Shedding of the endometrium",
+        "isCorrect": false
+      },
+      {
+        "text": "Rupture of the Graafian follicle",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "During the luteal (secretory) phase, the remaining parts of the Graafian follicle transform into the corpus luteum, which secretes large amounts of progesterone. Progesterone is essential for the maintenance of the endometrium.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113132,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "If the ovum released during ovulation is not fertilised, which of the following events occurs?",
+    "options": [
+      {
+        "text": "The corpus luteum degenerates, progesterone falls and the endometrium disintegrates",
+        "isCorrect": true
+      },
+      {
+        "text": "A new Graafian follicle is formed immediately without menstruation",
+        "isCorrect": false
+      },
+      {
+        "text": "The endometrium is maintained and implantation occurs",
+        "isCorrect": false
+      },
+      {
+        "text": "The corpus luteum persists and progesterone remains high",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "In the absence of fertilisation, the corpus luteum degenerates. The level of progesterone falls, the endometrium disintegrates and is shed off, leading to menstruation and marking the beginning of a new cycle.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113134,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "Read the following statements regarding the hormonal changes during the menstrual cycle and select the correct option.<br>I. There is a rapid surge in the secretion of LH around the mid-cycle.<br>II. The level of progesterone is maximum during the luteal phase.<br>III. The level of FSH is maximum during the menstrual phase.",
+    "options": [
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Statements I and II are correct. FSH rises during the follicular phase to stimulate follicular development, and also shows a mid-cycle peak along with LH; it is not maximum during the menstrual phase.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113136,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "<strong>Assertion:</strong> The level of progesterone is maximum during the follicular phase of the menstrual cycle.<br><br><strong>Reason:</strong> Progesterone is secreted by the growing primary follicles of the ovary.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Both the assertion and the reason are incorrect. Progesterone is secreted by the corpus luteum and its level is maximum during the luteal phase. The growing follicles chiefly secrete oestrogen.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113137,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "Match Column I (Phase of menstrual cycle) with Column II (Main event) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Menstrual phase<br>B. Follicular phase<br>C. Ovulatory phase<br>D. Luteal phase<br></div><div class=\"column-right\">P. Growth of primary follicles into the Graafian follicle<br>Q. Breakdown of the endometrium and bleeding<br>R. Formation of the corpus luteum and secretion of progesterone<br>S. Rupture of the Graafian follicle and release of the ovum<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  Q, B  -  R, C  -  P, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  S, B  -  P, C  -  Q, D  -  R}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  Q, C  -  R, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  Q, B  -  P, C  -  S, D  -  R}}$",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "A. Menstrual phase &ndash; Breakdown of the endometrium and bleeding<br>B. Follicular phase &ndash; Growth of primary follicles into the Graafian follicle<br>C. Ovulatory phase &ndash; Rupture of the Graafian follicle and release of the ovum<br>D. Luteal phase &ndash; Formation of the corpus luteum and secretion of progesterone",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113138,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "After ovulation, the remaining parts of the Graafian follicle transform into the:",
+    "options": [
+      {
+        "text": "Secondary follicle",
+        "isCorrect": false
+      },
+      {
+        "text": "Corpus albicans",
+        "isCorrect": false
+      },
+      {
+        "text": "Primary follicle",
+        "isCorrect": false
+      },
+      {
+        "text": "Corpus luteum",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "After ovulation, the remains of the Graafian follicle transform into the corpus luteum, which secretes large amounts of progesterone. This hormone is essential for the maintenance of the endometrium for implantation.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113139,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "Read the following statements about the menstrual cycle and select the correct option.<br>I. Menarche is the first menstruation which begins at puberty.<br>II. The menstrual cycle is repeated at an interval of about 28/29 days in humans.<br>III. In humans, the cycle of reproductive events is called the oestrous cycle.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Statements I and II are correct. In humans (and other primates), the cycle is called the menstrual cycle; the oestrous cycle is seen in non-primate mammals such as cows, sheep, rats and dogs.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113140,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1116,
+    "question_html": "Which of the following statements about the human mammary glands is correct?",
+    "options": [
+      {
+        "text": "They are functional throughout the life of a female",
+        "isCorrect": false
+      },
+      {
+        "text": "They are made up of nervous tissue",
+        "isCorrect": false
+      },
+      {
+        "text": "They become functional only after parturition",
+        "isCorrect": true
+      },
+      {
+        "text": "They are present only in human females",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Mammary glands are paired structures containing glandular tissue and a variable amount of fat. They become functional only after parturition, i.e. they secrete milk only after the birth of the baby.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113142,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1116,
+    "question_html": "The glandular tissue of each human breast is divided into 15&ndash;20 mammary lobes. Each lobe contains clusters of cells called:",
+    "options": [
+      {
+        "text": "Alveoli",
+        "isCorrect": true
+      },
+      {
+        "text": "Fimbriae",
+        "isCorrect": false
+      },
+      {
+        "text": "Lobules of the cervix",
+        "isCorrect": false
+      },
+      {
+        "text": "Ampullae",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The glandular tissue of each breast is divided into 15&ndash;20 mammary lobes containing clusters of cells called alveoli. The cells of the alveoli secrete milk, which is stored in the lumens (cavities) of the alveoli.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113143,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1116,
+    "question_html": "The first milk secreted by the mammary glands after parturition is called colostrum. It is important for the newborn because it is rich in:",
+    "options": [
+      {
+        "text": "Lactose only",
+        "isCorrect": false
+      },
+      {
+        "text": "Iron and calcium only",
+        "isCorrect": false
+      },
+      {
+        "text": "Antibodies",
+        "isCorrect": true
+      },
+      {
+        "text": "Fat and vitamin K only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The first milk secreted after parturition is called colostrum. It contains several antibodies which provide passive immunity to the newborn baby, and it also contains proteins and other nutrients.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113144,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1116,
+    "question_html": "Read the following statements about the human mammary gland and select the correct option.<br>I. The alveoli of the mammary gland open into mammary tubules, which join to form a mammary duct.<br>II. Several mammary ducts join to form a wider structure called the mammary ampulla.<br>III. Milk is sucked out through the lactiferous duct.",
+    "options": [
+      {
+        "text": "I and II only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "All three statements are correct and describe the duct system of the mammary gland: alveoli $\\rightarrow$ mammary tubules $\\rightarrow$ mammary duct $\\rightarrow$ ampulla $\\rightarrow$ lactiferous duct.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113145,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1116,
+    "question_html": "<strong>Assertion:</strong> Colostrum is extremely important for the newborn baby.<br><br><strong>Reason:</strong> Colostrum contains several antibodies that provide passive immunity to the newborn.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Both the assertion and the reason are correct and the reason is the correct explanation of the assertion. The high antibody content of colostrum makes it indispensable for the newborn.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113146,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1116,
+    "question_html": "Which one of the following statements about the human mammary gland is <strong>incorrect</strong>?",
+    "options": [
+      {
+        "text": "The glandular tissue of each breast is divided into 15&ndash;20 mammary lobes",
+        "isCorrect": false
+      },
+      {
+        "text": "The size of the breast is determined by the amount of glandular tissue present in it",
+        "isCorrect": true
+      },
+      {
+        "text": "The alveoli are the clusters of cells which secrete milk",
+        "isCorrect": false
+      },
+      {
+        "text": "The mammary ducts join to form the mammary ampulla",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The size of the breast is determined mainly by the amount of fat present in it and not by the amount of glandular tissue. The 15&ndash;20 lobes, the alveoli and the duct system form the glandular component.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113148,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "The changes that the sperms must undergo in the female reproductive tract, which make them capable of fertilising the ovum, is called capacitation. Capacitation occurs in the:",
+    "options": [
+      {
+        "text": "Female reproductive tract",
+        "isCorrect": true
+      },
+      {
+        "text": "Vas deferens",
+        "isCorrect": false
+      },
+      {
+        "text": "Rete testis",
+        "isCorrect": false
+      },
+      {
+        "text": "Epididymis",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Capacitation is the physiological change that the sperms undergo inside the female reproductive tract, which makes them capable of fertilising the ovum. The secretions of the female tract remove the coating over the acrosome and make the sperm membrane more permeable.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113149,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "In human beings, fertilisation is internal and the fusion of the male and female gametes results in the formation of a:",
+    "options": [
+      {
+        "text": "Diploid zygote",
+        "isCorrect": true
+      },
+      {
+        "text": "Haploid morula",
+        "isCorrect": false
+      },
+      {
+        "text": "Tetraploid zygote",
+        "isCorrect": false
+      },
+      {
+        "text": "Haploid zygote",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The fusion of the haploid sperm nucleus with the haploid ovum nucleus results in the formation of the diploid zygote (46 chromosomes). The zygote is the first cell of the new individual.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113150,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "The entry of a sperm into the secondary oocyte induces the oocyte to:",
+    "options": [
+      {
+        "text": "Undergo mitotic division to form a morula",
+        "isCorrect": false
+      },
+      {
+        "text": "Enter meiosis I and get arrested in the diplotene stage",
+        "isCorrect": false
+      },
+      {
+        "text": "Complete meiosis II and form the ovum and the second polar body",
+        "isCorrect": true
+      },
+      {
+        "text": "Complete meiosis I and form the first polar body",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The entry of the sperm induces the secondary oocyte to complete the second meiotic division, which is unequal. This results in the formation of a haploid ovum and a tiny second polar body.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113151,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "Read the following statements about fertilisation in humans and select the correct option.<br>I. The acrosomal enzymes of the sperm help it to penetrate the corona radiata and the zona pellucida.<br>II. The entry of the sperm induces the secondary oocyte to complete the second meiotic division.<br>III. The zygote formed after fertilisation is haploid.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Statements I and II are correct. The zygote is diploid, as it is formed by the fusion of two haploid nuclei &ndash; one from the sperm and one from the ovum.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113152,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "Which one of the following gives the correct sequence of events during fertilisation in humans?",
+    "options": [
+      {
+        "text": "Entry of the sperm into the ooplasm $\\rightarrow$ Fusion of the haploid nuclei $\\rightarrow$ Completion of meiosis II $\\rightarrow$ Penetration of the sperm",
+        "isCorrect": false
+      },
+      {
+        "text": "Fusion of the haploid nuclei $\\rightarrow$ Entry of the sperm $\\rightarrow$ Completion of meiosis II $\\rightarrow$ Penetration of the sperm",
+        "isCorrect": false
+      },
+      {
+        "text": "Penetration of the sperm $\\rightarrow$ Entry of the sperm into the ooplasm $\\rightarrow$ Completion of meiosis II $\\rightarrow$ Fusion of the haploid nuclei",
+        "isCorrect": true
+      },
+      {
+        "text": "Completion of meiosis II $\\rightarrow$ Penetration of the sperm $\\rightarrow$ Fusion of the haploid nuclei $\\rightarrow$ Entry of the sperm into the ooplasm",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The sperm penetrates the corona radiata and the zona pellucida with the help of the acrosomal enzymes, its nucleus enters the ooplasm, the secondary oocyte completes meiosis II, and finally the haploid nuclei of the sperm and the ovum fuse to form the diploid zygote.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113153,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "After fertilisation, the zygote:",
+    "options": [
+      {
+        "text": "Divides mitotically while moving through the fallopian tube towards the uterus",
+        "isCorrect": true
+      },
+      {
+        "text": "Is implanted directly in the cervix",
+        "isCorrect": false
+      },
+      {
+        "text": "Divides meiotically while moving towards the uterus",
+        "isCorrect": false
+      },
+      {
+        "text": "Remains undivided until it reaches the vagina",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The zygote formed in the ampullary&ndash;isthmic junction moves through the fallopian tube towards the uterus, undergoing mitotic divisions (cleavage) on the way, and reaches the uterus for implantation.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113154,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "Match Column I (Structure) with Column II (Description) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Corona radiata<br>B. Zona pellucida<br>C. Acrosome<br>D. Zygote<br></div><div class=\"column-right\">P. Cap-like structure filled with enzymes<br>Q. Layer of follicular cells around the ovum<br>R. Glycoprotein layer outside the oocyte membrane<br>S. Diploid cell formed by fertilisation<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  Q, B  -  R, C  -  P, D  -  S}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  S, B  -  R, C  -  P, D  -  Q}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  R, B  -  Q, C  -  P, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  Q, B  -  P, C  -  R, D  -  S}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "A. Corona radiata &ndash; Layer of follicular cells around the ovum<br>B. Zona pellucida &ndash; Glycoprotein layer outside the oocyte membrane<br>C. Acrosome &ndash; Cap-like structure of the sperm filled with enzymes<br>D. Zygote &ndash; Diploid cell formed by the fusion of the gametes",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113155,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "The mitotic division of the zygote, as it moves through the fallopian tube towards the uterus, is called:",
+    "options": [
+      {
+        "text": "Capacitation",
+        "isCorrect": false
+      },
+      {
+        "text": "Implantation",
+        "isCorrect": false
+      },
+      {
+        "text": "Cleavage",
+        "isCorrect": true
+      },
+      {
+        "text": "Spermiogenesis",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The mitotic divisions of the zygote are called cleavage. During cleavage, the number of cells increases rapidly, forming 2, 4, 8 and 16-celled stages successively.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113156,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "The human embryo with 8 to 16 cells is called a:",
+    "options": [
+      {
+        "text": "Zygote",
+        "isCorrect": false
+      },
+      {
+        "text": "Blastocyst",
+        "isCorrect": false
+      },
+      {
+        "text": "Gastrula",
+        "isCorrect": false
+      },
+      {
+        "text": "Morula",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The embryo with 8 to 16 cells is called a morula. The morula continues to divide and transforms into the blastocyst, which then gets implanted in the endometrium.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113157,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "In the human blastocyst, the outer layer of cells is called the trophoblast and the inner group of cells is called the:",
+    "options": [
+      {
+        "text": "Blastocoel",
+        "isCorrect": false
+      },
+      {
+        "text": "Inner cell mass",
+        "isCorrect": true
+      },
+      {
+        "text": "Corona radiata",
+        "isCorrect": false
+      },
+      {
+        "text": "Antrum",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The blastocyst has an outer layer of cells called the trophoblast and an inner group of cells called the inner cell mass. The trophoblast attaches to the endometrium, while the inner cell mass differentiates into the embryo proper.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113159,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1112,
+    "question_html": "Implantation in the human female refers to:",
+    "options": [
+      {
+        "text": "Fusion of the sperm and the ovum in the fallopian tube",
+        "isCorrect": false
+      },
+      {
+        "text": "Release of the ovum from the Graafian follicle",
+        "isCorrect": false
+      },
+      {
+        "text": "Attachment of the blastocyst to the endometrium of the uterus",
+        "isCorrect": true
+      },
+      {
+        "text": "Attachment of the sperm to the corona radiata",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "Implantation is the attachment of the blastocyst to the endometrium of the uterus. It leads to pregnancy. The trophoblast of the blastocyst attaches to the endometrium and the inner cell mass differentiates into the embryo.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113160,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "Read the following statements about cleavage and implantation and select the correct option.<br>I. Cleavage divisions are mitotic in nature.<br>II. During cleavage, the number of cells increases rapidly but the size of the embryo does not increase proportionately.<br>III. Implantation occurs in the fallopian tube.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "Statements I and II are correct. Implantation occurs in the uterus, where the blastocyst attaches to the endometrium. Implantation in the fallopian tube is abnormal (ectopic) and not a normal event.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113161,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "By the end of which month of pregnancy is the heart of the human embryo formed?",
+    "options": [
+      {
+        "text": "Second month",
+        "isCorrect": false
+      },
+      {
+        "text": "Third month",
+        "isCorrect": false
+      },
+      {
+        "text": "First month",
+        "isCorrect": true
+      },
+      {
+        "text": "Fifth month",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "By the end of the first month of pregnancy the heart is formed. The development of the embryo's limbs and digits occurs by the end of the second month.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113163,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "Limbs and digits of the human foetus are developed by the end of the:",
+    "options": [
+      {
+        "text": "Third month",
+        "isCorrect": false
+      },
+      {
+        "text": "First month",
+        "isCorrect": false
+      },
+      {
+        "text": "Second month",
+        "isCorrect": true
+      },
+      {
+        "text": "Fifth month",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "By the end of the second month of pregnancy, the foetus develops limbs and digits. By the end of 12 weeks (first trimester), most of the major organ systems are formed.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113164,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "The first movements of the foetus and the appearance of hair on the head are usually observed by the end of the:",
+    "options": [
+      {
+        "text": "Seventh month",
+        "isCorrect": false
+      },
+      {
+        "text": "Fifth month",
+        "isCorrect": true
+      },
+      {
+        "text": "Third month",
+        "isCorrect": false
+      },
+      {
+        "text": "Ninth month",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "By the end of the fifth month of pregnancy, the first movements of the foetus and the appearance of hair on the head are observed.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113165,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "By the end of 24 weeks (second trimester) of pregnancy:",
+    "options": [
+      {
+        "text": "The limbs and digits begin to develop",
+        "isCorrect": false
+      },
+      {
+        "text": "Implantation of the blastocyst takes place",
+        "isCorrect": false
+      },
+      {
+        "text": "The body is covered with fine hair, eyelids separate and eyelashes are formed",
+        "isCorrect": true
+      },
+      {
+        "text": "The heart is formed for the first time",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "By the end of 24 weeks, the body of the foetus is covered with fine hair, the eyelids separate and the eyelashes are formed. The major organ systems are already formed by the end of 12 weeks.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113166,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "In the human female, the foetus becomes fully developed and is ready for delivery:",
+    "options": [
+      {
+        "text": "By the end of seven months",
+        "isCorrect": false
+      },
+      {
+        "text": "By the end of twelve months",
+        "isCorrect": false
+      },
+      {
+        "text": "By the end of five months",
+        "isCorrect": false
+      },
+      {
+        "text": "By the end of nine months",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The foetus is fully developed and ready for delivery at the end of about nine months (third trimester), which is followed by the process of parturition.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113167,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1113,
+    "question_html": "In the human female, the placenta is formed by the interdigitation of:",
+    "options": [
+      {
+        "text": "Chorionic villi and the uterine tissue",
+        "isCorrect": true
+      },
+      {
+        "text": "The inner cell mass and the endometrium",
+        "isCorrect": false
+      },
+      {
+        "text": "The amnion and the chorion only",
+        "isCorrect": false
+      },
+      {
+        "text": "The trophoblast and the myometrium",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "After implantation, finger-like projections called chorionic villi appear on the trophoblast. The chorionic villi and the uterine tissue interdigitate with each other to form the placenta.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113168,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1113,
+    "question_html": "The placenta is best described as:",
+    "options": [
+      {
+        "text": "A temporary storage organ for the sperms",
+        "isCorrect": false
+      },
+      {
+        "text": "A part of the foetal nervous system",
+        "isCorrect": false
+      },
+      {
+        "text": "A gland which secretes only oestrogen",
+        "isCorrect": false
+      },
+      {
+        "text": "A structural and functional connection between the foetus and the mother",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The placenta is a structural and functional connection between the foetus and the mother. It helps in the supply of oxygen and nutrients to the foetus and the removal of carbon dioxide and excretory waste from the foetus.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113169,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1113,
+    "question_html": "Read the following statements about the human placenta and select the correct option.<br>I. The chorionic villi and the uterine tissue interdigitate to form the placenta.<br>II. The placenta helps in the supply of oxygen and nutrients to the foetus.<br>III. The placenta removes carbon dioxide and excretory waste from the foetus.",
+    "options": [
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "All three statements are correct. The placenta is the structural and functional connection between the foetus and the mother, and carries out the exchange of gases, nutrients and waste products.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113170,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1113,
+    "question_html": "Which one of the following is <strong>not</strong> a function of the human placenta?",
+    "options": [
+      {
+        "text": "Removal of wastes from the foetus",
+        "isCorrect": false
+      },
+      {
+        "text": "Formation of the blood cells of the foetus",
+        "isCorrect": true
+      },
+      {
+        "text": "Secretion of hormones such as hCG and hPL",
+        "isCorrect": false
+      },
+      {
+        "text": "Supply of oxygen and nutrients to the foetus",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The placenta supplies nutrients and oxygen to the foetus, removes its waste products, and secretes hormones such as hCG, hPL, oestrogens and progesterone. It does not produce the foetal blood cells &ndash; these are formed in the foetal liver, spleen and bone marrow.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113171,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1113,
+    "question_html": "Which hormone secreted by the placenta is used for the detection of pregnancy in pregnancy test kits?",
+    "options": [
+      {
+        "text": "Follicle stimulating hormone",
+        "isCorrect": false
+      },
+      {
+        "text": "Human chorionic gonadotropin (hCG)",
+        "isCorrect": true
+      },
+      {
+        "text": "Human placental lactogen (hPL)",
+        "isCorrect": false
+      },
+      {
+        "text": "Relaxin",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The placenta secretes human chorionic gonadotropin (hCG), human placental lactogen (hPL), oestrogens, progesterone and relaxin. The presence of hCG in the urine or blood is used for the detection of pregnancy.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113172,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1113,
+    "question_html": "Match Column I (Hormone) with Column II (Source/Function) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. hCG<br>B. hPL<br>C. Relaxin<br>D. Oxytocin</div><div class=\"column-right\">P. Secreted by the placenta and used to detect pregnancy<br>Q. Released from the posterior pituitary; causes strong uterine contractions and milk ejection<br>R. Placental hormone involved in fetal growth and maternal metabolic changes<br>S. Helps relax the pelvic ligaments during parturition</div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  Q, B  -  R, C  -  S, D  -  P}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  R, C  -  S, D  -  Q}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  R, B  -  P, C  -  S, D  -  Q}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  S, C  -  R, D  -  Q}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "hCG is secreted by the placenta and is the basis of pregnancy testing. hPL is a placental hormone involved in fetal growth and maternal metabolic changes. Relaxin helps relax the pelvic ligaments during parturition. Oxytocin is released from the posterior pituitary and causes strong uterine contractions and milk ejection.",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113173,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 557,
+    "subtopic_id": 1115,
+    "question_html": "The process of delivery of the foetus is called:",
+    "options": [
+      {
+        "text": "Implantation",
+        "isCorrect": false
+      },
+      {
+        "text": "Lactation",
+        "isCorrect": false
+      },
+      {
+        "text": "Parturition",
+        "isCorrect": true
+      },
+      {
+        "text": "Ovulation",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The process of delivery of the foetus is called parturition. It is induced by the signals (foetal ejection reflex) from the fully developed foetus and the placenta.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113174,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 557,
+    "subtopic_id": 1115,
+    "question_html": "Signals from the fully developed foetus and the placenta which induce mild uterine contractions are called the:",
+    "options": [
+      {
+        "text": "Withdrawal reflex",
+        "isCorrect": false
+      },
+      {
+        "text": "Milk ejection reflex",
+        "isCorrect": false
+      },
+      {
+        "text": "Foetal ejection reflex",
+        "isCorrect": true
+      },
+      {
+        "text": "Suckling reflex",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 2,
+    "explanation": "The signals originating from the fully developed foetus and the placenta that induce mild uterine contractions are called the foetal ejection reflex. This triggers the release of oxytocin from the maternal pituitary.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113175,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 557,
+    "subtopic_id": 1115,
+    "question_html": "During parturition, which hormone acts on the uterine muscle and causes stronger contractions?",
+    "options": [
+      {
+        "text": "Oxytocin",
+        "isCorrect": true
+      },
+      {
+        "text": "Relaxin",
+        "isCorrect": false
+      },
+      {
+        "text": "Progesterone",
+        "isCorrect": false
+      },
+      {
+        "text": "Oestrogen",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "The foetal ejection reflex triggers the release of oxytocin from the maternal pituitary. Oxytocin acts on the uterine muscle and causes stronger uterine contractions, which in turn stimulate further secretion of oxytocin, and the process continues until the baby is delivered.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113176,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 558,
+    "subtopic_id": 1116,
+    "question_html": "The process of secretion of milk by the mammary glands after parturition is called:",
+    "options": [
+      {
+        "text": "Parturition",
+        "isCorrect": false
+      },
+      {
+        "text": "Lactation",
+        "isCorrect": true
+      },
+      {
+        "text": "Ovulation",
+        "isCorrect": false
+      },
+      {
+        "text": "Gestation",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The secretion of milk by the mammary glands after the birth of the baby is called lactation. The first milk secreted is colostrum, which is rich in antibodies.",
+    "difficulty": "Easy",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113177,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 557,
+    "subtopic_id": 1115,
+    "question_html": "Read the following statements about parturition and lactation and select the correct option.<br>I. The foetal ejection reflex is induced by signals from the fully developed foetus and the placenta.<br>II. Oxytocin from the maternal pituitary causes stronger uterine contractions.<br>III. Colostrum, the first milk, is rich in antibodies.",
+    "options": [
+      {
+        "text": "I, II and III",
+        "isCorrect": true
+      },
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "All three statements are correct. Parturition is a neuroendocrine mechanism in which the foetal ejection reflex triggers oxytocin release, leading to stronger contractions till the baby is delivered; lactation then begins with the secretion of colostrum.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113178,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 557,
+    "subtopic_id": 1115,
+    "question_html": "<strong>Assertion:</strong> The process of parturition is initiated by the foetus itself.<br><br><strong>Reason:</strong> Signals from the fully developed foetus and the placenta induce mild uterine contractions, called the foetal ejection reflex.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Both the assertion and the reason are correct and the reason is the correct explanation of the assertion. The foetal ejection reflex is the mechanism by which the foetus initiates its own delivery.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113180,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 557,
+    "subtopic_id": 1115,
+    "question_html": "Identify the <strong>incorrect</strong> pairing of hormone with its source.",
+    "options": [
+      {
+        "text": "Relaxin &ndash; Testis",
+        "isCorrect": true
+      },
+      {
+        "text": "Oestrogen &ndash; Ovary",
+        "isCorrect": false
+      },
+      {
+        "text": "Testosterone &ndash; Leydig cells",
+        "isCorrect": false
+      },
+      {
+        "text": "Progesterone &ndash; Corpus luteum",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Relaxin is secreted by the placenta (and also by the ovary) and helps in relaxing the pelvic ligaments during parturition; it is not secreted by the testis. Testosterone is secreted by the Leydig cells of the testis.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113181,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 556,
+    "subtopic_id": 1114,
+    "question_html": "Arrange the following events in the correct sequence of their occurrence in a human female.<br>I. Ovulation &nbsp;&nbsp; II. Implantation &nbsp;&nbsp; III. Fertilisation &nbsp;&nbsp; IV. Cleavage",
+    "options": [
+      {
+        "text": "II $\\rightarrow$ IV $\\rightarrow$ III $\\rightarrow$ I",
+        "isCorrect": false
+      },
+      {
+        "text": "I $\\rightarrow$ III $\\rightarrow$ IV $\\rightarrow$ II",
+        "isCorrect": true
+      },
+      {
+        "text": "III $\\rightarrow$ I $\\rightarrow$ II $\\rightarrow$ IV",
+        "isCorrect": false
+      },
+      {
+        "text": "I $\\rightarrow$ II $\\rightarrow$ III $\\rightarrow$ IV",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 1,
+    "explanation": "The correct sequence is ovulation $\\rightarrow$ fertilisation $\\rightarrow$ cleavage $\\rightarrow$ implantation. Ovulation releases the secondary oocyte, fertilisation occurs at the ampullary&ndash;isthmic junction, cleavage divisions occur as the zygote moves towards the uterus, and finally the blastocyst is implanted in the endometrium.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113182,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 555,
+    "subtopic_id": 1110,
+    "question_html": "Match Column I (Term) with Column II (Description) and choose the correct option.<div class=\"matching-question\"><div class=\"column-left\">A. Menarche<br>B. Menopause<br>C. Colostrum<br>D. Capacitation<br></div><div class=\"column-right\">P. First menstruation at puberty<br>Q. Permanent cessation of the menstrual cycle<br>R. First milk rich in antibodies<br>S. Changes in sperms in the female reproductive tract<br></div></div>",
+    "options": [
+      {
+        "text": "${\\rm{A  -  P, B  -  Q, C  -  R, D  -  S}}$",
+        "isCorrect": true
+      },
+      {
+        "text": "${\\rm{A  -  P, B  -  R, C  -  Q, D  -  S}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  Q, B  -  P, C  -  S, D  -  R}}$",
+        "isCorrect": false
+      },
+      {
+        "text": "${\\rm{A  -  S, B  -  R, C  -  Q, D  -  P}}$",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "A. Menarche &ndash; The first menstruation which begins at puberty<br>B. Menopause &ndash; Permanent cessation of the menstrual cycle, usually around 50 years of age<br>C. Colostrum &ndash; The first milk secreted after parturition, rich in antibodies<br>D. Capacitation &ndash; Changes in the sperms which occur in the female reproductive tract",
+    "difficulty": "Medium",
+    "qtype": "Match the following",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113183,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": 1105,
+    "question_html": "Which one of the following gives the correct sequence of the path of the sperm from the testis to the site of fertilisation in the human female?",
+    "options": [
+      {
+        "text": "Seminiferous tubules $\\rightarrow$ Rete testis $\\rightarrow$ Epididymis $\\rightarrow$ Vas deferens $\\rightarrow$ Urethra $\\rightarrow$ Vagina $\\rightarrow$ Ovary",
+        "isCorrect": false
+      },
+      {
+        "text": "Seminiferous tubules $\\rightarrow$ Epididymis $\\rightarrow$ Rete testis $\\rightarrow$ Vasa efferentia $\\rightarrow$ Vas deferens $\\rightarrow$ Urethra $\\rightarrow$ Uterus $\\rightarrow$ Ovary",
+        "isCorrect": false
+      },
+      {
+        "text": "Seminiferous tubules $\\rightarrow$ Vasa efferentia $\\rightarrow$ Rete testis $\\rightarrow$ Vas deferens $\\rightarrow$ Epididymis $\\rightarrow$ Uterus $\\rightarrow$ Cervix $\\rightarrow$ Ampulla",
+        "isCorrect": false
+      },
+      {
+        "text": "Seminiferous tubules $\\rightarrow$ Rete testis $\\rightarrow$ Vasa efferentia $\\rightarrow$ Epididymis $\\rightarrow$ Vas deferens $\\rightarrow$ Urethra $\\rightarrow$ Uterus $\\rightarrow$ Ampullary&ndash;isthmic junction",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "The sperms travel from the seminiferous tubules $\\rightarrow$ rete testis $\\rightarrow$ vasa efferentia $\\rightarrow$ epididymis $\\rightarrow$ vas deferens $\\rightarrow$ ejaculatory duct $\\rightarrow$ urethra, and after insemination pass through the vagina and the cervix into the uterus and then into the fallopian tube, where fertilisation occurs at the ampullary&ndash;isthmic junction.",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113184,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 552,
+    "subtopic_id": 1109,
+    "question_html": "Read the following statements and select the option with the correct statements.<br>I. In the human female, the ovum is released from the ovary at the 14th day of the menstrual cycle.<br>II. The corpus luteum is formed after ovulation and secretes progesterone.<br>III. If fertilisation occurs, the corpus luteum degenerates immediately.",
+    "options": [
+      {
+        "text": "I and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "II and III only",
+        "isCorrect": false
+      },
+      {
+        "text": "I, II and III",
+        "isCorrect": false
+      },
+      {
+        "text": "I and II only",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Statements I and II are correct. If fertilisation occurs, the corpus luteum does not degenerate immediately &ndash; it persists and continues to secrete progesterone, which is essential for the maintenance of the endometrium and hence of pregnancy.",
+    "difficulty": "Medium",
+    "qtype": "MCQ type-2",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113185,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 553,
+    "subtopic_id": 1108,
+    "question_html": "<strong>Assertion:</strong> A human female is born with all the oocytes that she will ever have.<br><br><strong>Reason:</strong> Oogenesis begins during foetal life, and no new oogonia are formed after birth.",
+    "options": [
+      {
+        "text": "Both Assertion and Reason are correct and Reason is the correct explanation of the Assertion.",
+        "isCorrect": true
+      },
+      {
+        "text": "Both Assertion and Reason are correct but Reason is not the correct explanation of the Assertion.",
+        "isCorrect": false
+      },
+      {
+        "text": "Assertion is correct but Reason is incorrect.",
+        "isCorrect": false
+      },
+      {
+        "text": "Both Assertion and Reason are incorrect.",
+        "isCorrect": false
+      }
+    ],
+    "correct_index": 0,
+    "explanation": "Both the assertion and the reason are correct and the reason is the correct explanation of the assertion. Oogonia are formed only during foetal development; after birth, the number of oocytes steadily decreases as no new ones are produced.",
+    "difficulty": "Medium",
+    "qtype": "Assertion and Reason",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  },
+  {
+    "id": 113186,
+    "subject_id": "biology",
+    "chapter_id": 100,
+    "topic_id": 551,
+    "subtopic_id": null,
+    "question_html": "Which one of the following statements is correct?",
+    "options": [
+      {
+        "text": "Leydig cells are located inside the seminiferous tubules",
+        "isCorrect": false
+      },
+      {
+        "text": "Capacitation of sperms occurs in the epididymis",
+        "isCorrect": false
+      },
+      {
+        "text": "A fully mature ovum is released from the ovary at ovulation",
+        "isCorrect": false
+      },
+      {
+        "text": "Sertoli cells provide nutrition to the developing germ cells",
+        "isCorrect": true
+      }
+    ],
+    "correct_index": 3,
+    "explanation": "Sertoli cells provide nutrition to the developing germ cells, whereas Leydig cells secrete androgens. Spermiation is the release of sperms from the seminiferous tubules, capacitation occurs in the female reproductive tract, and the ovum is released at ovulation as a secondary oocyte (not as a fully mature ovum).",
+    "difficulty": "Medium",
+    "qtype": "MCQ",
+    "year": null,
+    "tag": null,
+    "is_pyq": false,
+    "question_image_url": null
+  }
+]
