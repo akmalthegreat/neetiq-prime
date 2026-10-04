@@ -5,12 +5,17 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Loader2, Crown, Users, IndianRupee, TrendingUp, Wallet, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Crown, Users, IndianRupee, TrendingUp, Wallet, ChevronLeft, ChevronRight, Pencil, Save, Link2, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import { adminListCollaborators, adminUpdateCollaboratorStatus } from "@/lib/collaborators.functions";
+import {
+  adminListCollaborators,
+  adminUpdateCollaboratorStatus,
+  adminUpdateCollaboratorDetails,
+} from "@/lib/collaborators.functions";
 
 export const Route = createFileRoute("/admin-collaborators")({
   head: () => ({ meta: [{ title: "Admin · Collaborators — NEETIQ Prime" }] }),
@@ -22,20 +27,38 @@ function AdminCollaborators() {
   const nav = useNavigate();
   const list = useServerFn(adminListCollaborators);
   const update = useServerFn(adminUpdateCollaboratorStatus);
+  const updateDetails = useServerFn(adminUpdateCollaboratorDetails);
 
   const [rows, setRows] = useState<any[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [idx, setIdx] = useState(0);
   const [notes, setNotes] = useState("");
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editLink, setEditLink] = useState("");
+  const [editCoupon, setEditCoupon] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const reload = async () => {
+    const fresh = await list();
+    setRows(fresh.rows);
+    setLoaded(true);
+  };
 
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
   useEffect(() => {
     if (!user || !isAdmin) return;
-    list().then((r) => { setRows(r.rows); setLoaded(true); }).catch((e) => toast.error(e?.message ?? "Failed"));
+    reload().catch((e) => toast.error(e?.message ?? "Failed"));
   }, [user?.id, isAdmin]);
 
-  useEffect(() => { setNotes(rows[idx]?.admin_notes ?? ""); }, [idx, rows.length]);
+  useEffect(() => {
+    const c = rows[idx];
+    setNotes(c?.admin_notes ?? "");
+    setEditingDetails(false);
+    setEditName(c?.name ?? "");
+    setEditLink(c?.collaborator_link?.code ?? "");
+    setEditCoupon(c?.collaborator_coupon?.code ?? "");
+  }, [idx, rows]);
 
   if (loading || !loaded) {
     return <PageShell eyebrow="Admin" title="Collaborators"><div className="flex h-40 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div></PageShell>;
@@ -48,23 +71,64 @@ function AdminCollaborators() {
   }
 
   const c = rows[idx];
+
+  const selectCollaborator = (value: string) => {
+    const next = rows.findIndex((r) => r.id === value);
+    if (next >= 0) setIdx(next);
+  };
+
   const setStatus = async (status: "approved" | "rejected" | "pending" | "ended") => {
     setBusy(true);
     try {
       await update({ data: { id: c.id, status, admin_notes: notes || undefined } });
       toast.success("Updated");
-      const fresh = await list();
-      setRows(fresh.rows);
+      await reload();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally { setBusy(false); }
   };
 
+  const saveDetails = async () => {
+    setBusy(true);
+    try {
+      const result = await updateDetails({
+        data: {
+          user_id: c.user_id,
+          name: editName,
+          link_code: editLink,
+          coupon_code: editCoupon,
+        },
+      });
+      toast.success("Collaborator name, link and coupon updated");
+      setEditingDetails(false);
+      await reload();
+      const freshIndex = rows.findIndex((r) => r.id === c.id);
+      if (freshIndex >= 0) setIdx(freshIndex);
+      // Keep the returned values visible immediately even if the list refresh is delayed.
+      setEditLink(result.link_code);
+      setEditCoupon(result.coupon_code);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not save changes");
+    } finally { setBusy(false); }
+  };
+
+  const linkCode = c.collaborator_link?.code ?? "—";
+  const couponCode = c.collaborator_coupon?.code ?? "—";
+
   return (
-    <PageShell eyebrow="Admin" title="Collaborators" description={`${rows.length} application(s). Swipe through to review.`}>
-      <div className="mb-3 flex items-center justify-between">
-        <Button variant="outline" size="sm" asChild><Link to="/admin"><ChevronLeft className="mr-1 h-4 w-4" /> Admin</Link></Button>
-        <div className="flex items-center gap-1.5 text-sm">
+    <PageShell eyebrow="Admin" title="Collaborators" description="Choose a collaborator and manage their name, private link and coupon code.">
+      <div className="mb-3 grid gap-2 sm:grid-cols-[1fr_auto]">
+        <Select value={c.id} onValueChange={selectCollaborator}>
+          <SelectTrigger><SelectValue placeholder="Choose collaborator" /></SelectTrigger>
+          <SelectContent>
+            {rows.map((r) => (
+              <SelectItem key={r.id} value={r.id}>
+                {r.name} · {r.profile?.email ?? r.email}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex items-center justify-end gap-1.5 text-sm">
           <Button variant="outline" size="icon" disabled={idx === 0} onClick={() => setIdx(idx - 1)}><ChevronLeft className="h-4 w-4" /></Button>
           <span className="px-2 text-xs text-muted-foreground">{idx + 1} / {rows.length}</span>
           <Button variant="outline" size="icon" disabled={idx >= rows.length - 1} onClick={() => setIdx(idx + 1)}><ChevronRight className="h-4 w-4" /></Button>
@@ -79,6 +143,53 @@ function AdminCollaborators() {
               <div className="text-xs text-muted-foreground">{c.profile?.email ?? c.email}</div>
             </div>
             <Badge variant="outline">{c.status}</Badge>
+          </div>
+
+          <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <div>
+                <div className="text-sm font-bold">Collaborator identity & promotion codes</div>
+                <div className="text-xs text-muted-foreground">Choose who owns this promotion and edit the public link/code.</div>
+              </div>
+              {!editingDetails ? (
+                <Button variant="outline" size="sm" onClick={() => setEditingDetails(true)}>
+                  <Pencil className="mr-1.5 h-4 w-4" /> Edit
+                </Button>
+              ) : null}
+            </div>
+
+            {editingDetails ? (
+              <div className="space-y-3">
+                <div>
+                  <div className="mb-1 text-xs font-medium">Collaborator name</div>
+                  <Input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="e.g. Sahil" />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <div className="mb-1 flex items-center gap-1 text-xs font-medium"><Link2 className="h-3.5 w-3.5" /> Private link code</div>
+                    <Input value={editLink} onChange={(e) => setEditLink(e.target.value.toUpperCase())} placeholder="e.g. SAHIL2026" />
+                    <div className="mt-1 text-[10px] text-muted-foreground">Link: neettrack.com/c/{editLink || "CODE"}</div>
+                  </div>
+                  <div>
+                    <div className="mb-1 flex items-center gap-1 text-xs font-medium"><Tag className="h-3.5 w-3.5" /> Collaborator coupon</div>
+                    <Input value={editCoupon} onChange={(e) => setEditCoupon(e.target.value.toUpperCase())} placeholder="e.g. SAHILNEET" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={saveDetails} disabled={busy || !editName.trim() || !editLink.trim() || !editCoupon.trim()}>
+                    {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Save className="mr-1.5 h-4 w-4" />}
+                    Save changes
+                  </Button>
+                  <Button variant="ghost" onClick={() => setEditingDetails(false)} disabled={busy}>Cancel</Button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Field label="Name" value={c.name} />
+                <Field label="Private link" value={linkCode === "—" ? "Not created" : `neettrack.com/c/${linkCode}`} />
+                <Field label="Coupon code" value={couponCode} />
+              </div>
+            )}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -130,10 +241,11 @@ function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className="text-sm">{value}</div>
+      <div className="text-sm break-words">{value}</div>
     </div>
   );
 }
+
 function Stat({ icon, label, value, highlight }: { icon: React.ReactNode; label: string; value: string; highlight?: boolean }) {
   return (
     <Card className={highlight ? "border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-transparent" : ""}>
