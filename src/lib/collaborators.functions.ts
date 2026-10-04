@@ -161,12 +161,19 @@ export const adminUpdateCollaboratorDetails = createServerFn({ method: "POST" })
     name: z.string().trim().min(2).max(120),
     link_code: z.string().trim().min(4).max(40).regex(/^[A-Za-z0-9_-]+$/, "Link code can use letters, numbers, _ and - only."),
     coupon_code: z.string().trim().min(4).max(40).regex(/^[A-Za-z0-9_-]+$/, "Coupon code can use letters, numbers, _ and - only."),
+    discount_kind: z.enum(["percent", "flat"]),
+    discount_value: z.number().finite().min(0),
+  }).superRefine((data, ctx) => {
+    if (data.discount_kind === "percent" && data.discount_value > 100) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["discount_value"], message: "Percentage discount cannot exceed 100%." });
+    }
   }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
     const admin = supabaseAdmin as any;
     const linkCode = data.link_code.toUpperCase();
     const couponCode = data.coupon_code.toUpperCase();
+    const discountValue = Math.round(data.discount_value * 100) / 100;
 
     const { data: otherLink } = await admin
       .from("collaborator_links")
@@ -218,7 +225,7 @@ export const adminUpdateCollaboratorDetails = createServerFn({ method: "POST" })
     if (existingCoupon) {
       const { error } = await admin
         .from("coupons")
-        .update({ code: couponCode, active: true })
+        .update({ code: couponCode, kind: data.discount_kind, value: discountValue, active: true })
         .eq("id", existingCoupon.id);
       if (error) throw new Error(error.message);
     } else {
@@ -226,8 +233,8 @@ export const adminUpdateCollaboratorDetails = createServerFn({ method: "POST" })
         .from("coupons")
         .insert({
           code: couponCode,
-          kind: "percent",
-          value: 0,
+          kind: data.discount_kind,
+          value: discountValue,
           active: true,
           used_count: 0,
           owner_user_id: data.user_id,
@@ -236,5 +243,5 @@ export const adminUpdateCollaboratorDetails = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
     }
 
-    return { ok: true, link_code: linkCode, coupon_code: couponCode };
+    return { ok: true, link_code: linkCode, coupon_code: couponCode, discount_kind: data.discount_kind, discount_value: discountValue };
   });
