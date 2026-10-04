@@ -37,6 +37,8 @@ function AdminCollaborators() {
   const [editName, setEditName] = useState("");
   const [editLink, setEditLink] = useState("");
   const [editCoupon, setEditCoupon] = useState("");
+  const [editDiscountKind, setEditDiscountKind] = useState<"percent" | "flat">("percent");
+  const [editDiscountValue, setEditDiscountValue] = useState("0");
   const [busy, setBusy] = useState(false);
 
   const reload = async () => {
@@ -58,6 +60,8 @@ function AdminCollaborators() {
     setEditName(c?.name ?? "");
     setEditLink(c?.collaborator_link?.code ?? "");
     setEditCoupon(c?.collaborator_coupon?.code ?? "");
+    setEditDiscountKind(c?.collaborator_coupon?.kind === "flat" ? "flat" : "percent");
+    setEditDiscountValue(String(c?.collaborator_coupon?.value ?? 0));
   }, [idx, rows]);
 
   if (loading || !loaded) {
@@ -97,9 +101,11 @@ function AdminCollaborators() {
           name: editName,
           link_code: editLink,
           coupon_code: editCoupon,
+          discount_kind: editDiscountKind,
+          discount_value: Number(editDiscountValue),
         },
       });
-      toast.success("Collaborator name, link and coupon updated");
+      toast.success("Name, link, coupon and discount updated");
       setEditingDetails(false);
       await reload();
       const freshIndex = rows.findIndex((r) => r.id === c.id);
@@ -107,6 +113,8 @@ function AdminCollaborators() {
       // Keep the returned values visible immediately even if the list refresh is delayed.
       setEditLink(result.link_code);
       setEditCoupon(result.coupon_code);
+      setEditDiscountKind(result.discount_kind);
+      setEditDiscountValue(String(result.discount_value));
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not save changes");
     } finally { setBusy(false); }
@@ -114,6 +122,7 @@ function AdminCollaborators() {
 
   const linkCode = c.collaborator_link?.code ?? "—";
   const couponCode = c.collaborator_coupon?.code ?? "—";
+  const couponDiscount = c.collaborator_coupon ? (c.collaborator_coupon.kind === "flat" ? `₹${Number(c.collaborator_coupon.value).toFixed(2)} off` : `${Number(c.collaborator_coupon.value).toFixed(2)}% off`) : "—";
 
   return (
     <PageShell eyebrow="Admin" title="Collaborators" description="Choose a collaborator and manage their name, private link and coupon code.">
@@ -175,6 +184,23 @@ function AdminCollaborators() {
                     <Input value={editCoupon} onChange={(e) => setEditCoupon(e.target.value.toUpperCase())} placeholder="e.g. SAHILNEET" />
                   </div>
                 </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <div className="mb-1 text-xs font-medium">Discount type</div>
+                    <Select value={editDiscountKind} onValueChange={(v) => setEditDiscountKind(v as "percent" | "flat")}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percent">Percentage (%)</SelectItem>
+                        <SelectItem value="flat">Flat amount (₹)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <div className="mb-1 text-xs font-medium">Discount value</div>
+                    <Input type="number" min="0" max={editDiscountKind === "percent" ? "100" : undefined} step="0.01" value={editDiscountValue} onChange={(e) => setEditDiscountValue(e.target.value)} placeholder={editDiscountKind === "percent" ? "10" : "500"} />
+                    <div className="mt-1 text-[10px] text-muted-foreground">{editDiscountKind === "percent" ? "Example: 10 = 10% off" : "Example: 500 = ₹500 off"}</div>
+                  </div>
+                </div>
                 <div className="flex gap-2">
                   <Button onClick={saveDetails} disabled={busy || !editName.trim() || !editLink.trim() || !editCoupon.trim()}>
                     {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Save className="mr-1.5 h-4 w-4" />}
@@ -188,6 +214,7 @@ function AdminCollaborators() {
                 <Field label="Name" value={c.name} />
                 <Field label="Private link" value={linkCode === "—" ? "Not created" : `neettrack.com/c/${linkCode}`} />
                 <Field label="Coupon code" value={couponCode} />
+                <Field label="Discount" value={couponDiscount} />
               </div>
             )}
           </div>
