@@ -78,6 +78,7 @@ function CollaboratorsPage() {
 
   const privateLink = data.link?.code ? `https://neettrack.com/c/${data.link.code}` : null;
   const couponCode = data.coupon?.code ?? null;
+  const couponDiscount = data.coupon ? (data.coupon.kind === "flat" ? `₹${Number(data.coupon.value).toFixed(2)} off` : `${Number(data.coupon.value).toFixed(2)}% off`) : null;
 
   const copyText = async (value: string, label: string) => {
     try {
@@ -137,6 +138,12 @@ function CollaboratorsPage() {
                     <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy
                   </Button>
                 </div>
+              </div>
+            )}
+            {couponDiscount && (
+              <div className="rounded-xl border bg-background/50 p-3">
+                <div className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Coupon discount</div>
+                <div className="text-base font-bold">{couponDiscount}</div>
               </div>
             )}
           </CardContent>
