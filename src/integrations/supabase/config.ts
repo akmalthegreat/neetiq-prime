@@ -18,3 +18,10 @@ export const SUPABASE_PUBLISHABLE_KEY: string =
   DEFAULT_SUPABASE_ANON_KEY;
 
 export const SUPABASE_STORAGE_URL: string = `${SUPABASE_URL}/storage/v1/object/public`;
+
+export function getPublicSupabaseConfig() {
+  return {
+    url: SUPABASE_URL,
+    anonKey: SUPABASE_PUBLISHABLE_KEY,
+  };
+}

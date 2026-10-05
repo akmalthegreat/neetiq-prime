@@ -11,13 +11,11 @@ import {
 
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/hooks/use-auth";
-import { AccessProvider } from "@/hooks/use-access";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { Toaster } from "@/components/ui/sonner";
 import { OnboardingTour } from "@/components/onboarding-tour";
 import { SupportWidget } from "@/components/support-widget";
 import { AppVersionGate } from "@/components/app-version-gate";
-import { PremiumGate } from "@/components/premium-gate";
 import { getPublicSupabaseConfig } from "@/integrations/supabase/config";
 
 const THEME_INIT = `(function(){try{var t=localStorage.getItem('neetiq-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){}})();`;
@@ -134,14 +132,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <AccessProvider>
-            <Outlet />
+                      <Outlet />
             <Toaster richColors position="top-center" />
             <OnboardingTour />
             <SupportWidget />
             <AppVersionGate />
-            <PremiumGate />
-          </AccessProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

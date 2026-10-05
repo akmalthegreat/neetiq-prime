@@ -46,3 +46,13 @@ export function FeatureLock({ feature, children }: { feature: string; children: 
     </div>
   );
 }
+
+export function locked<P extends object>(feature: string, Component: React.ComponentType<P>) {
+  return function LockedComponent(props: P) {
+    return (
+      <FeatureLock feature={feature}>
+        <Component {...props} />
+      </FeatureLock>
+    );
+  };
+}
