@@ -191,7 +191,7 @@ function ContestCard({ c, live, joined, submitted, busy, onJoin }: {
           ) : joined ? (
             live ? (
               <Button asChild size="sm" className="bg-gradient-primary">
-                <Link to="/quiz/$testId" params={{ testId: c.test_id }}>Play now <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                <Link to="/quiz/$testId" params={{ testId: c.test_id }} search={{ mode: "cbt" } as never}>Play now <ArrowRight className="ml-1 h-4 w-4" /></Link>
               </Button>
             ) : <Badge variant="secondary" className="font-semibold">Joined</Badge>
           ) : (

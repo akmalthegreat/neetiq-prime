@@ -103,6 +103,7 @@ function QuizPlayer() {
   // NTA CBT state: visited questions + marked-for-review set
   const [visitedIds, setVisitedIds] = useState<Set<number>>(new Set());
   const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
+  const [cbtPick, setCbtPick] = useState<Record<string, number>>({});
   const startedAt = useRef<number>(Date.now());
   const paletteRef = useRef<HTMLDivElement>(null);
   const isContest = test?.type === "contest";
@@ -760,6 +761,267 @@ function QuizPlayer() {
   const subjName = q.subject_id ? subjects[q.subject_id] : undefined;
   const chapName = q.chapter_id ? chapters[q.chapter_id] : undefined;
 
+  const cbtSubmitDialog = (
+      <Dialog open={confirmSubmit} onOpenChange={setConfirmSubmit}>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+        <div className="bg-primary/10 px-5 py-4 border-b border-primary/20 flex items-center gap-3">
+          <Laptop className="h-5 w-5 text-primary" />
+          <DialogTitle className="text-lg font-bold">NEET CBT — Exam Summary</DialogTitle>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="overflow-x-auto rounded-xl border border-border">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-muted text-muted-foreground uppercase text-[10px]">
+                <tr>
+                  <th className="p-2 font-bold">Subject</th>
+                  <th className="p-2 text-center font-bold">Total</th>
+                  <th className="p-2 text-center font-bold text-emerald-600">Answered</th>
+                  <th className="p-2 text-center font-bold text-rose-600">Not Ans.</th>
+                  <th className="p-2 text-center font-bold text-purple-600">Marked</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {subjectGroups.map((g) => {
+                  const totalG = g.indices.length;
+                  const ansG = g.indices.filter((i) => answers[questions[i]?.id] !== undefined).length;
+                  const markedG = g.indices.filter((i) => markedForReview.has(questions[i]?.id)).length;
+                  const notAnsG = totalG - ansG;
+                  return (
+                    <tr key={g.name} className="hover:bg-muted/50">
+                      <td className="p-2 font-bold">{g.name}</td>
+                      <td className="p-2 text-center font-semibold">{totalG}</td>
+                      <td className="p-2 text-center font-semibold text-emerald-600">{ansG}</td>
+                      <td className="p-2 text-center font-semibold text-rose-600">{notAnsG}</td>
+                      <td className="p-2 text-center font-semibold text-purple-600">{markedG}</td>
+                    </tr>
+                  );
+                })}
+                <tr className="bg-muted/30 font-bold border-t border-border">
+                  <td className="p-2">Total</td>
+                  <td className="p-2 text-center">{questions.length}</td>
+                  <td className="p-2 text-center text-emerald-600">{Object.keys(answers).length}</td>
+                  <td className="p-2 text-center text-rose-600">{questions.length - Object.keys(answers).length}</td>
+                  <td className="p-2 text-center text-purple-600">{markedForReview.size}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+            {(() => {
+              const total = questions.length;
+              const answered = Object.keys(answers).length;
+              const marked = markedForReview.size;
+              const unanswered = total - answered;
+              return (
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Total Questions:</span><span className="font-bold">{total}</span></div>
+                  <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Answered:</span><span className="font-bold text-emerald-600">{answered}</span></div>
+                  <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Unanswered:</span><span className="font-bold text-rose-600">{unanswered}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-muted-foreground">Marked for Review:</span><span className="font-bold text-amber-600">{marked}</span></div>
+                </div>
+              );
+            })()}
+          {(() => {
+            const unanswered = questions.length - Object.keys(answers).length;
+            if (unanswered > 0) return (
+              <div className="rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 px-3 py-2 text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
+                <Flag className="h-4 w-4 shrink-0" /> You have {unanswered} unanswered question{unanswered === 1 ? "" : "s"}
+              </div>
+            );
+            return null;
+          })()}
+          <p className="text-center text-sm text-muted-foreground">Are you sure you want to submit your {isContest ? "contest" : "test"}?</p>
+          <div className="space-y-2">
+            <Button variant="secondary" className="w-full h-11" onClick={() => setConfirmSubmit(false)}>Review Answers</Button>
+            <Button className="w-full h-11 bg-gradient-primary" onClick={() => { setConfirmSubmit(false); submit(); }} disabled={submitting}>
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : `Submit ${isContest ? "Contest" : "Test"}`}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+  const cbtCandidate =
+    (user?.user_metadata as { full_name?: string; name?: string } | undefined)?.full_name ||
+    (user?.user_metadata as { name?: string } | undefined)?.name ||
+    user?.email?.split("@")[0] ||
+    "Candidate";
+  const cbtSelected = cbtPick[q.id] !== undefined ? cbtPick[q.id] : answers[q.id];
+  const cbtCommit = () => {
+    const v = cbtPick[q.id];
+    if (v === undefined) return answers[q.id] !== undefined;
+    setAnswers((prev) => ({ ...prev, [q.id]: v }));
+    setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; });
+    return true;
+  };
+  const cbtGo = (i: number) => {
+    setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; });
+    setIdx(Math.max(0, Math.min(total - 1, i)));
+  };
+  const cbtCounts = questions.reduce(
+    (acc, _qq, i) => { acc[cbtStatus(i)]++; return acc; },
+    { not_visited: 0, not_answered: 0, answered: 0, marked: 0, answered_marked: 0 } as Record<CbtStatus, number>,
+  );
+  const cbtTile: Record<CbtStatus, string> = {
+    not_visited: "bg-[#e9ecef] text-slate-700 border-slate-300",
+    not_answered: "bg-[#e8590c] text-white border-[#c2410c]",
+    answered: "bg-[#2f9e44] text-white border-[#237a35]",
+    marked: "bg-[#1c7ed6] text-white border-[#1864ab]",
+    answered_marked: "bg-[#1c7ed6] text-white border-[#1864ab]",
+  };
+  const cbtBtn = "h-10 rounded-[3px] border px-4 text-sm font-bold uppercase tracking-wide shadow-sm transition active:translate-y-px disabled:opacity-50";
+
+  if (isCbt)
+    return (
+      <div className="light min-h-screen bg-white text-slate-800" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+        {isContest && !hasAckedAntiCheat("contest", testId) && (
+          <AntiCheatGate mode="contest" scopeId={testId} onAccept={() => {}} onCancel={() => nav({ to: "/contests" })} />
+        )}
+        {/* Candidate info */}
+        <div className="flex items-start gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-8">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-500 sm:h-16 sm:w-16">
+            <User className="h-9 w-9" />
+          </div>
+          <table className="text-sm sm:text-[15px]">
+            <tbody>
+              <tr><td className="pr-4 text-slate-600">Candidate Name</td><td className="font-semibold text-[#e8590c]">: {cbtCandidate}</td></tr>
+              <tr><td className="pr-4 text-slate-600">Exam Name</td><td className="font-semibold text-[#e8590c]">: {test.title} ({total} Qs · {test.duration_min}m)</td></tr>
+              <tr><td className="pr-4 text-slate-600">Subject</td><td className="font-semibold text-[#e8590c]">: {subjectGroups.length > 1 ? "Mixed" : subjName || "Mixed"}</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:p-5 lg:flex-row">
+          {/* Left: question area */}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between bg-[#e8590c] px-4 py-2.5 text-white">
+              <span className="text-lg font-bold">Question {idx + 1}:</span>
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                Time:
+                <span className="rounded-[3px] bg-white px-2.5 py-1 font-mono text-sm font-bold tabular-nums text-[#c2410c]">{hh}:{mm}:{ss}</span>
+              </span>
+            </div>
+            <div className="border border-t-0 border-slate-300 bg-white">
+              <div className="px-5 py-4">
+                <div className="text-[15px] leading-relaxed sm:text-base"><RichText>{q.text}</RichText></div>
+                {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
+                  <img
+                    src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
+                    alt="Question diagram"
+                    className="my-3 max-h-80 w-auto object-contain"
+                    loading="lazy"
+                  />
+                )}
+                <div className="mt-4 space-y-3">
+                  {q.options.map((opt, i) => (
+                    <div key={i} className="flex gap-3 text-[15px]">
+                      <span className="shrink-0">({i + 1})</span>
+                      <div className="min-w-0"><RichText>{opt}</RichText></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-4 border-t border-slate-200 px-5 py-3">
+                {q.options.map((_, i) => (
+                  <label key={i} className="flex cursor-pointer items-center gap-2 text-sm">
+                    <input
+                      type="radio"
+                      name={`cbt-${q.id}`}
+                      className="h-4 w-4 accent-[#1c7ed6]"
+                      checked={cbtSelected === i}
+                      onChange={() => setCbtPick((p) => ({ ...p, [q.id]: i }))}
+                    />
+                    {i + 1} )
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button className={cn(cbtBtn, "border-[#237a35] bg-[#2f9e44] text-white hover:bg-[#2b8a3e]")}
+                onClick={() => { cbtCommit(); setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; }); cbtGo(idx + 1); }}>
+                Save &amp; Next
+              </button>
+              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
+                onClick={() => { setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; }); cbtClearResponse(); }}>
+                Clear
+              </button>
+              <button className={cn(cbtBtn, "inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
+                onClick={() => { if (cbtCommit()) toast.success("Response saved"); else toast("Select an option first"); }}>
+                <Bookmark className="h-4 w-4" /> Save
+              </button>
+              <button className={cn(cbtBtn, "border-[#e0a800] bg-[#fab005] text-white hover:bg-[#f59f00]")}
+                onClick={() => { if (!cbtCommit()) { toast("Select an option to Save & Mark"); return; } cbtSaveAndMark(false); }}>
+                Save &amp; Mark
+              </button>
+              <button className={cn(cbtBtn, "border-[#1864ab] bg-[#1c7ed6] text-white hover:bg-[#1971c2]")}
+                onClick={() => { cbtSaveAndMark(false); cbtGo(idx + 1); }}>
+                Mark &amp; Next
+              </button>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === 0} onClick={() => cbtGo(idx - 1)}>
+                &lt;&lt; Back
+              </button>
+              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === total - 1} onClick={() => cbtGo(idx + 1)}>
+                Next &gt;&gt;
+              </button>
+              <button className={cn(cbtBtn, "ml-auto border-[#237a35] bg-[#2f9e44] px-7 text-white hover:bg-[#2b8a3e]")} disabled={submitting} onClick={() => setConfirmSubmit(true)}>
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
+              </button>
+            </div>
+          </div>
+
+          {/* Right: status + palette */}
+          <aside className="w-full shrink-0 space-y-3 lg:w-[360px]">
+            <div className="space-y-2 rounded border border-slate-200 bg-slate-50 p-3 text-sm">
+              {([
+                ["not_visited", "Not Visited"],
+                ["not_answered", "Not Answered"],
+                ["answered", "Answered"],
+                ["marked", "Marked"],
+                ["answered_marked", "Marked & Ans"],
+              ] as [CbtStatus, string][]).map(([k, label]) => (
+                <div key={k} className="flex items-center gap-2.5">
+                  <span className={cn("relative flex h-6 min-w-6 items-center justify-center rounded-[3px] border px-1 text-xs font-bold", cbtTile[k])}>
+                    {cbtCounts[k]}
+                    {k === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-white bg-[#2f9e44]" />}
+                  </span>
+                  <span className="text-slate-700">{label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="rounded border border-slate-200 bg-slate-50 p-3">
+              <div className="mb-3 text-sm font-bold uppercase text-slate-700">Question Palette</div>
+              <div className="grid max-h-[420px] grid-cols-6 gap-2 overflow-y-auto pr-1">
+                {questions.map((qq, i) => {
+                  const s = cbtStatus(i);
+                  return (
+                    <button
+                      key={qq.id}
+                      onClick={() => cbtGo(i)}
+                      aria-label={`Question ${i + 1}`}
+                      className={cn(
+                        "relative flex h-10 w-full items-center justify-center rounded-md border text-sm font-semibold",
+                        cbtTile[s],
+                        i === idx && "ring-2 ring-[#e8590c] ring-offset-1",
+                      )}
+                    >
+                      {i + 1}
+                      {s === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-white bg-[#2f9e44]" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <Link to="/dashboard" className="block text-right text-xs text-slate-500 hover:underline">Exit test</Link>
+          </aside>
+        </div>
+        {cbtSubmitDialog}
+      </div>
+    );
+
   return (
     <div className={cn("flex min-h-screen flex-col", isQuiz ? "bg-slate-50 text-slate-900 light" : "bg-background")}>
       {isContest && !submitted && !contestDone && !alreadyAttempted && !hasAckedAntiCheat("contest", testId) && (
@@ -1161,83 +1423,7 @@ function QuizPlayer() {
         </div>
       </footer>
 
-      <Dialog open={confirmSubmit} onOpenChange={setConfirmSubmit}>
-        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-          <div className="bg-primary/10 px-5 py-4 border-b border-primary/20 flex items-center gap-3">
-            <Laptop className="h-5 w-5 text-primary" />
-            <DialogTitle className="text-lg font-bold">NEET CBT — Exam Summary</DialogTitle>
-          </div>
-          <div className="p-5 space-y-4">
-            <div className="overflow-x-auto rounded-xl border border-border">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-muted text-muted-foreground uppercase text-[10px]">
-                  <tr>
-                    <th className="p-2 font-bold">Subject</th>
-                    <th className="p-2 text-center font-bold">Total</th>
-                    <th className="p-2 text-center font-bold text-emerald-600">Answered</th>
-                    <th className="p-2 text-center font-bold text-rose-600">Not Ans.</th>
-                    <th className="p-2 text-center font-bold text-purple-600">Marked</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {subjectGroups.map((g) => {
-                    const totalG = g.indices.length;
-                    const ansG = g.indices.filter((i) => answers[questions[i]?.id] !== undefined).length;
-                    const markedG = g.indices.filter((i) => markedForReview.has(questions[i]?.id)).length;
-                    const notAnsG = totalG - ansG;
-                    return (
-                      <tr key={g.name} className="hover:bg-muted/50">
-                        <td className="p-2 font-bold">{g.name}</td>
-                        <td className="p-2 text-center font-semibold">{totalG}</td>
-                        <td className="p-2 text-center font-semibold text-emerald-600">{ansG}</td>
-                        <td className="p-2 text-center font-semibold text-rose-600">{notAnsG}</td>
-                        <td className="p-2 text-center font-semibold text-purple-600">{markedG}</td>
-                      </tr>
-                    );
-                  })}
-                  <tr className="bg-muted/30 font-bold border-t border-border">
-                    <td className="p-2">Total</td>
-                    <td className="p-2 text-center">{questions.length}</td>
-                    <td className="p-2 text-center text-emerald-600">{Object.keys(answers).length}</td>
-                    <td className="p-2 text-center text-rose-600">{questions.length - Object.keys(answers).length}</td>
-                    <td className="p-2 text-center text-purple-600">{markedForReview.size}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-              {(() => {
-                const total = questions.length;
-                const answered = Object.keys(answers).length;
-                const marked = bookmarks.size;
-                const unanswered = total - answered;
-                return (
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Total Questions:</span><span className="font-bold">{total}</span></div>
-                    <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Answered:</span><span className="font-bold text-emerald-600">{answered}</span></div>
-                    <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Unanswered:</span><span className="font-bold text-rose-600">{unanswered}</span></div>
-                    <div className="flex items-center justify-between"><span className="text-muted-foreground">Marked for Review:</span><span className="font-bold text-amber-600">{marked}</span></div>
-                  </div>
-                );
-              })()}
-            {(() => {
-              const unanswered = questions.length - Object.keys(answers).length;
-              if (unanswered > 0) return (
-                <div className="rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 px-3 py-2 text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
-                  <Flag className="h-4 w-4 shrink-0" /> You have {unanswered} unanswered question{unanswered === 1 ? "" : "s"}
-                </div>
-              );
-              return null;
-            })()}
-            <p className="text-center text-sm text-muted-foreground">Are you sure you want to submit your {isContest ? "contest" : "test"}?</p>
-            <div className="space-y-2">
-              <Button variant="secondary" className="w-full h-11" onClick={() => setConfirmSubmit(false)}>Review Answers</Button>
-              <Button className="w-full h-11 bg-gradient-primary" onClick={() => { setConfirmSubmit(false); submit(); }} disabled={submitting}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : `Submit ${isContest ? "Contest" : "Test"}`}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {cbtSubmitDialog}
     </div>
   );
 }

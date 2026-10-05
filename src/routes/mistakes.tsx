@@ -126,7 +126,7 @@ function MistakesPage() {
       toast.error(error?.message ?? "Could not start practice");
       return;
     }
-    navigate({ to: "/quiz/$testId", params: { testId: test.id }, search: { mode: "quiz" } });
+    navigate({ to: "/quiz/$testId", params: { testId: test.id }, search: { mode: "cbt" } });
   };
 
   if (authLoading || mistakes === null) return <PageShell eyebrow="Improvement Zone" title="My Mistakes"><div className="flex justify-center py-12"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div></PageShell>;

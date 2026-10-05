@@ -7,9 +7,6 @@ import { Mermaid } from "@/components/mermaid";
 import { SUPABASE_URL } from "@/integrations/supabase/config";
 
 const STORAGE_IMG_BASE = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/question-images`;
-const QUESTION_IMG_CDN =
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_QUESTION_IMG_CDN) ||
-  "https://raw.githubusercontent.com/sanskarj1589-png/cdn/main";
 
 /**
  * Diagram- and Image-aware rich text renderer for NEET exam questions.
@@ -50,12 +47,7 @@ export function resolveAnyImageUrl(url?: string | null): string | null {
   // Normalize legacy relative paths and paths that already include the bucket name.
   const clean = trimmed.replace(/^\/+/, "").replace(/^img\/data\//i, "").replace(/^question-images\//i, "");
   if (!clean || clean.split("/").some((part) => part === "..")) return null;
-  const encodedPath = clean.split("/").map((part) => encodeURIComponent(decodeURIComponentSafe(part))).join("/");
-  // If the path targets standard NEET question folders (biology, chemistry, physics), route through our CDN
-  if (/^(biology|chemistry|physics)\//i.test(clean)) {
-    return `${QUESTION_IMG_CDN}/${encodedPath}`;
-  }
-  return `${STORAGE_IMG_BASE}/${encodedPath}`;
+  return `${STORAGE_IMG_BASE}/${clean.split("/").map((part) => encodeURIComponent(decodeURIComponentSafe(part))).join("/")}`;
 }
 
 function decodeURIComponentSafe(value: string) {

@@ -77,7 +77,7 @@ function BookmarksPage() {
     }).select("id").maybeSingle();
     setLaunching(false);
     if (error || !t) { toast.error(error?.message ?? "Could not start"); return; }
-    nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode: "quiz" } });
+    nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode: "cbt" } });
   };
 
   return (

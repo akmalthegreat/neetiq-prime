@@ -72,9 +72,9 @@ export function SketchfabEmbed({ model, autospin = true, autostart = true }: Pro
           >
             {model.license}
           </a>
-          <Link to="/license" className="hover:underline">
+          <a href={model.licenseUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
             Licenses
-          </Link>
+          </a>
         </span>
       </div>
     </div>

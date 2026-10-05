@@ -105,7 +105,7 @@ function DppPage() {
                       {a?.status === "completed" ? (
                         <Button asChild size="sm" variant="outline"><Link to="/analysis/$attemptId" params={{ attemptId: a.id }}><Eye className="mr-1.5 h-3.5 w-3.5" /> View Analysis</Link></Button>
                       ) : a?.status === "in_progress" ? (
-                        <Button asChild size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90"><Link to="/quiz/$testId" params={{ testId: t.id }} search={{ mode: "quiz" } as never}><RotateCw className="mr-1.5 h-3.5 w-3.5" /> Resume</Link></Button>
+                        <Button asChild size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90"><Link to="/quiz/$testId" params={{ testId: t.id }} search={{ mode: "cbt" } as never}><RotateCw className="mr-1.5 h-3.5 w-3.5" /> Resume</Link></Button>
                       ) : (
                         <div className="flex flex-wrap gap-2">
                           <Button

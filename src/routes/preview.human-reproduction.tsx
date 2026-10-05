@@ -97,7 +97,7 @@ function HumanReproductionPreview() {
             </div>
 
             <div className="mb-6 text-base leading-7">
-              <RichText html={q.question_html} />
+              <RichText>{q.question_html}</RichText>
             </div>
 
             <div className="space-y-3">

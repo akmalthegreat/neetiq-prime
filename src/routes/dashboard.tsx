@@ -217,7 +217,7 @@ function Dashboard() {
     const val = Math.max(5, Math.min(300, Number(goalDraft) || 20));
     const { error } = await supabase.from("profiles").update({ daily_goal: val }).eq("id", user.id);
     if (!error) {
-      toast.success();
+      toast.success("Daily goal updated");
       refresh();
       setGoalDialog(false);
     } else {
@@ -773,15 +773,6 @@ function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 md:grid-cols-3">
-            {/* Tool 1: DPP Hub (Blue square) */}
-            <StudyToolItem
-              to={daily ? "/quiz/$testId" : "/daily"}
-              params={daily ? { testId: daily.id } : undefined}
-              title="DPP Hub"
-              subtitle="Daily Practice Problems"
-              icon={CalendarDays}
-              iconBg="bg-blue-500/20 text-blue-400 border border-blue-400/30"
-            />
 
             {/* Tool 2: Short Notes (Purple square) */}
             <StudyToolItem
@@ -810,14 +801,6 @@ function Dashboard() {
               iconBg="bg-pink-500/20 text-pink-400 border border-pink-400/30"
             />
 
-            {/* Tool 5: NCERT Reader (Teal square) */}
-            <StudyToolItem
-              to="/highlighted-ncert"
-              title="NCERT Reader"
-              subtitle="Chapter Summary & Line by Line"
-              icon={BookOpen}
-              iconBg="bg-teal-500/20 text-teal-400 border border-teal-400/30"
-            />
 
             {/* Tool 6: Score Predictor (Orange/Amber square) */}
             <StudyToolItem
@@ -854,47 +837,6 @@ function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-            {/* Cash Contests */}
-            <Link
-              to="/contests"
-              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-card p-3 shadow-sm transition-all hover:border-amber-400/50 hover:bg-muted/50 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-400/30">
-                  <Trophy className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="truncate text-xs font-bold text-foreground group-hover:text-amber-500">
-                    Cash Contests
-                  </div>
-                  <div className="truncate text-[10px] text-muted-foreground">
-                    Win rewards & rank
-                  </div>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
-            </Link>
-
-            {/* Battlegrounds */}
-            <Link
-              to="/battlegrounds"
-              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-card p-3 shadow-sm transition-all hover:border-blue-400/50 hover:bg-muted/50 dark:border-white/10 dark:bg-white/[0.03]"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 text-cyan-400 border border-cyan-400/30">
-                  <Swords className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="truncate text-xs font-bold text-foreground group-hover:text-cyan-500">
-                    Battlegrounds
-                  </div>
-                  <div className="truncate text-[10px] text-muted-foreground">
-                    1v1 & Group quiz wars
-                  </div>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
-            </Link>
 
             {/* Community */}
             <Link
