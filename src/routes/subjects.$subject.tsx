@@ -194,22 +194,52 @@ function SubjectPage() {
         });
       }
 
-      const ids = filtered.map((c) => c.id);
-      const counts: Record<string, number> = {};
-      if (ids.length) {
-        await Promise.all(
-          ids.slice(0, 50).map(async (cid) => {
-            const { count } = await supabase
-              .from("questions")
-              .select("id", { count: "exact", head: true })
-              .eq("chapter_id", cid);
-            counts[cid] = count ?? 0;
-          }),
-        );
-      }
-      setChapters(filtered.map((c) => ({ ...c, q_count: counts[c.id] ?? 0 })));
+      setChapters(filtered);
     })();
   }, [normalizedSubject]);
+
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [counting, setCounting] = useState(false);
+
+  useEffect(() => {
+    if (!chapters || chapters.length === 0) {
+      setCounts({});
+      return;
+    }
+    let active = true;
+    setCounting(true);
+    (async () => {
+      const ids = chapters.map((c) => c.id);
+      const newCounts: Record<string, number> = {};
+      await Promise.all(
+        ids.slice(0, 100).map(async (cid) => {
+          let q = supabase
+            .from("questions")
+            .select("id", { count: "exact", head: true })
+            .eq("chapter_id", cid);
+
+          if (difficulty !== "any") {
+            const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+            q = q.eq("difficulty", cap);
+          }
+          if (qtype !== "any") {
+            const dbType = QTYPE_MAP[qtype];
+            if (dbType) q = q.eq("qtype", dbType);
+          }
+
+          const { count } = await q;
+          newCounts[cid] = count ?? 0;
+        })
+      );
+      if (active) {
+        setCounts(newCounts);
+        setCounting(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [chapters, difficulty, qtype]);
 
   const startChapter = async (chapter: Chapter) => {
     if (!user) {
@@ -217,8 +247,9 @@ function SubjectPage() {
       nav({ to: "/login" });
       return;
     }
-    if (!chapter.q_count) {
-      toast.error("No questions in this chapter yet.");
+    const availableCount = counts[chapter.id] ?? chapter.q_count;
+    if (availableCount === 0) {
+      toast.error("No questions match the selected filters in this chapter.");
       return;
     }
     setLaunching(chapter.id);
@@ -424,7 +455,11 @@ function SubjectPage() {
                   <div>
                     <div className="text-sm font-semibold text-foreground">{ch.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {ch.q_count !== undefined && ch.q_count > 0
+                      {counts[ch.id] !== undefined
+                        ? `${counts[ch.id]} questions`
+                        : counting
+                        ? "Updating..."
+                        : ch.q_count !== undefined && ch.q_count > 0
                         ? `${ch.q_count} questions`
                         : "Practice available"}
                     </div>

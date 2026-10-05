@@ -45,7 +45,8 @@ function resolveImageUrl(url?: string | null) {
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
     return trimmed;
   }
-  const clean = trimmed.replace(/^\/+/, "");
+  // Strip leading slashes and legacy img/data/ prefixes to match the storage layout
+  const clean = trimmed.replace(/^\/+/, "").replace(/^img\/data\//, "");
   return "https://cupvxfoikjkufudgehsr.supabase.co/storage/v1/object/public/question-images/" + clean;
 }
 type Test = {
@@ -956,14 +957,20 @@ function QuizPlayer() {
         </div>
 
         {resolveImageUrl(q.question_image_url) && (
-          <div className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs">
+          <div
+            className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs"
+            onError={(e) => {
+              (e.currentTarget as HTMLElement).style.display = "none";
+            }}
+          >
             <img
               src={resolveImageUrl(q.question_image_url)!}
               alt="Question Diagram"
               className="max-h-80 w-auto rounded-lg object-contain"
               loading="lazy"
               onError={(e) => {
-                (e.currentTarget as HTMLElement).style.display = "none";
+                const frame = (e.currentTarget as HTMLElement).parentElement;
+                if (frame) frame.style.display = "none";
               }}
             />
           </div>
@@ -1089,14 +1096,20 @@ function QuizPlayer() {
               <div className="mt-3 text-sm leading-relaxed">
                 <RichText>{q.explanation}</RichText>
                 {resolveImageUrl(q.explanation_image_url) && (
-                  <div className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs">
+                  <div
+                    className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = "none";
+                    }}
+                  >
                     <img
                       src={resolveImageUrl(q.explanation_image_url)!}
                       alt="Solution Diagram"
                       className="max-h-80 w-auto rounded-lg object-contain"
                       loading="lazy"
                       onError={(e) => {
-                        (e.currentTarget as HTMLElement).style.display = "none";
+                        const frame = (e.currentTarget as HTMLElement).parentElement;
+                        if (frame) frame.style.display = "none";
                       }}
                     />
                   </div>

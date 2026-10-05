@@ -24,13 +24,13 @@ export function RichText({ children, className }: { children?: string | null; cl
   try {
     const normalized = normalizeRichText(children);
     return (
-      <span className={cn("whitespace-pre-wrap break-words leading-relaxed inline-block max-w-full", className)}>
+      <span className={cn("inline-block max-w-full break-words leading-relaxed whitespace-pre-wrap", className)}>
         {renderBlocks(normalized)}
       </span>
     );
   } catch (error) {
     console.error("[rich-text] render failed", error);
-    return <span className={cn("whitespace-pre-wrap break-words", className)}>{children}</span>;
+    return <span className={cn("break-words whitespace-pre-wrap", className)}>{children}</span>;
   }
 }
 
@@ -41,19 +41,19 @@ export function resolveAnyImageUrl(url?: string | null): string | null {
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
     return trimmed;
   }
-  if (trimmed.startsWith("/img/data/")) {
-    return `${STORAGE_IMG_BASE}${trimmed}`;
-  }
-  if (trimmed.startsWith("img/data/")) {
-    return `${STORAGE_IMG_BASE}/${trimmed}`;
-  }
-  return `${STORAGE_IMG_BASE}/${trimmed.replace(/^\/+/, "")}`;
+  // Strip leading slash and img/data/ prefix to match standard storage layout
+  const clean = trimmed.replace(/^\/?(?:img\/data\/)?/, "");
+  return `${STORAGE_IMG_BASE}/${clean}`;
 }
 
 function normalizeRichText(src: string): string {
   let s = src.replace(/\r\n/g, "\n");
 
-  // Standardize <br> tags
+  // Fix mid-sentence <br> tags commonly created by scrapers/OCR
+  s = s.replace(/\s*<br\s*\/?>\s*([,.;:!?\)\]])/gi, "$1");
+  s = s.replace(/\b(of|and|or|in|at|to|with|by|from|is|are|was|were|the|a|an|be|as|for|that|which|on|into)\s*<br\s*\/?>\s*/gi, "$1 ");
+  s = s.replace(/([,\-(\[])\s*<br\s*\/?>\s*/gi, "$1 ");
+  s = s.replace(/<br\s*\/?>\s*([a-z])/gi, " $1");
   s = s.replace(/<br\s*\/?>/gi, "\n");
 
   // Standardize font styling tags
@@ -74,6 +74,9 @@ function normalizeRichText(src: string): string {
   s = s.replace(/<\/span>/gi, "");
   s = s.replace(/<p[^>]*>/gi, "");
   s = s.replace(/<\/p>/gi, "\n");
+
+  // Collapse 3+ newlines to max 2
+  s = s.replace(/\n{3,}/g, "\n\n");
 
   return s;
 }
@@ -97,11 +100,18 @@ function renderBlocks(src: string): ReactNode[] {
       out.push(<TikzBlock key={k++} code={m[4].trim()} />);
     } else {
       const tex = (m[5] ?? m[6] ?? "") as string;
-      out.push(
-        <span key={k++} className="my-2 block overflow-x-auto">
-          <SafeBlockMath tex={tex} />
-        </span>,
-      );
+      // If the math expression is a short single-line expression without line breaks or environment blocks,
+      // render it inline so it does not break the question sentence across multiple lines.
+      const isMultiline = tex.includes("\n") || tex.includes("\\\\") || /\\begin\{/.test(tex);
+      if (!isMultiline && tex.trim().length < 80) {
+        out.push(<SafeInlineMath key={k++} tex={tex} />);
+      } else {
+        out.push(
+          <span key={k++} className="my-2 block overflow-x-auto">
+            <SafeBlockMath tex={tex} />
+          </span>,
+        );
+      }
     }
     last = m.index + m[0].length;
   }
@@ -166,12 +176,6 @@ function SvgBlock({ svg }: { svg: string }) {
 function renderInline(src: string): ReactNode[] {
   const out: ReactNode[] = [];
 
-  // Match:
-  // 1. HTML img tag: <img[^>]+src=["']([^"']+)["'][^>]*>
-  // 2. Markdown image: ![alt](url)
-  // 3. Standalone image URL: https://...(png|jpg|jpeg|webp|svg|mathpix|cloudinary)
-  // 4. Inline LaTeX: $...$ or \(...\)
-  // 5. Bold / italic / code
   const re =
     /<img[^>]+src=["']([^"']+)["'][^>]*\/?>|!\[([^\]]*)\]\(((?:https?:\/\/|\/)[^\s)]+)\)|(https?:\/\/[^\s<>]+\.(?:png|jpg|jpeg|webp|svg)(?:\?[^\s<>]*)?|https?:\/\/(?:res\.cloudinary\.com|cdn\.mathpix\.com|image\.cleverb\.in)[^\s<>]+)|\$([^$\n]+?)\$|\\\(([^\n]+?)\\\)|\*\*([^*\n]+?)\*\*|\*([^*\n]+?)\*|`([^`\n]+?)`/gi;
 
