@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -7,18 +7,17 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid } from "lucide-react";
+import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, Clock, User, Check, AlertCircle, FileText, Maximize2, Laptop } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { RichText } from "@/components/rich-text";
 import { ReportQuestionButton } from "@/components/report-question-button";
 import { AntiCheatGate, hasAckedAntiCheat } from "@/components/anti-cheat-gate";
 
-
 export const Route = createFileRoute("/quiz/$testId")({
   head: () => ({ meta: [{ title: "Quiz — NEETIQ Prime" }] }),
-  validateSearch: (s: Record<string, unknown>): { mode?: "quiz" | "exam" } => ({
-    mode: (s.mode === "quiz" ? "quiz" : "exam") as "quiz" | "exam",
+  validateSearch: (s: Record<string, unknown>): { mode?: "quiz" | "cbt" } => ({
+    mode: (s.mode === "quiz" ? "quiz" : "cbt") as "quiz" | "cbt",
   }),
   component: QuizPlayer,
 });
@@ -86,7 +85,7 @@ function QuizPlayer() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [wrongMarks, setWrongMarks] = useState<Set<string>>(new Set());
-  const isExam = mode === "exam";
+  const isCbt = mode === "cbt";
   const isQuiz = mode === "quiz";
   // Chapter-wise practice = no submit, persist answers, lock-on-pick reveal.
   const isChapterPractice = test?.type === "practice";
@@ -104,6 +103,9 @@ function QuizPlayer() {
   const [contestDone, setContestDone] = useState<null | { score: number; correct: number; wrong: number; attempted: number }>(null);
   const [alreadyAttempted, setAlreadyAttempted] = useState<null | { contestId: string | null; score: number | null }>(null);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+  // NTA CBT state: visited questions + marked-for-review set
+  const [visitedIds, setVisitedIds] = useState<Set<number>>(new Set());
+  const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
   const startedAt = useRef<number>(Date.now());
   const paletteRef = useRef<HTMLDivElement>(null);
   const isContest = test?.type === "contest";
@@ -395,14 +397,14 @@ function QuizPlayer() {
   }, [answers, bookmarks, nav, questions, submitted, submitting, testId, user, test, battleMatchId]);
 
   useEffect(() => {
-    if (loading || submitted || !isExam) return;
+    if (loading || submitted || !isCbt) return;
     if (secondsLeft <= 0) {
       submit();
       return;
     }
     const t = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
-  }, [secondsLeft, loading, submitted, isExam, submit]);
+  }, [secondsLeft, loading, submitted, isCbt, submit]);
 
   // ===== Contest anti-cheat =====
   // Disable text copy / selection / context menu on the whole document while
@@ -463,7 +465,7 @@ function QuizPlayer() {
 
   // Leaving the app/tab for more than 10 seconds during a contest auto-submits.
   useEffect(() => {
-    if (!isContest || !isExam || submitted || contestDone || alreadyAttempted || loading) return;
+    if (!isContest || !isCbt || submitted || contestDone || alreadyAttempted || loading) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
     let warned = false;
     const start = () => {
@@ -496,7 +498,7 @@ function QuizPlayer() {
       window.removeEventListener("focus", stop);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [isContest, isExam, submitted, contestDone, alreadyAttempted, loading, submit]);
+  }, [isContest, isCbt, submitted, contestDone, alreadyAttempted, loading, submit]);
 
 
   useEffect(() => {
@@ -505,12 +507,74 @@ function QuizPlayer() {
       ?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, [idx]);
 
+  // Track which questions the candidate has visited (NTA CBT "Not Visited" state)
+  useEffect(() => {
+    setVisitedIds((v) => {
+      if (v.has(idx)) return v;
+      const n = new Set(v);
+      n.add(idx);
+      return n;
+    });
+  }, [idx]);
+
   const q = questions[idx];
   const total = questions.length;
   const progress = total ? ((idx + 1) / total) * 100 : 0;
   const hh = String(Math.floor(secondsLeft / 3600)).padStart(2, "0");
   const mm = String(Math.floor((secondsLeft % 3600) / 60)).padStart(2, "0");
   const ss = String(secondsLeft % 60).padStart(2, "0");
+
+  // ===== NTA CBT helpers =====
+  type CbtStatus = "answered_marked" | "marked" | "answered" | "not_answered" | "not_visited";
+  const cbtStatus = (i: number): CbtStatus => {
+    const qq = questions[i];
+    if (!qq) return "not_visited";
+    const answered = answers[qq.id] !== undefined;
+    const marked = markedForReview.has(qq.id);
+    if (answered && marked) return "answered_marked";
+    if (marked) return "marked";
+    if (answered) return "answered";
+    if (visitedIds.has(i)) return "not_answered";
+    return "not_visited";
+  };
+
+  // Contiguous subject groups (questions arrive subject-ordered) for CBT section tabs
+  const subjectGroups = useMemo(() => {
+    const groups: { name: string; indices: number[] }[] = [];
+    questions.forEach((qq, i) => {
+      const name = (qq.subject_id ? subjects[qq.subject_id] : "Other") || "Other";
+      const last = groups[groups.length - 1];
+      if (last && last.name === name) last.indices.push(i);
+      else groups.push({ name, indices: [i] });
+    });
+    return groups;
+  }, [questions, subjects]);
+
+  const activeGroupIndex = subjectGroups.findIndex((g) => g.indices.includes(idx));
+
+  const cbtSaveAndNext = () => setIdx((i) => Math.min(total - 1, i + 1));
+  const cbtClearResponse = () => {
+    if (!q) return;
+    setAnswers((prev) => {
+      const next = { ...prev };
+      delete next[q.id];
+      return next;
+    });
+    setMarkedForReview((m) => {
+      const n = new Set(m);
+      n.delete(q.id);
+      return n;
+    });
+  };
+  const cbtSaveAndMark = (advance: boolean) => {
+    if (!q) return;
+    setMarkedForReview((m) => {
+      const n = new Set(m);
+      n.add(q.id);
+      return n;
+    });
+    if (advance) setIdx((i) => Math.min(total - 1, i + 1));
+  };
 
   const setAnswer = (i: number) => {
     if (!q) return;
@@ -717,7 +781,7 @@ function QuizPlayer() {
                   <span className="shrink-0 rounded-md border border-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 dark:border-emerald-500/40">
                     +{test.marks_correct}/{test.marks_wrong}
                   </span>
-                  {isExam && (
+                  {isCbt && (
                     <span className="shrink-0 rounded-md border border-rose-300 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-rose-700 dark:text-rose-300 dark:border-rose-500/40">
                       {hh}:{mm}:{ss}
                     </span>
@@ -1065,13 +1129,48 @@ function QuizPlayer() {
 
       <Dialog open={confirmSubmit} onOpenChange={setConfirmSubmit}>
         <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-          <div className="bg-amber-50 dark:bg-amber-500/10 px-5 py-4 border-b border-amber-200/60 dark:border-amber-500/20 flex items-center gap-3">
-            <Flag className="h-5 w-5 text-amber-600" />
-            <DialogTitle className="text-lg font-bold">Confirm Submission</DialogTitle>
+          <div className="bg-primary/10 px-5 py-4 border-b border-primary/20 flex items-center gap-3">
+            <Laptop className="h-5 w-5 text-primary" />
+            <DialogTitle className="text-lg font-bold">NEET CBT — Exam Summary</DialogTitle>
           </div>
           <div className="p-5 space-y-4">
-            <div className="rounded-xl bg-muted/50 p-4 space-y-3">
-              <div className="text-center font-semibold">Submission Summary</div>
+            <div className="overflow-x-auto rounded-xl border border-border">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-muted text-muted-foreground uppercase text-[10px]">
+                  <tr>
+                    <th className="p-2 font-bold">Subject</th>
+                    <th className="p-2 text-center font-bold">Total</th>
+                    <th className="p-2 text-center font-bold text-emerald-600">Answered</th>
+                    <th className="p-2 text-center font-bold text-rose-600">Not Ans.</th>
+                    <th className="p-2 text-center font-bold text-purple-600">Marked</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {subjectGroups.map((g) => {
+                    const totalG = g.indices.length;
+                    const ansG = g.indices.filter((i) => answers[questions[i]?.id] !== undefined).length;
+                    const markedG = g.indices.filter((i) => markedForReview.has(questions[i]?.id)).length;
+                    const notAnsG = totalG - ansG;
+                    return (
+                      <tr key={g.name} className="hover:bg-muted/50">
+                        <td className="p-2 font-bold">{g.name}</td>
+                        <td className="p-2 text-center font-semibold">{totalG}</td>
+                        <td className="p-2 text-center font-semibold text-emerald-600">{ansG}</td>
+                        <td className="p-2 text-center font-semibold text-rose-600">{notAnsG}</td>
+                        <td className="p-2 text-center font-semibold text-purple-600">{markedG}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr className="bg-muted/30 font-bold border-t border-border">
+                    <td className="p-2">Total</td>
+                    <td className="p-2 text-center">{questions.length}</td>
+                    <td className="p-2 text-center text-emerald-600">{Object.keys(answers).length}</td>
+                    <td className="p-2 text-center text-rose-600">{questions.length - Object.keys(answers).length}</td>
+                    <td className="p-2 text-center text-purple-600">{markedForReview.size}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
               {(() => {
                 const total = questions.length;
                 const answered = Object.keys(answers).length;
@@ -1086,7 +1185,6 @@ function QuizPlayer() {
                   </div>
                 );
               })()}
-            </div>
             {(() => {
               const unanswered = questions.length - Object.keys(answers).length;
               if (unanswered > 0) return (
@@ -1109,6 +1207,154 @@ function QuizPlayer() {
     </div>
   );
 }
+
+
+function PalettePanelContent({
+  user,
+  questions,
+  answers,
+  markedForReview,
+  visitedIds,
+  cbtStatus,
+  idx,
+  setIdx,
+  setConfirmSubmit,
+  submitting,
+}: {
+  user: any;
+  questions: Question[];
+  answers: Record<string, number>;
+  markedForReview: Set<string>;
+  visitedIds: Set<number>;
+  cbtStatus: (i: number) => "answered_marked" | "marked" | "answered" | "not_answered" | "not_visited";
+  idx: number;
+  setIdx: (fn: (i: number) => number | number) => void;
+  setConfirmSubmit: (b: boolean) => void;
+  submitting: boolean;
+}) {
+  let countAnswered = 0;
+  let countNotAnswered = 0;
+  let countNotVisited = 0;
+  let countMarked = 0;
+  let countAnsweredMarked = 0;
+
+  for (let i = 0; i < questions.length; i++) {
+    const s = cbtStatus(i);
+    if (s === "answered") countAnswered++;
+    else if (s === "not_answered") countNotAnswered++;
+    else if (s === "marked") countMarked++;
+    else if (s === "answered_marked") countAnsweredMarked++;
+    else countNotVisited++;
+  }
+
+  return (
+    <div className="flex flex-col h-full justify-between space-y-4">
+      <div className="space-y-4">
+        {/* Candidate Profile Box */}
+        <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-secondary/30 p-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+            <User className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-bold truncate">{user?.email?.split("@")[0] ?? "Candidate"}</div>
+            <div className="text-[10px] text-muted-foreground uppercase font-mono">NEET Candidate</div>
+          </div>
+        </div>
+
+        {/* Official NTA 5-Color Status Legend */}
+        <div className="rounded-xl border border-border/70 bg-card p-3 space-y-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Legend</div>
+          <div className="grid grid-cols-2 gap-2 text-[11px]">
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-600 text-[10px] font-bold text-white shrink-0">
+                {countAnswered}
+              </span>
+              <span className="text-muted-foreground truncate">Answered</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded bg-rose-500 text-[10px] font-bold text-white shrink-0">
+                {countNotAnswered}
+              </span>
+              <span className="text-muted-foreground truncate">Not Answered</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded bg-slate-200 dark:bg-slate-700 text-[10px] font-bold text-foreground shrink-0 border border-border">
+                {countNotVisited}
+              </span>
+              <span className="text-muted-foreground truncate">Not Visited</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0">
+                {countMarked}
+              </span>
+              <span className="text-muted-foreground truncate">Marked for Review</span>
+            </div>
+            <div className="flex items-center gap-1.5 col-span-2">
+              <span className="relative flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0 after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white">
+                {countAnsweredMarked}
+              </span>
+              <span className="text-muted-foreground truncate text-[10px]">Answered & Marked (Evaluated)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Numbered Palette Grid */}
+        <div>
+          <div className="mb-2 text-xs font-bold text-foreground">Questions ({questions.length})</div>
+          <div className="grid grid-cols-5 gap-1.5 max-h-[300px] overflow-y-auto pr-1">
+            {questions.map((qq, i) => {
+              const status = cbtStatus(i);
+              const isActive = i === idx;
+              let bg = "bg-slate-200 dark:bg-slate-700 text-foreground border-border";
+              let shape = "rounded";
+
+              if (status === "answered") {
+                bg = "bg-emerald-600 text-white border-emerald-700";
+              } else if (status === "not_answered") {
+                bg = "bg-rose-500 text-white border-rose-600";
+              } else if (status === "marked") {
+                bg = "bg-purple-600 text-white border-purple-700";
+                shape = "rounded-full";
+              } else if (status === "answered_marked") {
+                bg = "bg-purple-600 text-white border-purple-700";
+                shape = "rounded-full relative after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white";
+              }
+
+              return (
+                <button
+                  key={qq.id}
+                  type="button"
+                  onClick={() => setIdx(() => i)}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center text-xs font-bold transition border cursor-pointer",
+                    shape,
+                    bg,
+                    isActive && "ring-2 ring-primary ring-offset-1"
+                  )}
+                >
+                  <span>{i + 1}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Prominent Submit Test Button */}
+      <div className="pt-3 border-t border-border">
+        <Button
+          type="button"
+          onClick={() => setConfirmSubmit(true)}
+          disabled={submitting}
+          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11"
+        >
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Test"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 
 function ResultsView({
   test,

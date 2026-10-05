@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Gift, Search, CheckSquare, Square, Sliders, Clock, BookOpen, Layers } from "lucide-react";
+import { Loader2, Gift, Search, CheckSquare, Square, Sliders, Clock, BookOpen, Layers, Laptop } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -36,7 +36,9 @@ function GeneratePage() {
   const [step, setStep] = useState(1);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [allChapters, setAllChapters] = useState<Chapter[]>([]);
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
+  // Multi-subject selection using checkbox IDs
+  const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
+  const [activeSubjectTab, setActiveSubjectTab] = useState<string>("all");
   const [chapIds, setChapIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -61,7 +63,14 @@ function GeneratePage() {
       .from("subjects")
       .select("id,name")
       .order("name")
-      .then(({ data }) => setSubjects((data ?? []) as Subject[]));
+      .then(({ data }) => {
+        const list = (data ?? []) as Subject[];
+        setSubjects(list);
+        // Default to all subjects checked
+        if (list.length > 0) {
+          setSelectedSubjectIds(list.map((s) => s.id));
+        }
+      });
 
     supabase
       .from("chapters")
@@ -70,17 +79,47 @@ function GeneratePage() {
       .then(({ data }) => setAllChapters((data ?? []) as Chapter[]));
   }, []);
 
+  const toggleSubject = (id: string) => {
+    setSelectedSubjectIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const selectAllSubjects = () => {
+    setSelectedSubjectIds(subjects.map((s) => s.id));
+  };
+
+  const deselectAllSubjects = () => {
+    setSelectedSubjectIds([]);
+  };
+
+  // Available chapters based on chosen subjects
+  const availableChapters = useMemo(() => {
+    if (selectedSubjectIds.length === 0) return [];
+    return allChapters.filter((c) => selectedSubjectIds.includes(c.subject_id));
+  }, [allChapters, selectedSubjectIds]);
+
+  // Clean up chapIds if user unchecks a subject in step 1
+  useEffect(() => {
+    if (selectedSubjectIds.length === 0) {
+      setChapIds([]);
+      return;
+    }
+    const validChapterIds = new Set(availableChapters.map((c) => c.id));
+    setChapIds((prev) => prev.filter((id) => validChapterIds.has(id)));
+  }, [availableChapters]);
+
   const visibleChapters = useMemo(() => {
-    let list = allChapters;
-    if (selectedSubjectId !== "all") {
-      list = list.filter((c) => c.subject_id === selectedSubjectId);
+    let list = availableChapters;
+    if (activeSubjectTab !== "all") {
+      list = list.filter((c) => c.subject_id === activeSubjectTab);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter((c) => c.name.toLowerCase().includes(q));
     }
     return list;
-  }, [allChapters, selectedSubjectId, searchQuery]);
+  }, [availableChapters, activeSubjectTab, searchQuery]);
 
   const toggleChap = (id: string) => {
     setChapIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -134,7 +173,7 @@ function GeneratePage() {
     setPerChapterDistribution(updated);
   };
 
-  const start = async (mode: "quiz" | "exam") => {
+  const start = async (mode: "quiz" | "cbt") => {
     if (!user || !chapIds.length) return;
     if (bonus < BONUS_COST) {
       toast.error(`Need ${BONUS_COST} bonus to generate a test. You have ${bonus}.`);
@@ -154,10 +193,11 @@ function GeneratePage() {
 
     setLaunching(true);
     try {
+      const chosenSubjects = subjects.filter((s) => selectedSubjectIds.includes(s.id));
       const subjName =
-        selectedSubjectId === "all"
+        chosenSubjects.length === subjects.length || chosenSubjects.length === 0
           ? "Full Syllabus"
-          : subjects.find((s) => s.id === selectedSubjectId)?.name ?? "Custom";
+          : chosenSubjects.map((s) => s.name).join(", ");
 
       const { testId, totalQuestions } = await createTest({
         data: {
@@ -192,51 +232,78 @@ function GeneratePage() {
 
       <Stepper step={step} />
 
-      {/* STEP 1: SUBJECT SELECTION */}
+      {/* STEP 1: SUBJECT SELECTION (WITH CHECKBOXES LIKE CHAPTERS) */}
       {step === 1 && (
         <div className="mt-6 space-y-4">
-          <div className="text-sm font-medium text-muted-foreground">Select a subject or practice the full syllabus:</div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <button
-              onClick={() => {
-                setSelectedSubjectId("all");
-                setStep(2);
-              }}
-              className={cn(
-                "flex items-center justify-between rounded-2xl border p-5 text-left transition hover:border-primary/40",
-                selectedSubjectId === "all" ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card"
-              )}
-            >
-              <div>
-                <div className="flex items-center gap-2 text-base font-bold">
-                  <Layers className="h-5 w-5 text-primary" />
-                  All Subjects (Full Syllabus)
-                </div>
-                <div className="mt-1 text-xs text-muted-foreground">Physics, Chemistry & Biology ({allChapters.length} chapters)</div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="text-base font-bold">Select Subjects</div>
+              <div className="text-xs text-muted-foreground">
+                Pick the subjects you want to include in this test ({selectedSubjectIds.length} of {subjects.length} selected)
               </div>
-            </button>
+            </div>
 
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={selectAllSubjects} className="h-8 text-xs">
+                <CheckSquare className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                Select All
+              </Button>
+              <Button size="sm" variant="ghost" onClick={deselectAllSubjects} className="h-8 text-xs">
+                <Square className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" />
+                Deselect All
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
             {subjects.map((s) => {
+              const selected = selectedSubjectIds.includes(s.id);
               const countForSubj = allChapters.filter((c) => c.subject_id === s.id).length;
               return (
                 <button
                   key={s.id}
-                  onClick={() => {
-                    setSelectedSubjectId(s.id);
-                    setStep(2);
-                  }}
+                  type="button"
+                  onClick={() => toggleSubject(s.id)}
                   className={cn(
-                    "flex items-center justify-between rounded-2xl border p-5 text-left transition hover:border-primary/40",
-                    selectedSubjectId === s.id ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-card"
+                    "flex items-center justify-between rounded-2xl border p-4 text-left transition",
+                    selected
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "border-border bg-card hover:border-border/80"
                   )}
                 >
-                  <div>
-                    <div className="text-base font-bold">{s.name}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">{countForSubj} chapters available</div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={cn(
+                        "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition",
+                        selected ? "border-primary bg-primary text-white" : "border-muted-foreground/30"
+                      )}
+                    >
+                      {selected && "✓"}
+                    </span>
+                    <div>
+                      <div className="text-base font-bold">{s.name}</div>
+                      <div className="mt-0.5 text-xs text-muted-foreground">{countForSubj} chapters available</div>
+                    </div>
                   </div>
+                  <span className="rounded-md bg-secondary px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+                    {countForSubj} Ch.
+                  </span>
                 </button>
               );
             })}
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button
+              className="w-full sm:w-auto bg-gradient-primary font-semibold px-8"
+              onClick={() => {
+                setActiveSubjectTab("all");
+                setStep(2);
+              }}
+              disabled={selectedSubjectIds.length === 0}
+            >
+              Next: Select Chapters ({selectedSubjectIds.length} subject{selectedSubjectIds.length === 1 ? "" : "s"} chosen)
+            </Button>
           </div>
         </div>
       )}
@@ -246,13 +313,9 @@ function GeneratePage() {
         <div className="mt-6 space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="text-base font-bold">
-                {selectedSubjectId === "all"
-                  ? "All Subjects Chapters"
-                  : `${subjects.find((s) => s.id === selectedSubjectId)?.name ?? ""} Chapters`}
-              </div>
+              <div className="text-base font-bold">Select Chapters</div>
               <div className="text-xs text-muted-foreground">
-                {chapIds.length} of {allChapters.length} total chapters selected
+                {chapIds.length} of {availableChapters.length} chapters selected across {selectedSubjectIds.length} subject{selectedSubjectIds.length === 1 ? "" : "s"}
               </div>
             </div>
 
@@ -267,6 +330,47 @@ function GeneratePage() {
               </Button>
             </div>
           </div>
+
+          {/* Subject Filter Tabs if multiple subjects chosen */}
+          {selectedSubjectIds.length > 1 && (
+            <div className="flex flex-wrap gap-1.5 border-b border-border/60 pb-2">
+              <button
+                type="button"
+                onClick={() => setActiveSubjectTab("all")}
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-xs font-semibold transition",
+                  activeSubjectTab === "all"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                )}
+              >
+                All Selected ({availableChapters.length})
+              </button>
+              {subjects
+                .filter((s) => selectedSubjectIds.includes(s.id))
+                .map((s) => {
+                  const cCount = availableChapters.filter((c) => c.subject_id === s.id).length;
+                  const selectedInSubj = chapIds.filter((id) =>
+                    availableChapters.some((c) => c.id === id && c.subject_id === s.id)
+                  ).length;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setActiveSubjectTab(s.id)}
+                      className={cn(
+                        "rounded-lg px-3 py-1.5 text-xs font-semibold transition",
+                        activeSubjectTab === s.id
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {s.name} ({selectedInSubj}/{cCount})
+                    </button>
+                  );
+                })}
+            </div>
+          )}
 
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -285,6 +389,7 @@ function GeneratePage() {
               return (
                 <button
                   key={c.id}
+                  type="button"
                   onClick={() => toggleChap(c.id)}
                   className={cn(
                     "flex w-full items-center justify-between rounded-xl border p-3.5 text-left transition",
@@ -302,7 +407,7 @@ function GeneratePage() {
                     </span>
                     <span className="text-sm">{c.name}</span>
                   </div>
-                  {selectedSubjectId === "all" && subj && (
+                  {subj && (
                     <span className="shrink-0 rounded-md bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground uppercase">
                       {subj.name}
                     </span>
@@ -340,6 +445,7 @@ function GeneratePage() {
               {(["mix", "easy", "medium", "hard"] as const).map((d) => (
                 <button
                   key={d}
+                  type="button"
                   onClick={() => setDifficulty(d)}
                   className={cn(
                     "rounded-xl border p-3 text-sm font-semibold capitalize transition",
@@ -388,6 +494,7 @@ function GeneratePage() {
                   {[10, 30, 45, 90, 180].map((n) => (
                     <button
                       key={n}
+                      type="button"
                       onClick={() => setCount(n)}
                       className={cn(
                         "rounded-xl border p-2.5 text-xs font-bold transition",
@@ -473,6 +580,7 @@ function GeneratePage() {
               {[15, 30, 45, 60, 90, 180, 200].map((t) => (
                 <button
                   key={t}
+                  type="button"
                   onClick={() => {
                     setTimer(t);
                     setCustomTimerInput("");
@@ -506,7 +614,7 @@ function GeneratePage() {
             </div>
           </div>
 
-          {/* Mode Selection */}
+          {/* Mode Selection: Quiz Mode vs CBT Mode */}
           <div>
             <div className="mb-2 text-sm font-bold">Mode</div>
             <div className="grid grid-cols-2 gap-3">
@@ -523,11 +631,14 @@ function GeneratePage() {
               <Button
                 size="lg"
                 disabled={launching}
-                onClick={() => start("exam")}
-                className="h-auto flex-col items-start gap-1 bg-gradient-primary p-4"
+                onClick={() => start("cbt")}
+                className="h-auto flex-col items-start gap-1 bg-gradient-primary p-4 border border-primary/20 shadow-sm"
               >
-                <span className="font-bold">Exam Mode</span>
-                <span className="text-xs font-normal opacity-90">Simulate real NEET exam with final submission</span>
+                <div className="flex items-center gap-1.5">
+                  <Laptop className="h-4 w-4" />
+                  <span className="font-bold">CBT Mode</span>
+                </div>
+                <span className="text-xs font-normal opacity-90">100% authentic NEET CBT exam simulation with official palette & timer</span>
               </Button>
             </div>
             {launching && (
@@ -547,7 +658,7 @@ function GeneratePage() {
 }
 
 function Stepper({ step }: { step: number }) {
-  const labels = ["Subject", "Chapters", "Configuration"];
+  const labels = ["Subjects", "Chapters", "Configuration"];
   return (
     <div className="flex items-center gap-2">
       {labels.map((l, i) => (

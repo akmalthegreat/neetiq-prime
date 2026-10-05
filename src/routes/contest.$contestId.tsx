@@ -141,7 +141,7 @@ function ContestPage() {
   const doJoin = async (thenStart: boolean) => {
     if (joined) {
       if (thenStart && c.test_id) {
-        nav({ to: "/quiz/$testId", params: { testId: c.test_id }, search: { mode: "exam" } });
+        nav({ to: "/quiz/$testId", params: { testId: c.test_id }, search: { mode: "cbt" } });
       }
       return;
     }
@@ -162,7 +162,7 @@ function ContestPage() {
       }
       const testId = res?.test_id ?? c.test_id;
       if (thenStart && testId) {
-        nav({ to: "/quiz/$testId", params: { testId }, search: { mode: "exam" } });
+        nav({ to: "/quiz/$testId", params: { testId }, search: { mode: "cbt" } });
         return;
       }
       await load();
@@ -466,7 +466,7 @@ function LiveSection({
             </Button>
           ) : joined ? (
             <Button asChild className="h-12 w-full bg-gradient-primary">
-              <Link to="/quiz/$testId" params={{ testId }} search={{ mode: "exam" }}>
+              <Link to="/quiz/$testId" params={{ testId }} search={{ mode: "cbt" }}>
                 Start test <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

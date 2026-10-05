@@ -177,7 +177,7 @@ function JoinPage() {
                     const liveNow = now >= startsAt && now < endsAt;
                     const testId = res?.test_id ?? c.test_id;
                     if (liveNow && testId) {
-                      nav({ to: "/quiz/$testId", params: { testId }, search: { mode: "exam" } });
+                      nav({ to: "/quiz/$testId", params: { testId }, search: { mode: "cbt" } });
                     } else {
                       nav({ to: "/contest/$contestId", params: { contestId } });
                     }

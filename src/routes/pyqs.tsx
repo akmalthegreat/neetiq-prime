@@ -35,7 +35,7 @@ function PyqPage() {
     })();
   }, []);
 
-  const start = async (year: number, mode: "quiz" | "exam") => {
+  const start = async (year: number, mode: "quiz" | "cbt") => {
     if (!user) return;
     setLaunching(year);
     const { data: qs } = await supabase.from("questions").select("id").eq("is_pyq", true).eq("pyq_year", year);
@@ -65,7 +65,7 @@ function PyqPage() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Button size="sm" className="bg-gradient-primary" disabled={launching === r.year} onClick={() => start(r.year, "quiz")}>Quiz</Button>
-                  <Button size="sm" variant="outline" disabled={launching === r.year} onClick={() => start(r.year, "exam")}>Exam</Button>
+                  <Button size="sm" variant="outline" disabled={launching === r.year} onClick={() => start(r.year, "cbt")}>CBT Mode</Button>
                 </div>
               </CardContent>
             </Card>

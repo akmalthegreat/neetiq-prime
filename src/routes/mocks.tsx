@@ -102,7 +102,7 @@ function MocksPage() {
                             <Link
                               key={t.id}
                               to="/quiz/$testId"
-                              params={{ testId: t.id }}
+                              params={{ testId: t.id }} search={{ mode: "cbt" } as never}
                               className="flex items-center justify-between rounded-md border bg-card px-2.5 py-1.5 text-xs hover:bg-accent"
                             >
                               <span className="line-clamp-1">{t.title}</span>
@@ -146,7 +146,7 @@ function MockCard({ t }: { t: Test }) {
     setStarting(true);
     try {
       await gate({ data: { test_id: t.id } });
-      nav({ to: "/quiz/$testId", params: { testId: t.id } });
+      nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode: "cbt" } as never });
     } catch (e: any) {
       toast.error(e?.message ?? "Could not start this mock");
     } finally {
