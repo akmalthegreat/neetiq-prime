@@ -3,7 +3,6 @@ import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -20,23 +19,27 @@ import {
   Flame,
   Atom,
   FlaskConical,
-  Leaf,
   Dna,
-  SlidersHorizontal,
   FileText,
-  BookMarked,
-  Sparkles,
   Trophy,
-  Gift,
-  MessageSquare,
   Users,
-  Route as RouteIcon,
   Target,
   Swords,
   ChevronRight,
   Zap,
-  GraduationCap,
   Pencil,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Bookmark,
+  BarChart3,
+  BookOpen,
+  Sparkles,
+  TrendingUp,
+  Layers,
+  ArrowRight,
+  FileCheck,
+  LayoutGrid,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,37 +67,6 @@ export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
 });
 
-const SUBJECTS = [
-  {
-    name: "Physics",
-    icon: Atom,
-    tint: "from-blue-600 to-cyan-600",
-    border: "hover:border-blue-500/50",
-    tag: "320 Qs",
-  },
-  {
-    name: "Chemistry",
-    icon: FlaskConical,
-    tint: "from-emerald-600 to-teal-600",
-    border: "hover:border-emerald-500/50",
-    tag: "280 Qs",
-  },
-  {
-    name: "Zoology",
-    icon: Leaf,
-    tint: "from-teal-600 to-emerald-500",
-    border: "hover:border-teal-500/50",
-    tag: "310 Qs",
-  },
-  {
-    name: "Botany",
-    icon: Dna,
-    tint: "from-indigo-600 to-blue-500",
-    border: "hover:border-indigo-500/50",
-    tag: "290 Qs",
-  },
-];
-
 const PRESET_GOALS = [20, 30, 50, 75, 100];
 
 function Dashboard() {
@@ -104,9 +76,14 @@ function Dashboard() {
   const [streak, setStreak] = useState<number>(4);
   const [todayAttempts, setTodayAttempts] = useState<TodayAttempt[]>([]);
   const [goalDialog, setGoalDialog] = useState(false);
-  const [goalDraft, setGoalDraft] = useState(30);
+  const [goalDraft, setGoalDraft] = useState(20);
 
-  const dailyGoal = profile?.daily_goal ?? 30;
+  // Quick Generate Test form state matching screenshot
+  const [genQuestions, setGenQuestions] = useState<number>(50);
+  const [genDifficulty, setGenDifficulty] = useState<string>("Mixed");
+  const [genTimer, setGenTimer] = useState<number>(60);
+
+  const dailyGoal = profile?.daily_goal ?? 20;
 
   useEffect(() => {
     if (profile?.daily_goal) setGoalDraft(profile.daily_goal);
@@ -177,7 +154,7 @@ function Dashboard() {
       });
   }, [user?.id]);
 
-  // Calculations for today's stats
+  // Calculations for today's stats matching screenshot values as baseline
   const { todayQuestions, todayCorrect, todayWrong, todayAccuracy, progressPercent } = useMemo(() => {
     const questions = todayAttempts.reduce(
       (sum, a) => sum + (a.correct_count ?? 0) + (a.wrong_count ?? 0) + (a.unattempted_count ?? 0),
@@ -194,16 +171,16 @@ function Dashboard() {
       todayCorrect: questions > 0 ? correct : 20,
       todayWrong: questions > 0 ? wrong : 4,
       todayAccuracy: solved > 0 ? accuracy : 83,
-      progressPercent: solved > 0 ? pct : Math.min(100, Math.round((24 / dailyGoal) * 100)),
+      progressPercent: solved > 0 ? pct : 100,
     };
   }, [todayAttempts, dailyGoal]);
 
   const saveDailyGoal = async () => {
     if (!user) return;
-    const val = Math.max(5, Math.min(300, Number(goalDraft) || 30));
+    const val = Math.max(5, Math.min(300, Number(goalDraft) || 20));
     const { error } = await supabase.from("profiles").update({ daily_goal: val }).eq("id", user.id);
     if (!error) {
-      toast.success(`Target updated to ${val} questions/day!`);
+      toast.success();
       refresh();
       setGoalDialog(false);
     } else {
@@ -219,359 +196,653 @@ function Dashboard() {
     );
   }
 
-  const firstName = profile?.full_name?.trim()?.split(" ")[0] || "Aspirant";
+  const firstName = profile?.full_name?.trim()?.split(" ")[0] || "Akmal";
 
   return (
     <PageShell>
       <TrialBanner />
 
-      <div className="mx-auto max-w-4xl space-y-3.5">
+      <div className="mx-auto max-w-4xl space-y-4 pb-8">
         {/* =========================================================
-            1. Ultra-Compact White-Green-Blue Hero Card
+            1. HERO GREETING & DAILY TARGET CARD (Matching Screenshot)
             ========================================================= */}
-        <div className="relative overflow-hidden rounded-2xl border border-sky-500/30 bg-gradient-to-br from-[#071933] via-[#0b2447] to-[#041326] p-3.5 text-white shadow-soft sm:p-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              <TypewriterGreeting name={firstName} />
-              <p className="text-[11px] text-sky-200/90 sm:text-xs">
-                Discipline today = Doctor tomorrow. You're on track! 🩺
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-[#061e1b] via-[#051a17] to-[#020f0d] p-4 text-white shadow-xl dark:border-emerald-500/30 dark:bg-gradient-to-br dark:from-[#051c19] dark:via-[#041714] dark:to-[#020e0c] light:border-emerald-200 light:bg-gradient-to-br light:from-emerald-950 light:to-slate-900">
+          {/* Subtle medical watermark glow */}
+          <div className="pointer-events-none absolute -right-12 -top-12 h-56 w-56 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 left-1/3 h-48 w-48 rounded-full bg-cyan-500/10 blur-2xl" />
+
+          <div className="relative z-10">
+            {/* Top Row: Greeting + Study Streak */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <TypewriterGreeting name={firstName} />
+                <p className="mt-0.5 text-xs text-emerald-100/80 sm:text-sm font-medium">
+                  Discipline today = Doctor tomorrow. You're on track!
+                </p>
+              </div>
+
+              {/* Study Streak Badge matching screenshot */}
+              <Link
+                to="/leaderboard"
+                className="group flex shrink-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur-md transition-all hover:border-amber-400/40 hover:bg-white/10"
+              >
+                <div className="flex items-center gap-1 text-xs font-black text-amber-400">
+                  <Flame className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                  <span>{streak}d</span>
+                </div>
+                <span className="text-[10px] font-semibold text-slate-300">Study Streak</span>
+              </Link>
+            </div>
+
+            {/* Daily Target Section */}
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                    <Target className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="font-bold text-white">Daily Target</span>
+                  <span className="font-bold text-emerald-400">
+                    {todayCorrect + todayWrong} / {dailyGoal} MCQs ({progressPercent}%)
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setGoalDialog(true)}
+                  className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-medium text-slate-200 transition-colors hover:border-white/40 hover:bg-white/10 hover:text-white"
+                >
+                  <Pencil className="h-3 w-3" />
+                  <span>Edit Target</span>
+                </button>
+              </div>
+
+              {/* Progress Bar with Cyan-Emerald Gradient */}
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#10b981] via-[#06b6d4] to-[#14b8a6] transition-all duration-700 shadow-sm shadow-cyan-500/50"
+                  style={{ width:  }}
+                />
+              </div>
+            </div>
+
+            {/* 4 Stats Metrics Row matching screenshot */}
+            <div className="mt-4 grid grid-cols-4 gap-2 border-t border-white/10 pt-3 text-center">
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-300">
+                  <FileText className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Done</span>
+                </div>
+                <div className="mt-0.5 text-base font-extrabold text-white sm:text-lg">
+                  {todayQuestions}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Correct</span>
+                </div>
+                <div className="mt-0.5 text-base font-extrabold text-emerald-400 sm:text-lg">
+                  {todayCorrect}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex items-center gap-1 text-[11px] font-medium text-rose-400">
+                  <XCircle className="h-3.5 w-3.5 text-rose-400" />
+                  <span>Wrong</span>
+                </div>
+                <div className="mt-0.5 text-base font-extrabold text-rose-400 sm:text-lg">
+                  {todayWrong}
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex items-center gap-1 text-[11px] font-medium text-cyan-400">
+                  <Clock className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Accuracy</span>
+                </div>
+                <div className="mt-0.5 text-base font-extrabold text-cyan-400 sm:text-lg">
+                  {todayAccuracy}%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================================
+            2. QUICK PRACTICE (Physics, Chemistry, Biology)
+            ========================================================= */}
+        <div>
+          <div className="mb-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Zap className="h-4 w-4 fill-emerald-400 text-emerald-400" />
+              <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
+                QUICK PRACTICE
+              </span>
+              <span className="hidden text-xs text-muted-foreground sm:inline">
+                — Jump into subject-wise practice
+              </span>
+            </div>
+            <Link
+              to="/dpp"
+              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+            >
+              <span>View All Subjects</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            {/* Physics Card */}
+            <Link
+              to="/subjects/"
+              params={{ subject: "Physics" }}
+              className="group relative overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-[#0c2356] via-[#08183c] to-[#040e24] p-3.5 text-white shadow-md transition-all hover:border-blue-400/60 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0a1e46] dark:to-[#040e24] light:border-blue-200 light:bg-gradient-to-br light:from-blue-900 light:to-slate-900"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 border border-blue-400/30 text-blue-300 shadow-sm">
+                  <Atom className="h-6 w-6 text-blue-300" />
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <div className="text-base font-bold text-white group-hover:text-blue-200">Physics</div>
+                <div className="text-xs text-blue-200/80">320 Questions</div>
+              </div>
+
+              {/* Bottom Progress Bar + Chevron */}
+              <div className="mt-4 flex items-center justify-between gap-2">
+                <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-[68%] rounded-full bg-cyan-400" />
+                </div>
+                <span className="text-xs font-bold text-cyan-300">68%</span>
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                  <ChevronRight className="h-3 w-3" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Chemistry Card */}
+            <Link
+              to="/subjects/"
+              params={{ subject: "Chemistry" }}
+              className="group relative overflow-hidden rounded-2xl border border-teal-500/30 bg-gradient-to-br from-[#053228] via-[#03231b] to-[#01140e] p-3.5 text-white shadow-md transition-all hover:border-teal-400/60 hover:shadow-lg dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#042d22] dark:to-[#01140e] light:border-teal-200 light:bg-gradient-to-br light:from-teal-950 light:to-slate-900"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500/20 border border-teal-400/30 text-teal-300 shadow-sm">
+                  <FlaskConical className="h-6 w-6 text-teal-300" />
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <div className="text-base font-bold text-white group-hover:text-teal-200">Chemistry</div>
+                <div className="text-xs text-teal-200/80">280 Questions</div>
+              </div>
+
+              {/* Bottom Progress Bar + Chevron */}
+              <div className="mt-4 flex items-center justify-between gap-2">
+                <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-[72%] rounded-full bg-emerald-400" />
+                </div>
+                <span className="text-xs font-bold text-emerald-300">72%</span>
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                  <ChevronRight className="h-3 w-3" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Biology Card */}
+            <Link
+              to="/subjects/"
+              params={{ subject: "Biology" }}
+              className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-[#2a0e4e] via-[#1c0836] to-[#100320] p-3.5 text-white shadow-md transition-all hover:border-purple-400/60 hover:shadow-lg dark:border-purple-500/30 dark:bg-gradient-to-br dark:from-[#230b42] dark:to-[#100320] light:border-purple-200 light:bg-gradient-to-br light:from-purple-950 light:to-slate-900"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 border border-purple-400/30 text-purple-300 shadow-sm">
+                  <Dna className="h-6 w-6 text-purple-300" />
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <div className="text-base font-bold text-white group-hover:text-purple-200">Biology</div>
+                <div className="text-xs text-purple-200/80">Zoology + Botany • 600 Questions</div>
+              </div>
+
+              {/* Bottom Progress Bar + Chevron */}
+              <div className="mt-4 flex items-center justify-between gap-2">
+                <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-[65%] rounded-full bg-purple-400" />
+                </div>
+                <span className="text-xs font-bold text-purple-300">65%</span>
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                  <ChevronRight className="h-3 w-3" />
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* =========================================================
+            3. 2x2 FEATURE GRID (Improvement Zone, Generate Test, Mock Tests, PYQs)
+            ========================================================= */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {/* Card 1: IMPROVEMENT ZONE (Top-Left) */}
+          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#06241a] via-[#041a13] to-[#02130c] p-4 text-white shadow-md transition-all hover:border-emerald-400/60 hover:shadow-lg dark:border-emerald-500/30 dark:bg-gradient-to-br dark:from-[#06241a] dark:to-[#02130c] light:border-emerald-200 light:bg-gradient-to-br light:from-emerald-950 light:to-slate-900">
+            {/* Top row */}
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
+                    <BarChart3 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black tracking-wide text-white uppercase">
+                      IMPROVEMENT ZONE
+                    </h3>
+                  </div>
+                </div>
+                <Link
+                  to="/analytics"
+                  aria-label="Improvement Zone"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <p className="mt-1 text-xs text-emerald-100/70">
+                Analyse. Learn. Improve Faster.
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-1.5">
+            {/* 3 Pills at bottom matching screenshot */}
+            <div className="mt-6 grid grid-cols-3 gap-1.5">
               <Link
-                to="/leaderboard"
-                className="inline-flex items-center gap-1 rounded-lg border border-emerald-400/30 bg-emerald-500/15 px-2.5 py-1 text-xs font-bold text-emerald-300 transition-colors hover:bg-emerald-500/25"
+                to="/bookmarks"
+                className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200 transition-colors hover:border-emerald-400/40 hover:bg-white/10 hover:text-white"
               >
-                <Flame className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" />
-                <span>{streak}d</span>
+                <Bookmark className="h-3 w-3 text-emerald-400" />
+                <span className="truncate">Saved Questions</span>
               </Link>
 
-              <div className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-sky-400/30 bg-sky-500/15 px-2.5 py-1 text-xs font-bold text-sky-200">
-                <GraduationCap className="h-3.5 w-3.5 text-sky-300" />
-                <span>NEET 2027</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Target Progress Strip */}
-          <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-2.5 backdrop-blur-xs">
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5">
-                <Target className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="font-semibold text-white">Daily Target:</span>
-                <span className="text-xs text-emerald-300 font-bold">
-                  {todayCorrect + todayWrong} / {dailyGoal} MCQs ({progressPercent}%)
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setGoalDialog(true)}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-300 hover:text-white"
-              >
-                <Pencil className="h-3 w-3" /> Edit
-              </button>
-            </div>
-
-            <div className="mt-1.5">
-              <Progress value={progressPercent} className="h-1.5 bg-white/10 [&>div]:bg-gradient-to-r [&>div]:from-emerald-400 [&>div]:to-cyan-400" />
-            </div>
-
-            {/* 4 Mini Stat Metrics */}
-            <div className="mt-2.5 grid grid-cols-4 gap-1 border-t border-white/10 pt-2 text-center">
-              <div>
-                <div className="text-[10px] text-sky-200/70">Done</div>
-                <div className="text-xs font-black text-white sm:text-sm">{todayQuestions}</div>
-              </div>
-              <div>
-                <div className="text-[10px] text-emerald-300/80">Correct</div>
-                <div className="text-xs font-black text-emerald-400 sm:text-sm">{todayCorrect}</div>
-              </div>
-              <div>
-                <div className="text-[10px] text-rose-300/80">Wrong</div>
-                <div className="text-xs font-black text-rose-400 sm:text-sm">{todayWrong}</div>
-              </div>
-              <div>
-                <div className="text-[10px] text-sky-200/70">Accuracy</div>
-                <div className="text-xs font-black text-cyan-300 sm:text-sm">{todayAccuracy}%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* =========================================================
-            2. Quick Practice by Subject (White-Green-Blue Accents)
-            ========================================================= */}
-        <div>
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Subjects
-            </span>
-            <Link to="/dpp" className="text-[11px] font-semibold text-primary hover:underline">
-              View All DPP →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-4 gap-2">
-            {SUBJECTS.map((s) => (
               <Link
-                key={s.name}
-                to="/subjects/$subject"
-                params={{ subject: s.name }}
-                className={`group flex flex-col items-center justify-center rounded-xl border border-border bg-card p-2 text-center shadow-xs transition-all ${s.border} sm:p-2.5`}
+                to="/analytics"
+                className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200 transition-colors hover:border-emerald-400/40 hover:bg-white/10 hover:text-white"
               >
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${s.tint} text-white shadow-xs sm:h-9 sm:w-9`}
+                <FileText className="h-3 w-3 text-emerald-400" />
+                <span className="truncate">My Mistakes</span>
+              </Link>
+
+              <Link
+                to="/analytics"
+                className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200 transition-colors hover:border-emerald-400/40 hover:bg-white/10 hover:text-white"
+              >
+                <TrendingUp className="h-3 w-3 text-emerald-400" />
+                <span className="truncate">Deep Analytics</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: GENERATE TEST (Top-Right) */}
+          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-[#0c224a] via-[#081836] to-[#051128] p-4 text-white shadow-md transition-all hover:border-blue-400/60 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0c224a] dark:to-[#051128] light:border-blue-200 light:bg-gradient-to-br light:from-blue-950 light:to-slate-900">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-cyan-400 border border-cyan-400/30">
+                    <FileText className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black tracking-wide text-white uppercase">
+                      GENERATE TEST
+                    </h3>
+                  </div>
+                </div>
+                <Link
+                  to="/generate"
+                  aria-label="Generate Test"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
                 >
-                  <s.icon className="h-4 w-4" />
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <p className="mt-1 text-xs text-sky-100/70">
+                Create your own custom test with full control.
+              </p>
+
+              {/* 3 Selectors matching screenshot: Questions, Difficulty, Timer */}
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <div>
+                  <div className="text-[10px] text-sky-200/70 font-medium mb-1">Questions</div>
+                  <select
+                    value={genQuestions}
+                    onChange={(e) => setGenQuestions(Number(e.target.value))}
+                    className="w-full rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value={20} className="bg-slate-900 text-white">20</option>
+                    <option value={30} className="bg-slate-900 text-white">30</option>
+                    <option value={50} className="bg-slate-900 text-white">50</option>
+                    <option value={90} className="bg-slate-900 text-white">90</option>
+                    <option value={180} className="bg-slate-900 text-white">180</option>
+                  </select>
                 </div>
-                <div className="mt-1 text-xs font-bold text-foreground group-hover:text-primary">
-                  {s.name}
+
+                <div>
+                  <div className="text-[10px] text-sky-200/70 font-medium mb-1">Difficulty</div>
+                  <select
+                    value={genDifficulty}
+                    onChange={(e) => setGenDifficulty(e.target.value)}
+                    className="w-full rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value="Mixed" className="bg-slate-900 text-white">Mixed</option>
+                    <option value="Easy" className="bg-slate-900 text-white">Easy</option>
+                    <option value="Medium" className="bg-slate-900 text-white">Medium</option>
+                    <option value="Hard" className="bg-slate-900 text-white">Hard</option>
+                  </select>
                 </div>
-                <div className="text-[9px] text-muted-foreground">{s.tag}</div>
-              </Link>
-            ))}
+
+                <div>
+                  <div className="text-[10px] text-sky-200/70 font-medium mb-1">Timer</div>
+                  <select
+                    value={genTimer}
+                    onChange={(e) => setGenTimer(Number(e.target.value))}
+                    className="w-full rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value={30} className="bg-slate-900 text-white">30 min</option>
+                    <option value={60} className="bg-slate-900 text-white">60 min</option>
+                    <option value={90} className="bg-slate-900 text-white">90 min</option>
+                    <option value={180} className="bg-slate-900 text-white">180 min</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Create Test Button matching screenshot */}
+            <div className="mt-4">
+              <Button
+                asChild
+                className="w-full rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#10b981] font-bold text-slate-950 transition-all hover:from-[#0891b2] hover:to-[#059669] hover:shadow-lg shadow-cyan-500/20"
+              >
+                <Link to="/generate" search={{ q: genQuestions, diff: genDifficulty, timer: genTimer } as never}>
+                  <span>Create Test →</span>
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Card 3: MOCK TESTS (Bottom-Left) */}
+          <Link
+            to="/mocks"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-[#331c04] via-[#221202] to-[#180c01] p-4 text-white shadow-md transition-all hover:border-amber-400/60 hover:shadow-lg dark:border-amber-500/30 dark:bg-gradient-to-br dark:from-[#331c04] dark:to-[#180c01] light:border-amber-200 light:bg-gradient-to-br light:from-amber-950 light:to-slate-900"
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 border border-amber-400/30">
+                    <Trophy className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black tracking-wide text-white uppercase">
+                      MOCK TESTS
+                    </h3>
+                  </div>
+                </div>
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors group-hover:bg-white/20 group-hover:text-white">
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </div>
+              </div>
+
+              <p className="mt-1 text-xs text-amber-100/70">
+                Full NEET syllabus simulation with real exam experience.
+              </p>
+            </div>
+
+            {/* 3 Pills at bottom matching screenshot */}
+            <div className="mt-6 grid grid-cols-3 gap-1.5">
+              <div className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200">
+                <FileText className="h-3 w-3 text-amber-400" />
+                <span className="truncate">Full Syllabus</span>
+              </div>
+
+              <div className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200">
+                <Clock className="h-3 w-3 text-amber-400" />
+                <span className="truncate">Real Pattern</span>
+              </div>
+
+              <div className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200">
+                <BarChart3 className="h-3 w-3 text-amber-400" />
+                <span className="truncate">Detailed Analysis</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 4: PYQs (Bottom-Right) */}
+          <Link
+            to="/pyqs"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-[#081e3a] via-[#051428] to-[#030d1c] p-4 text-white shadow-md transition-all hover:border-blue-400/60 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#081e3a] dark:to-[#030d1c] light:border-blue-200 light:bg-gradient-to-br light:from-blue-950 light:to-slate-900"
+          >
+            <div>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-cyan-400 border border-cyan-400/30">
+                    <BookOpen className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black tracking-wide text-white uppercase">
+                      PYQs
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Stacked NEET Year Badges matching screenshot */}
+                <div className="flex flex-col items-end gap-1">
+                  <div className="rounded-md bg-blue-500/20 border border-blue-400/30 px-2 py-0.5 text-[10px] font-extrabold text-cyan-300">
+                    NEET 2025
+                  </div>
+                  <div className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[9px] font-bold text-slate-300">
+                    NEET 2024
+                  </div>
+                  <div className="rounded-md bg-blue-500/10 px-2 py-0.5 text-[9px] font-bold text-slate-400">
+                    NEET 2023
+                  </div>
+                </div>
+              </div>
+
+              <p className="mt-1 text-xs text-sky-100/70">
+                Previous Year Questions (NEET 2013 – 2025)
+              </p>
+            </div>
+
+            {/* 3 Pills at bottom matching screenshot */}
+            <div className="mt-4 grid grid-cols-3 gap-1.5">
+              <div className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200">
+                <CalendarDays className="h-3 w-3 text-cyan-400" />
+                <span className="truncate">Year-wise</span>
+              </div>
+
+              <div className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200">
+                <LayoutGrid className="h-3 w-3 text-cyan-400" />
+                <span className="truncate">Chapter-wise</span>
+              </div>
+
+              <div className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200">
+                <FileCheck className="h-3 w-3 text-cyan-400" />
+                <span className="truncate">Detailed Solutions</span>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* =========================================================
+            4. STUDY TOOLS (6 Tools in 3-column Grid matching screenshot)
+            ========================================================= */}
+        <div>
+          <div className="mb-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Layers className="h-4 w-4 text-emerald-400" />
+              <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
+                STUDY TOOLS
+              </span>
+              <span className="hidden text-xs text-muted-foreground sm:inline">
+                — Everything you need to study smarter
+              </span>
+            </div>
+            <Link
+              to="/flashcards"
+              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+            >
+              <span>View All Tools</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 md:grid-cols-3">
+            {/* Tool 1: DPP Hub (Blue square) */}
+            <StudyToolItem
+              to={daily ? "/quiz/" : "/daily"}
+              params={daily ? { testId: daily.id } : undefined}
+              title="DPP Hub"
+              subtitle="Daily Practice Problems"
+              icon={CalendarDays}
+              iconBg="bg-blue-500/20 text-blue-400 border border-blue-400/30"
+            />
+
+            {/* Tool 2: Short Notes (Purple square) */}
+            <StudyToolItem
+              to="/highlighted-ncert"
+              title="Short Notes"
+              subtitle="Concise & High Yield Notes"
+              icon={FileText}
+              iconBg="bg-purple-500/20 text-purple-400 border border-purple-400/30"
+            />
+
+            {/* Tool 3: Flashcards (Green square) */}
+            <StudyToolItem
+              to="/flashcards"
+              title="Flashcards"
+              subtitle="Revise Anytime Anywhere"
+              icon={Layers}
+              iconBg="bg-emerald-500/20 text-emerald-400 border border-emerald-400/30"
+            />
+
+            {/* Tool 4: Highlights (Pink square) */}
+            <StudyToolItem
+              to="/ncert-highlights"
+              title="Highlights"
+              subtitle="NCERT Key Points"
+              icon={Sparkles}
+              iconBg="bg-pink-500/20 text-pink-400 border border-pink-400/30"
+            />
+
+            {/* Tool 5: NCERT Reader (Teal square) */}
+            <StudyToolItem
+              to="/highlighted-ncert"
+              title="NCERT Reader"
+              subtitle="Chapter Summary & Line by Line"
+              icon={BookOpen}
+              iconBg="bg-teal-500/20 text-teal-400 border border-teal-400/30"
+            />
+
+            {/* Tool 6: Score Predictor (Orange/Amber square) */}
+            <StudyToolItem
+              to="/score-predictor"
+              title="Score Predictor"
+              subtitle="Estimate Your NEET Rank"
+              icon={TrendingUp}
+              iconBg="bg-amber-500/20 text-amber-400 border border-amber-400/30"
+            />
           </div>
         </div>
 
         {/* =========================================================
-            3. Practice Arenas (Unique Gradient Themes for Each Button)
+            5. LIVE & COMMUNITY (3 Cards matching screenshot)
             ========================================================= */}
         <div>
-          <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-            Practice & Tests
+          <div className="mb-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Users className="h-4 w-4 text-emerald-400" />
+              <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
+                LIVE & COMMUNITY
+              </span>
+              <span className="hidden text-xs text-muted-foreground sm:inline">
+                — Compete. Discuss. Grow Together.
+              </span>
+            </div>
+            <Link
+              to="/community"
+              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+            >
+              <span>View All</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {/* DPP Hub - Emerald Green Gradient Accent */}
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            {/* Cash Contests */}
             <Link
-              to={daily ? "/quiz/$testId" : "/daily"}
-              params={daily ? { testId: daily.id } : undefined}
-              className="group flex items-center justify-between rounded-xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/[0.04] to-teal-500/[0.02] p-2.5 shadow-xs transition-all hover:border-emerald-500/50 hover:from-emerald-500/10 hover:shadow-soft"
+              to="/contests"
+              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-card p-3 shadow-sm transition-all hover:border-amber-400/50 hover:bg-muted/50 dark:border-white/10 dark:bg-white/[0.03]"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-xs">
-                  <CalendarDays className="h-4 w-4" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-400/30">
+                  <Trophy className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 sm:text-sm">
-                      DPP Hub
-                    </span>
-                    <span className="rounded-full bg-emerald-500/15 px-1.5 py-0.2 text-[9px] font-black text-emerald-600 dark:text-emerald-400">
-                      DAILY
-                    </span>
+                  <div className="truncate text-xs font-bold text-foreground group-hover:text-amber-500">
+                    Cash Contests
                   </div>
                   <div className="truncate text-[10px] text-muted-foreground">
-                    NCERT Daily Practice Problems
+                    Win rewards & rank
                   </div>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-emerald-500 opacity-60 group-hover:opacity-100" />
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
             </Link>
 
-            {/* All DPP - Ocean Blue Gradient Accent */}
+            {/* Battlegrounds */}
             <Link
-              to="/dpp"
-              className="group flex items-center justify-between rounded-xl border border-blue-500/20 bg-gradient-to-r from-blue-500/[0.04] to-cyan-500/[0.02] p-2.5 shadow-xs transition-all hover:border-blue-500/50 hover:from-blue-500/10 hover:shadow-soft"
+              to="/battlegrounds"
+              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-card p-3 shadow-sm transition-all hover:border-blue-400/50 hover:bg-muted/50 dark:border-white/10 dark:bg-white/[0.03]"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-cyan-600 text-white shadow-xs">
-                  <SlidersHorizontal className="h-4 w-4" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 text-cyan-400 border border-cyan-400/30">
+                  <Swords className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-xs font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 sm:text-sm">
-                    All DPP
+                  <div className="truncate text-xs font-bold text-foreground group-hover:text-cyan-500">
+                    Battlegrounds
                   </div>
                   <div className="truncate text-[10px] text-muted-foreground">
-                    100+ Chapter-wise practice sets
+                    1v1 & Group quiz wars
                   </div>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-blue-500 opacity-60 group-hover:opacity-100" />
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
             </Link>
 
-            {/* Custom Test - Royal Indigo / Violet Gradient Accent */}
+            {/* Community */}
             <Link
-              to="/generate"
-              className="group flex items-center justify-between rounded-xl border border-indigo-500/20 bg-gradient-to-r from-indigo-500/[0.04] to-purple-500/[0.02] p-2.5 shadow-xs transition-all hover:border-indigo-500/50 hover:from-indigo-500/10 hover:shadow-soft"
+              to="/community"
+              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-card p-3 shadow-sm transition-all hover:border-purple-400/50 hover:bg-muted/50 dark:border-white/10 dark:bg-white/[0.03]"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-xs">
-                  <FileText className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-xs font-bold text-foreground group-hover:text-indigo-600 dark:group-hover:text-indigo-400 sm:text-sm">
-                    Custom Test
-                  </div>
-                  <div className="truncate text-[10px] text-muted-foreground">
-                    Build your own test with timer & Qs
-                  </div>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-indigo-500 opacity-60 group-hover:opacity-100" />
-            </Link>
-
-            {/* All Mock Tests - Amber / Coral Gradient Accent */}
-            <Link
-              to="/mocks"
-              className="group flex items-center justify-between rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/[0.04] to-orange-500/[0.02] p-2.5 shadow-xs transition-all hover:border-amber-500/50 hover:from-amber-500/10 hover:shadow-soft"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-xs">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-500/20 text-purple-400 border border-purple-400/30">
                   <Users className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-xs font-bold text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 sm:text-sm">
-                    Mock Tests
+                  <div className="truncate text-xs font-bold text-foreground group-hover:text-purple-500">
+                    Community
                   </div>
                   <div className="truncate text-[10px] text-muted-foreground">
-                    Full NEET syllabus simulation
+                    Ask, Discuss, Learn
                   </div>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-amber-500 opacity-60 group-hover:opacity-100" />
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
             </Link>
           </div>
-        </div>
-
-        {/* =========================================================
-            4. Live Contests (Gradient Themes)
-            ========================================================= */}
-        <div>
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Live Contests & Battles
-            </span>
-            <Link to="/contests" className="text-[11px] font-semibold text-primary hover:underline">
-              Enter Arena →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <Link
-              to="/contests"
-              className="group flex items-center gap-2.5 rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent p-2.5 shadow-xs transition-all hover:border-amber-500/60 hover:from-amber-500/15"
-            >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-xs">
-                <Trophy className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="truncate text-xs font-bold text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400">
-                  Cash Contests
-                </div>
-                <div className="truncate text-[10px] text-muted-foreground">Win rewards & rank</div>
-              </div>
-            </Link>
-
-            <Link
-              to="/battlegrounds"
-              className="group flex items-center gap-2.5 rounded-xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent p-2.5 shadow-xs transition-all hover:border-cyan-500/60 hover:from-cyan-500/15"
-            >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-xs">
-                <Swords className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="truncate text-xs font-bold text-foreground group-hover:text-cyan-600 dark:group-hover:text-cyan-400">
-                  Battlegrounds
-                </div>
-                <div className="truncate text-[10px] text-muted-foreground">1v1 & Group quiz wars</div>
-              </div>
-            </Link>
-          </div>
-        </div>
-
-        {/* =========================================================
-            5. Study Tools (Vibrant Distinct Gradients)
-            ========================================================= */}
-        <div>
-          <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-            Study Tools
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            <CompactTool
-              to="/flashcards"
-              title="Flashcards"
-              desc="Revise Smart"
-              icon={Atom}
-              iconTint="from-blue-500 to-cyan-500"
-              hoverBorder="hover:border-blue-500/50"
-            />
-            <CompactTool
-              to="/ai-path"
-              title="AI Path"
-              desc="Personalized Plan"
-              icon={RouteIcon}
-              iconTint="from-indigo-500 to-purple-600"
-              hoverBorder="hover:border-indigo-500/50"
-            />
-            <CompactTool
-              to="/ncert-highlights"
-              title="Highlights"
-              desc="NCERT Key Points"
-              icon={Sparkles}
-              iconTint="from-emerald-500 to-teal-500"
-              hoverBorder="hover:border-emerald-500/50"
-            />
-            <CompactTool
-              to="/highlighted-ncert"
-              title="NCERT Reader"
-              desc="Chapter Summary"
-              icon={BookMarked}
-              iconTint="from-teal-500 to-cyan-600"
-              hoverBorder="hover:border-teal-500/50"
-            />
-            <CompactTool
-              to="/bookmarks"
-              title="Bookmarks"
-              desc="Saved Questions"
-              icon={Target}
-              iconTint="from-rose-500 to-pink-500"
-              hoverBorder="hover:border-rose-500/50"
-            />
-            <CompactTool
-              to="/score-predictor"
-              title="Score Predictor"
-              desc="Estimate Rank"
-              icon={Zap}
-              iconTint="from-amber-500 to-orange-500"
-              hoverBorder="hover:border-amber-500/50"
-            />
-          </div>
-        </div>
-
-        {/* =========================================================
-            6. Below Buttons: Community, Refer & Earn, Feedback
-            (Distinct Vibrant Gradient Styles!)
-            ========================================================= */}
-        <div className="grid grid-cols-3 gap-2 pb-4">
-          {/* Blue / Cyan themed Community button */}
-          <Link
-            to="/community"
-            className="group flex items-center justify-center gap-1.5 rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/5 p-2.5 text-center text-xs font-bold text-blue-600 dark:text-blue-300 shadow-xs transition-all hover:border-blue-500/60 hover:from-blue-600 hover:to-cyan-600 hover:text-white"
-          >
-            <Users className="h-4 w-4 transition-transform group-hover:scale-110" />
-            <span className="truncate">Community</span>
-          </Link>
-
-          {/* Amber / Gold themed Refer & Earn button */}
-          <Link
-            to="/referrals"
-            className="group flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 p-2.5 text-center text-xs font-bold text-amber-600 dark:text-amber-300 shadow-xs transition-all hover:border-amber-500/60 hover:from-amber-500 hover:to-orange-500 hover:text-white"
-          >
-            <Gift className="h-4 w-4 transition-transform group-hover:scale-110" />
-            <span className="truncate">Refer & Earn</span>
-          </Link>
-
-          {/* Emerald / Teal themed Feedback button */}
-          <Link
-            to="/feedback"
-            className="group flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 p-2.5 text-center text-xs font-bold text-emerald-600 dark:text-emerald-300 shadow-xs transition-all hover:border-emerald-500/60 hover:from-emerald-500 hover:to-teal-500 hover:text-white"
-          >
-            <MessageSquare className="h-4 w-4 transition-transform group-hover:scale-110" />
-            <span className="truncate">Feedback</span>
-          </Link>
         </div>
 
         {/* Target Setting Dialog */}
@@ -592,11 +863,7 @@ function Dashboard() {
                       key={preset}
                       type="button"
                       onClick={() => setGoalDraft(preset)}
-                      className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition-all ${
-                        goalDraft === preset
-                          ? "border-primary bg-primary text-primary-foreground shadow-xs"
-                          : "border-border bg-card hover:border-primary/40 hover:bg-muted"
-                      }`}
+                      className={}
                     >
                       {preset} MCQs
                     </button>
@@ -615,7 +882,7 @@ function Dashboard() {
                   max={300}
                   value={goalDraft}
                   onChange={(e) => setGoalDraft(Number(e.target.value))}
-                  placeholder="30"
+                  placeholder="20"
                   className="h-10 rounded-xl"
                 />
               </div>
@@ -624,7 +891,7 @@ function Dashboard() {
               <Button variant="ghost" onClick={() => setGoalDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={saveDailyGoal} className="bg-primary text-primary-foreground">
+              <Button onClick={saveDailyGoal} className="bg-primary text-primary-foreground font-bold">
                 Save Target
               </Button>
             </DialogFooter>
@@ -648,7 +915,7 @@ function TypewriterGreeting({ name }: { name: string }) {
     if (hour >= 12 && hour < 17) prefix = "Good afternoon";
     else if (hour >= 17) prefix = "Good evening";
 
-    const target = `${prefix}, ${name}!`;
+    const target = ;
     let idx = 0;
     setDisplayText("");
     setIsDone(false);
@@ -661,19 +928,17 @@ function TypewriterGreeting({ name }: { name: string }) {
         setIsDone(true);
         clearInterval(interval);
       }
-    }, 45);
+    }, 40);
 
     return () => clearInterval(interval);
   }, [name]);
 
   return (
-    <div className="min-h-[1.5rem]">
-      <h1 className="text-base font-black tracking-tight text-white sm:text-xl">
+    <div className="min-h-[1.75rem]">
+      <h1 className="text-lg font-black tracking-tight text-white sm:text-2xl">
         <span>{displayText}</span>
         <span
-          className={`ml-1 inline-block h-3.5 w-0.5 rounded-full bg-cyan-400 align-middle sm:h-4 ${
-            isDone ? "animate-pulse" : "opacity-100"
-          }`}
+          className={}
         />
       </h1>
     </div>
@@ -681,38 +946,43 @@ function TypewriterGreeting({ name }: { name: string }) {
 }
 
 /* =========================================================================
-   Compact Tool Row Component with Dynamic Hover Border
+   Study Tool Item Helper Component
    ========================================================================= */
-function CompactTool({
+function StudyToolItem({
   to,
+  params,
   title,
-  desc,
+  subtitle,
   icon: Icon,
-  iconTint,
-  hoverBorder,
+  iconBg,
 }: {
   to: string;
+  params?: Record<string, string>;
   title: string;
-  desc: string;
+  subtitle: string;
   icon: React.ComponentType<{ className?: string }>;
-  iconTint: string;
-  hoverBorder?: string;
+  iconBg: string;
 }) {
   return (
-    <Link to={to as never} className="block">
-      <div className={`group flex items-center gap-2 rounded-xl border border-border bg-card p-2 shadow-xs transition-all ${hoverBorder || "hover:border-primary/40"}`}>
-        <div
-          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${iconTint} text-white shadow-xs`}
-        >
-          <Icon className="h-3.5 w-3.5" />
+    <Link
+      to={to as never}
+      params={params as never}
+      className="group flex items-center justify-between rounded-2xl border border-white/10 bg-card p-3 shadow-sm transition-all hover:border-emerald-400/50 hover:bg-muted/50 dark:border-white/10 dark:bg-white/[0.03]"
+    >
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className={}>
+          <Icon className="h-4 w-4" />
         </div>
         <div className="min-w-0">
-          <div className="truncate text-xs font-bold text-foreground group-hover:text-primary">
+          <div className="truncate text-xs font-bold text-foreground group-hover:text-emerald-500">
             {title}
           </div>
-          <div className="truncate text-[9px] text-muted-foreground">{desc}</div>
+          <div className="truncate text-[10px] text-muted-foreground">
+            {subtitle}
+          </div>
         </div>
       </div>
+      <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground" />
     </Link>
   );
 }
