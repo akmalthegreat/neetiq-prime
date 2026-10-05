@@ -98,6 +98,7 @@ function FeatureRow({
   return (
     <Link
       to={to as never}
+      params={{ subject }}
       className={`${card} group flex min-h-[92px] items-center gap-4 bg-gradient-to-r ${tones} p-4 transition duration-200 hover:-translate-y-0.5 hover:border-white/20`}
     >
       {image && (
@@ -125,6 +126,7 @@ function FeatureRow({
 function SubjectCard({
   to,
   title,
+  subject,
   count,
   percent,
   icon: Icon,
@@ -132,6 +134,7 @@ function SubjectCard({
 }: {
   to: string;
   title: string;
+  subject: string;
   count: number;
   percent: number;
   icon: React.ComponentType<{ className?: string }>;
@@ -268,9 +271,9 @@ export function PremiumDashboard({
 
         <SectionTitle icon={Zap} title="Quick Practice" action="View All Subjects" to="/dpp" />
         <div className="mb-5 grid grid-cols-3 gap-2.5">
-          <SubjectCard to="/subjects/$subject" title="Physics" count={subjectCounts.physics} percent={68} icon={Atom} tone="blue" />
-          <SubjectCard to="/subjects/$subject" title="Chemistry" count={subjectCounts.chemistry} percent={72} icon={FlaskConical} tone="cream" />
-          <SubjectCard to="/subjects/$subject" title="Biology" count={subjectCounts.biology} percent={65} icon={Dna} tone="green" />
+          <SubjectCard to="/subjects/$subject" title="Physics" subject="Physics" count={subjectCounts.physics} percent={68} icon={Atom} tone="blue" />
+          <SubjectCard to="/subjects/$subject" title="Chemistry" subject="Chemistry" count={subjectCounts.chemistry} percent={72} icon={FlaskConical} tone="cream" />
+          <SubjectCard to="/subjects/$subject" title="Biology" subject="Biology" count={subjectCounts.biology} percent={65} icon={Dna} tone="green" />
         </div>
 
         <section className={`${card} mb-4 bg-gradient-to-br from-[#12221f] to-[#0e1819] p-4`}>
