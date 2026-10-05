@@ -371,35 +371,35 @@ function Dashboard() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {/* Physics Card */}
             <Link
               to="/subjects/$subject"
               params={{ subject: "Physics" }}
-              className="group relative overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-[#0c2356] via-[#08183c] to-[#040e24] p-3.5 text-white shadow-md transition-all hover:border-blue-400/60 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0a1e46] dark:to-[#040e24] light:border-blue-200 light:bg-gradient-to-br light:from-blue-900 light:to-slate-900"
+              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-blue-500/30 bg-gradient-to-br from-[#0c2356] via-[#08183c] to-[#040e24] p-2.5 sm:p-3.5 text-white shadow-md transition-all hover:border-blue-400/60 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0a1e46] dark:to-[#040e24] light:border-blue-200 light:bg-gradient-to-br light:from-blue-900 light:to-slate-900"
             >
               <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 border border-blue-400/30 text-blue-300 shadow-sm">
-                  <Atom className="h-6 w-6 text-blue-300" />
+                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-blue-500/20 border border-blue-400/30 text-blue-300 shadow-sm">
+                  <Atom className="h-4 w-4 sm:h-6 sm:w-6 text-blue-300" />
                 </div>
               </div>
 
-              <div className="mt-3">
-                <div className="text-base font-bold text-white group-hover:text-blue-200">
+              <div className="mt-2 sm:mt-3">
+                <div className="text-xs sm:text-base font-bold text-white group-hover:text-blue-200 truncate">
                   Physics
                 </div>
-                <div className="text-xs text-blue-200/80">
-                  {subjectCounts.physics.toLocaleString()} Questions
+                <div className="text-[10px] sm:text-xs text-blue-200/80 truncate">
+                  {subjectCounts.physics.toLocaleString()} Qs
                 </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
-              <div className="mt-4 flex items-center justify-between gap-2">
-                <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
+                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
                   <div className="h-full w-[68%] rounded-full bg-cyan-400" />
                 </div>
-                <span className="text-xs font-bold text-cyan-300">68%</span>
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                <span className="text-[10px] sm:text-xs font-bold text-cyan-300">68%</span>
+                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
               </div>
@@ -409,30 +409,30 @@ function Dashboard() {
             <Link
               to="/subjects/$subject"
               params={{ subject: "Chemistry" }}
-              className="group relative overflow-hidden rounded-2xl border border-teal-500/30 bg-gradient-to-br from-[#053228] via-[#03231b] to-[#01140e] p-3.5 text-white shadow-md transition-all hover:border-teal-400/60 hover:shadow-lg dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#042d22] dark:to-[#01140e] light:border-teal-200 light:bg-gradient-to-br light:from-teal-950 light:to-slate-900"
+              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-teal-500/30 bg-gradient-to-br from-[#053228] via-[#03231b] to-[#01140e] p-2.5 sm:p-3.5 text-white shadow-md transition-all hover:border-teal-400/60 hover:shadow-lg dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#042d22] dark:to-[#01140e] light:border-teal-200 light:bg-gradient-to-br light:from-teal-950 light:to-slate-900"
             >
               <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500/20 border border-teal-400/30 text-teal-300 shadow-sm">
-                  <FlaskConical className="h-6 w-6 text-teal-300" />
+                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-teal-500/20 border border-teal-400/30 text-teal-300 shadow-sm">
+                  <FlaskConical className="h-4 w-4 sm:h-6 sm:w-6 text-teal-300" />
                 </div>
               </div>
 
-              <div className="mt-3">
-                <div className="text-base font-bold text-white group-hover:text-teal-200">
+              <div className="mt-2 sm:mt-3">
+                <div className="text-xs sm:text-base font-bold text-white group-hover:text-teal-200 truncate">
                   Chemistry
                 </div>
-                <div className="text-xs text-teal-200/80">
-                  {subjectCounts.chemistry.toLocaleString()} Questions
+                <div className="text-[10px] sm:text-xs text-teal-200/80 truncate">
+                  {subjectCounts.chemistry.toLocaleString()} Qs
                 </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
-              <div className="mt-4 flex items-center justify-between gap-2">
-                <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
+                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
                   <div className="h-full w-[72%] rounded-full bg-emerald-400" />
                 </div>
-                <span className="text-xs font-bold text-emerald-300">72%</span>
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                <span className="text-[10px] sm:text-xs font-bold text-emerald-300">72%</span>
+                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
               </div>
@@ -442,30 +442,30 @@ function Dashboard() {
             <Link
               to="/subjects/$subject"
               params={{ subject: "Biology" }}
-              className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-[#2a0e4e] via-[#1c0836] to-[#100320] p-3.5 text-white shadow-md transition-all hover:border-purple-400/60 hover:shadow-lg dark:border-purple-500/30 dark:bg-gradient-to-br dark:from-[#230b42] dark:to-[#100320] light:border-purple-200 light:bg-gradient-to-br light:from-purple-950 light:to-slate-900"
+              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-purple-500/30 bg-gradient-to-br from-[#2a0e4e] via-[#1c0836] to-[#100320] p-2.5 sm:p-3.5 text-white shadow-md transition-all hover:border-purple-400/60 hover:shadow-lg dark:border-purple-500/30 dark:bg-gradient-to-br dark:from-[#230b42] dark:to-[#100320] light:border-purple-200 light:bg-gradient-to-br light:from-purple-950 light:to-slate-900"
             >
               <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/20 border border-purple-400/30 text-purple-300 shadow-sm">
-                  <Dna className="h-6 w-6 text-purple-300" />
+                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-purple-500/20 border border-purple-400/30 text-purple-300 shadow-sm">
+                  <Dna className="h-4 w-4 sm:h-6 sm:w-6 text-purple-300" />
                 </div>
               </div>
 
-              <div className="mt-3">
-                <div className="text-base font-bold text-white group-hover:text-purple-200">
+              <div className="mt-2 sm:mt-3">
+                <div className="text-xs sm:text-base font-bold text-white group-hover:text-purple-200 truncate">
                   Biology
                 </div>
-                <div className="text-xs text-purple-200/80">
-                  Zoology + Botany • {subjectCounts.biology.toLocaleString()} Questions
+                <div className="text-[10px] sm:text-xs text-purple-200/80 truncate">
+                  {subjectCounts.biology.toLocaleString()} Qs
                 </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
-              <div className="mt-4 flex items-center justify-between gap-2">
-                <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
+                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
                   <div className="h-full w-[65%] rounded-full bg-purple-400" />
                 </div>
-                <span className="text-xs font-bold text-purple-300">65%</span>
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                <span className="text-[10px] sm:text-xs font-bold text-purple-300">65%</span>
+                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
               </div>

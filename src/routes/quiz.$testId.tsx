@@ -750,7 +750,7 @@ function QuizPlayer() {
   const chapName = q.chapter_id ? chapters[q.chapter_id] : undefined;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className={cn("flex min-h-screen flex-col", isQuiz ? "bg-slate-50 text-slate-900 light" : "bg-background")}>
       {isContest && !submitted && !contestDone && !alreadyAttempted && !hasAckedAntiCheat("contest", testId) && (
         <AntiCheatGate
           mode="contest"
@@ -761,7 +761,7 @@ function QuizPlayer() {
       )}
 
       {/* Top bar */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card">
+      <header className={cn("sticky top-0 z-40 border-b", isQuiz ? "bg-white border-blue-100/80 shadow-xs" : "border-border bg-card")}>
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2.5">
           <div className="min-w-0 flex-1">
             {(() => {
@@ -880,7 +880,7 @@ function QuizPlayer() {
         </div>
         {/* progress bar */}
         <div className="h-1 w-full bg-secondary">
-          <div className="h-full bg-emerald-500 transition-all" style={{ width: `${progress}%` }} />
+          <div className={cn("h-full transition-all", isQuiz ? "bg-blue-600" : "bg-emerald-500")} style={{ width: `${progress}%` }} />
         </div>
         {/* Question palette */}
         <div className="mx-auto max-w-3xl">
@@ -926,7 +926,7 @@ function QuizPlayer() {
       {/* Question */}
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-5">
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
+          <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold", isQuiz ? "bg-blue-600 text-white" : "bg-foreground text-background")}>
             {idx + 1}
           </span>
           <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -967,12 +967,24 @@ function QuizPlayer() {
                 onClick={() => !locked && setAnswer(i)}
                 disabled={locked}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg border bg-card p-3.5 text-left text-base transition",
-                  !locked && "hover:border-primary/50",
-                  selected && !locked && "border-primary ring-1 ring-primary/30",
-                  isCorrectOpt && "border-emerald-400/60 bg-emerald-500/5",
-                  isWrongPick && "border-rose-400/60 bg-rose-500/5",
-                  locked && !isCorrectOpt && !isWrongPick && "border-border opacity-90",
+                  "flex w-full items-center gap-3 rounded-xl border p-3.5 text-left text-base transition",
+                  isQuiz
+                    ? cn(
+                        "bg-white border-blue-100/90 text-slate-800 shadow-xs",
+                        !locked && "hover:border-blue-400 hover:bg-blue-50/40",
+                        selected && !locked && "border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/30",
+                        isCorrectOpt && "border-emerald-500 bg-emerald-50 text-emerald-950 font-medium",
+                        isWrongPick && "border-rose-400 bg-rose-50 text-rose-950",
+                        locked && !isCorrectOpt && !isWrongPick && "border-slate-200 opacity-80"
+                      )
+                    : cn(
+                        "bg-card",
+                        !locked && "hover:border-primary/50",
+                        selected && !locked && "border-primary ring-1 ring-primary/30",
+                        isCorrectOpt && "border-emerald-400/60 bg-emerald-500/5",
+                        isWrongPick && "border-rose-400/60 bg-rose-500/5",
+                        locked && !isCorrectOpt && !isWrongPick && "border-border opacity-90"
+                      )
                 )}
               >
                 <span
@@ -982,7 +994,9 @@ function QuizPlayer() {
                       ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
                       : isWrongPick
                         ? "bg-rose-500/20 text-rose-700 dark:text-rose-300"
-                        : "bg-secondary text-foreground",
+                        : isQuiz
+                          ? "bg-blue-50 text-blue-700 border border-blue-200/60"
+                          : "bg-secondary text-foreground",
                   )}
                 >
                   {i + 1}
@@ -995,12 +1009,12 @@ function QuizPlayer() {
                   className={cn(
                     "h-5 w-5 shrink-0 rounded-full border-2",
                     isCorrectOpt
-                      ? "border-emerald-400/70 bg-emerald-400/40"
+                      ? "border-emerald-500 bg-emerald-500"
                       : isWrongPick
-                        ? "border-rose-400/70 bg-rose-400/40"
+                        ? "border-rose-400 bg-rose-400"
                         : selected
-                          ? "border-primary bg-primary"
-                          : "border-border",
+                          ? (isQuiz ? "border-blue-600 bg-blue-600" : "border-primary bg-primary")
+                          : (isQuiz ? "border-blue-200" : "border-border"),
                   )}
                 />
               </button>
@@ -1082,7 +1096,7 @@ function QuizPlayer() {
       </main>
 
       {/* Bottom action */}
-      <footer className="sticky bottom-0 border-t border-border bg-card">
+      <footer className={cn("sticky bottom-0 border-t", isQuiz ? "bg-white border-blue-100/80 shadow-md" : "border-border bg-card")}>
         <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
           <Button
             variant="outline"
@@ -1106,7 +1120,7 @@ function QuizPlayer() {
           </Button>
           {idx < total - 1 ? (
             <Button
-              className="h-11 flex-1"
+              className={cn("h-11 flex-1", isQuiz && "bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs")}
               onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
             >
               Next
