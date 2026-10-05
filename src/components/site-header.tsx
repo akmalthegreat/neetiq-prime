@@ -37,8 +37,8 @@ const GROUPS: Group[] = [
   {
     label: "Quick Practice",
     items: [
-      { to: "/daily", label: "Daily DPP" },
-      { to: "/dpp", label: "Sub-wise Quiz" },
+      { to: "/daily", label: "DPP HUB" },
+      { to: "/dpp", label: "ALL DPP" },
     ],
   },
   {
@@ -47,14 +47,14 @@ const GROUPS: Group[] = [
       { to: "/flashcards", label: "Flashcards" },
       { to: "/ncert-highlights", label: "NCERT Highlights" },
       { to: "/mocks", label: "Mock Tests" },
-      { to: "/dpp", label: "All DPPs" },
+      { to: "/dpp", label: "ALL DPP" },
       { to: "/bookmarks", label: "Bookmarks" },
     ],
   },
   {
     label: "AI Tools",
     items: [
-      { to: "/generate", label: "Generate Test" },
+      { to: "/generate", label: "Custom Test" },
       { to: "/ai-path", label: "AI Path" },
       { to: "/score-predictor", label: "Score Predictor" },
     ],
@@ -90,9 +90,9 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/dashboard" className="flex items-center gap-2">
-          <img src="/icons/icon-192.png" alt="NEETIQ Prime" className="h-9 w-9 rounded-xl shadow-glow" />
+          <img src="/icons/icon-192.png" alt="NEET Track" className="h-9 w-9 rounded-xl shadow-glow" />
           <div className="leading-none">
-            <div className="text-base font-bold tracking-tight">NEETIQ <span className="text-gradient-primary">Prime</span></div>
+            <div className="text-base font-bold tracking-tight">NEET <span className="text-gradient-primary">Track</span></div>
             <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Crack NEET, Smarter</div>
           </div>
         </Link>

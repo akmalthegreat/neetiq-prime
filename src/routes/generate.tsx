@@ -13,7 +13,7 @@ import { createCustomTestWithBonus } from "@/lib/generate-test.functions";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/generate")({
-  head: () => ({ meta: [{ title: "Generate Test — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Custom Test — NEET Track" }] }),
   component: () => (<FeatureLock feature="generate_test"><GeneratePage/></FeatureLock>),
 });
 
@@ -76,7 +76,7 @@ function GeneratePage() {
   };
 
   return (
-    <PageShell eyebrow="Builder" title="Generate Test" description="Build a custom test step-by-step.">
+    <PageShell eyebrow="Builder" title="Custom Test" description="Build a custom practice test tailored to your syllabus & difficulty.">
       <div className="mb-4 flex items-center justify-between rounded-xl border border-amber-300/40 bg-amber-500/10 px-4 py-2.5 text-sm">
         <span className="inline-flex items-center gap-2 font-medium">
           <Gift className="h-4 w-4 text-amber-600" />

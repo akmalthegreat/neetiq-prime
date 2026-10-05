@@ -1,15 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Loader2, ArrowRight, CalendarDays, Flame, Sparkles,
   Atom, FlaskConical, Leaf, Dna, SlidersHorizontal, Brain,
   FileText, BookMarked, RefreshCw, TrendingUp, Trophy,
-  Gift, MessageSquare, Layers, Users, Highlighter, Route as RouteIcon, Target, Coins,
-  Swords, Crown,
+  Gift, MessageSquare, Layers, Users, Highlighter, Route as RouteIcon, Target,
+  Swords, Crown, CheckCircle2, Zap, ArrowUpRight, BarChart3, Settings2
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,16 +24,24 @@ const comingSoon = (label: string) =>
 
 type Test = { id: string; title: string; type: string; difficulty: string; duration_min: number; total_questions: number };
 
+type TodayAttempt = {
+  id: string;
+  correct_count: number;
+  wrong_count: number;
+  unattempted_count: number;
+  submitted_at: string;
+};
+
 export const Route = createFileRoute("/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — NEET Track" }] }),
   component: Dashboard,
 });
 
 const SUBJECTS = [
-  { name: "Physics", icon: Atom, tint: "from-sky-500 to-blue-600", ring: "ring-sky-400/30" },
-  { name: "Chemistry", icon: FlaskConical, tint: "from-orange-500 to-rose-600", ring: "ring-orange-400/30" },
-  { name: "Zoology", icon: Leaf, tint: "from-emerald-500 to-teal-600", ring: "ring-emerald-400/30" },
-  { name: "Botany", icon: Dna, tint: "from-lime-500 to-green-600", ring: "ring-lime-400/30" },
+  { name: "Physics", icon: Atom, tint: "from-emerald-500 to-teal-600", ring: "ring-emerald-400/30" },
+  { name: "Chemistry", icon: FlaskConical, tint: "from-teal-500 to-emerald-700", ring: "ring-teal-400/30" },
+  { name: "Botany", icon: Leaf, tint: "from-green-500 to-emerald-600", ring: "ring-green-400/30" },
+  { name: "Zoology", icon: Dna, tint: "from-lime-500 to-emerald-600", ring: "ring-lime-400/30" },
 ];
 
 function Dashboard() {
@@ -37,35 +49,61 @@ function Dashboard() {
   const nav = useNavigate();
   const [daily, setDaily] = useState<Test | null | undefined>(undefined);
   const [streak, setStreak] = useState<number>(0);
+  const [todayAttempts, setTodayAttempts] = useState<TodayAttempt[]>([]);
+  const [goalDialog, setGoalDialog] = useState(false);
+  const [goalDraft, setGoalDraft] = useState(30);
+
+  const dailyGoal = profile?.daily_goal ?? 30;
+
+  useEffect(() => {
+    if (profile?.daily_goal) setGoalDraft(profile.daily_goal);
+  }, [profile?.daily_goal]);
 
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
   useEffect(() => { if (user) refresh(); }, [user?.id]);
+
+  // Fetch featured DPP HUB test
   useEffect(() => {
     supabase.from("tests").select("id,title,type,difficulty,duration_min,total_questions")
       .eq("type", "daily").order("created_at", { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => setDaily((data as Test | null) ?? null));
   }, []);
 
-  // Compute current daily streak from completed attempts
+  // Fetch streak & today's question counts
   useEffect(() => {
     if (!user) return;
-    const since = new Date(); since.setDate(since.getDate() - 60); since.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const sixtyDaysAgo = new Date();
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+    sixtyDaysAgo.setHours(0, 0, 0, 0);
+
     supabase
       .from("attempts")
-      .select("submitted_at")
+      .select("id,correct_count,wrong_count,unattempted_count,submitted_at")
       .eq("user_id", user.id)
       .eq("status", "completed")
-      .gte("submitted_at", since.toISOString())
+      .gte("submitted_at", sixtyDaysAgo.toISOString())
       .then(({ data }) => {
+        const attempts = (data ?? []) as TodayAttempt[];
+        
+        // Filter for today's completed attempts
+        const todayItems = attempts.filter((a) => {
+          if (!a.submitted_at) return false;
+          return new Date(a.submitted_at) >= today;
+        });
+        setTodayAttempts(todayItems);
+
+        // Calculate streak
         const days = new Set(
-          (data ?? [])
+          attempts
             .map((a) => a.submitted_at)
             .filter((s): s is string => !!s)
             .map((s) => new Date(s).toISOString().slice(0, 10)),
         );
         let s = 0;
         const cur = new Date(); cur.setHours(0, 0, 0, 0);
-        // Allow today missing but streak continues from yesterday
         if (!days.has(cur.toISOString().slice(0, 10))) {
           cur.setDate(cur.getDate() - 1);
         }
@@ -77,180 +115,328 @@ function Dashboard() {
       });
   }, [user?.id]);
 
+  // Calculations for today's stats
+  const { todayQuestions, todayCorrect, todayAccuracy, progressPercent } = useMemo(() => {
+    const questions = todayAttempts.reduce((sum, a) => sum + (a.correct_count ?? 0) + (a.wrong_count ?? 0), 0);
+    const correct = todayAttempts.reduce((sum, a) => sum + (a.correct_count ?? 0), 0);
+    const accuracy = questions > 0 ? Math.round((correct / questions) * 100) : 0;
+    const pct = Math.min(100, Math.round((questions / dailyGoal) * 100));
+    return { todayQuestions: questions, todayCorrect: correct, todayAccuracy: accuracy, progressPercent: pct };
+  }, [todayAttempts, dailyGoal]);
+
+  const saveDailyGoal = async () => {
+    if (!user) return;
+    const val = Math.max(5, Math.min(200, Number(goalDraft) || 30));
+    const { error } = await supabase.from("profiles").update({ daily_goal: val }).eq("id", user.id);
+    if (!error) {
+      toast.success(`Daily target updated to ${val} questions!`);
+      refresh();
+      setGoalDialog(false);
+    } else {
+      toast.error("Could not update target");
+    }
+  };
+
   if (loading || !user) {
     return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
 
   const firstName = profile?.full_name?.split(" ")[0] ?? "Aspirant";
-  const today = new Date().toISOString().slice(0, 10);
+  const todayStr = new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
   return (
     <PageShell>
       <TrialBanner />
-      {/* Top status strip */}
-      <div className="-mt-2 mb-2 grid grid-cols-3 gap-1.5 sm:max-w-md">
-        <StatPill icon={CalendarDays} label="NEET" value="2027" />
-        <Link to="/leaderboard"><StatPill icon={Flame} label="Streak" value={`${streak}d`} /></Link>
-        <Link to="/leaderboard"><StatPill icon={Trophy} label="XP" value={String((profile as unknown as { xp_total?: number } | null)?.xp_total ?? 0)} /></Link>
+
+      {/* Hero Welcome & Today Status */}
+      <div className="relative mb-6 overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-card to-teal-500/10 p-5 shadow-soft sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+              <Zap className="h-3.5 w-3.5" /> NEET 2027 Track
+            </div>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+              Welcome back, <span className="text-gradient-primary">{firstName}</span>
+            </h1>
+            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+              Today is {todayStr} · Stay consistent and hit your daily target.
+            </p>
+          </div>
+
+          {/* Quick Header Metric Pills */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 rounded-2xl border border-emerald-500/20 bg-card/80 px-3 py-2 shadow-sm backdrop-blur">
+              <Flame className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
+              <div>
+                <div className="text-[10px] uppercase font-bold text-muted-foreground">Streak</div>
+                <div className="text-xs font-extrabold text-foreground">{streak} Days</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-2xl border border-emerald-500/20 bg-card/80 px-3 py-2 shadow-sm backdrop-blur">
+              <Trophy className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />
+              <div>
+                <div className="text-[10px] uppercase font-bold text-muted-foreground">XP</div>
+                <div className="text-xs font-extrabold text-foreground">{profile?.xp_total ?? 0}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Daily Target & Question Count Tracker Card */}
+        <div className="mt-5 rounded-2xl border border-border bg-card/90 p-4 shadow-sm backdrop-blur">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Target className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Daily Question Target</div>
+                <div className="text-base font-extrabold text-foreground sm:text-lg">
+                  {todayQuestions} <span className="text-xs font-medium text-muted-foreground">/ {dailyGoal} questions done today</span>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setGoalDialog(true)}
+              className="h-8 rounded-xl border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500/10"
+            >
+              <Settings2 className="mr-1.5 h-3.5 w-3.5" /> Set Target
+            </Button>
+          </div>
+
+          <div className="mt-3">
+            <div className="mb-1.5 flex justify-between text-xs font-medium text-muted-foreground">
+              <span>{progressPercent}% completed</span>
+              <span>{Math.max(0, dailyGoal - todayQuestions)} questions left</span>
+            </div>
+            <Progress value={progressPercent} className="h-2.5 rounded-full bg-secondary" />
+          </div>
+        </div>
       </div>
 
-      {/* Quick Practice */}
-      <Section title="Quick Practice" first>
+      {/* Target Setting Dialog */}
+      <Dialog open={goalDialog} onOpenChange={setGoalDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Set Your Daily Question Target</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-3">
+            <div className="space-y-2">
+              <Label>Target Questions per Day</Label>
+              <Input
+                type="number"
+                min={5}
+                max={200}
+                value={goalDraft}
+                onChange={(e) => setGoalDraft(Number(e.target.value))}
+                placeholder="30"
+              />
+              <p className="text-xs text-muted-foreground">Recommended: 30–60 questions daily for NEET high yield.</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setGoalDialog(false)}>Cancel</Button>
+            <Button onClick={saveDailyGoal} className="bg-primary text-primary-foreground">Save Target</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Statistics Grid */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatCard
+          icon={CheckCircle2}
+          label="Today's Solved"
+          value={String(todayQuestions)}
+          sub={`${todayCorrect} correct`}
+          tint="text-emerald-700 dark:text-emerald-300"
+        />
+        <StatCard
+          icon={BarChart3}
+          label="Today's Accuracy"
+          value={todayQuestions > 0 ? `${todayAccuracy}%` : "—"}
+          sub={todayQuestions > 0 ? "Live calculation" : "Solve a DPP"}
+          tint="text-teal-700 dark:text-teal-300"
+        />
+        <StatCard
+          icon={Flame}
+          label="Active Streak"
+          value={`${streak}d`}
+          sub="Consistency rank"
+          tint="text-emerald-700 dark:text-emerald-300"
+        />
+        <StatCard
+          icon={Trophy}
+          label="Total Points"
+          value={String(profile?.xp_total ?? 0)}
+          sub="Leaderboard score"
+          tint="text-green-700 dark:text-green-300"
+        />
+      </div>
+
+      {/* Quick Practice Subjects */}
+      <Section title="Quick Practice by Subject" first>
         <div className="grid grid-cols-4 gap-3">
           {SUBJECTS.map((s) => (
             <Link key={s.name} to="/subjects/$subject" params={{ subject: s.name }} className="group">
-            <div className={`flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br ${s.tint} opacity-90 shadow-soft ring-1 ${s.ring} transition-transform group-hover:-translate-y-0.5`}>
+              <div className={`flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br ${s.tint} shadow-soft ring-1 ${s.ring} transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-elegant`}>
                 <s.icon className="h-8 w-8 text-white sm:h-10 sm:w-10" strokeWidth={1.8} />
               </div>
-              <div className="mt-2 text-center text-sm font-semibold">{s.name}</div>
+              <div className="mt-2 text-center text-xs font-bold text-foreground sm:text-sm">{s.name}</div>
             </Link>
           ))}
         </div>
       </Section>
 
-      {/* Daily DPP — uniform tile style */}
-      <Section title="Daily DPP">
-        <ToolCard
-          to={daily ? "/quiz/$testId" : "/daily"}
-          params={daily ? { testId: daily.id } : undefined}
-          title="Daily DPP"
-          subtitle={`20-min NEET practice · ${streak}-day streak · ${today}`}
-          icon={CalendarDays}
-          tint="from-sky-500 to-blue-600"
-        />
-      </Section>
-
-      {/* Live Contests — uniform tiles */}
-      <Section title="Live Contests">
-        <ToolCard
-          to="/contests"
-          title="Cash Contests"
-          subtitle="Daily 7 PM · live leaderboard · win real prizes"
-          icon={Trophy}
-          tint="from-amber-500 to-orange-600"
-          badge="LIVE"
-        />
-
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <SmallTool
-            to="/battlegrounds"
-            title="Battlegrounds"
-            subtitle="Pick stake · Free / ₹2 / ₹5 / ₹10 / ₹25"
-            icon={Swords}
-            tint="from-rose-500 to-red-600"
-            tall
-            badge="LIVE"
+      {/* Primary Practice Arenas: DPP HUB & ALL DPP */}
+      <Section title="Practice Arenas">
+        <div className="space-y-3">
+          {/* DPP HUB Featured Tile */}
+          <ToolCard
+            to={daily ? "/quiz/$testId" : "/daily"}
+            params={daily ? { testId: daily.id } : undefined}
+            title="DPP HUB"
+            subtitle={`Daily Practice Problem Set · 20-min speed drill · ${streak}-day streak`}
+            icon={CalendarDays}
+            tint="from-emerald-500 to-teal-700"
+            badge="TODAY'S DPP"
           />
-          <SmallTool
-            to="#"
-            title="Tournaments"
-            subtitle="Bracket-style elimination"
-            icon={Crown}
-            tint="from-fuchsia-500 to-purple-600"
-            tall
-            badge="SOON"
-            onClick={(e) => { e.preventDefault(); comingSoon("Tournaments"); }}
-          />
+
+          {/* ALL DPP & Custom Test Grid */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <SmallTool
+              to="/dpp"
+              title="ALL DPP"
+              subtitle="Browse topic-wise DPPs, past sets & quizzes"
+              icon={SlidersHorizontal}
+              tint="from-teal-500 to-emerald-600"
+              tall
+            />
+            <SmallTool
+              to="/generate"
+              title="Custom Test"
+              subtitle="Build your customized test by chapter & difficulty"
+              icon={FileText}
+              bonus={5}
+              tint="from-green-500 to-teal-600"
+              tall
+              badge="CUSTOM"
+            />
+          </div>
         </div>
       </Section>
 
-      {/* Study Tools — distinct per-feature accent colors */}
-      <Section title="Study Tools">
+      {/* Tests & Mock Exams */}
+      <Section title="Exams & Contests">
         <div className="space-y-3">
-          <ToolCard
-            to="/dpp"
-            title="All DPP & Quiz"
-            subtitle="Daily Practice Problems and topic quizzes"
-            icon={SlidersHorizontal}
-            tint="from-sky-500 to-blue-600"
-          />
           <ToolCard
             to="/mocks"
             title="All Mock Tests"
-            subtitle="Full-length NEET-pattern mocks"
+            subtitle="Full-length 720-mark NEET pattern mock examinations with timer & analysis"
             icon={Brain}
-            tint="from-violet-500 to-indigo-600"
+            tint="from-emerald-600 to-green-700"
             bonus={10}
           />
 
           <div className="grid grid-cols-2 gap-3">
-            <SmallTool to="/generate" title="Generate Test" subtitle="Custom DPP wizard" icon={FileText} bonus={5} tint="from-orange-500 to-rose-600" />
-            <div className="grid gap-3">
-              <SmallTool to="/neetlab" title="NEETLab" subtitle="3D simulations & PYQs" icon={BookMarked} tint="from-amber-500 to-yellow-600" />
-              <SmallTool to="/bookmarks" title="Bookmarks" subtitle="Saved questions" icon={RefreshCw} tint="from-pink-500 to-rose-600" />
-            </div>
+            <SmallTool
+              to="/contests"
+              title="Cash Contests"
+              subtitle="Daily 7 PM · Win prizes"
+              icon={Trophy}
+              tint="from-amber-500 to-emerald-600"
+              tall
+              badge="LIVE"
+            />
+            <SmallTool
+              to="/battlegrounds"
+              title="Battlegrounds"
+              subtitle="1v1 Real-time NEET Quiz"
+              icon={Swords}
+              tint="from-teal-600 to-emerald-700"
+              tall
+              badge="1V1"
+            />
           </div>
+        </div>
+      </Section>
 
-          {/* Flashcards + AI Path */}
+      {/* Study & High-Yield Tools */}
+      <Section title="High-Yield Study Tools">
+        <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <SmallTool to="/flashcards" title="Flashcards" subtitle="Flip & recall high-yield concepts" icon={Layers} bonus={15} tint="from-cyan-500 to-teal-600" tall />
-            <SmallTool to="/ai-path" title="AI Path" subtitle="7-day personalized plan" icon={RouteIcon} bonus={45} tint="from-fuchsia-500 to-purple-600" tall />
+            <SmallTool to="/flashcards" title="Flashcards" subtitle="High-yield formula & concept cards" icon={Layers} bonus={15} tint="from-emerald-500 to-teal-600" tall />
+            <SmallTool to="/ai-path" title="AI Path" subtitle="7-day personalized study roadmap" icon={RouteIcon} bonus={45} tint="from-teal-600 to-green-600" tall />
           </div>
 
           <ToolCard
             to="/highlighted-ncert"
             title="Highlighted NCERT"
-            subtitle="Class 11 & 12 Biology · PYQ-coloured lines & diagrams"
+            subtitle="Class 11 & 12 Biology · PYQ-coloured high-yield lines"
             icon={BookMarked}
-            tint="from-emerald-500 to-teal-600"
+            tint="from-emerald-600 to-teal-600"
           />
 
           <ToolCard
             to="/ncert-highlights"
             title="NCERT Highlights"
-            subtitle="Most-repeated NCERT lines for NEET"
+            subtitle="High-probability recurring NCERT lines for NEET"
             icon={Highlighter}
-            tint="from-emerald-500 to-green-600"
+            tint="from-teal-600 to-emerald-700"
             bonus={15}
           />
+
+          <div className="grid grid-cols-2 gap-3">
+            <SmallTool to="/neetlab" title="NEETLab" subtitle="3D simulations & models" icon={BookMarked} tint="from-green-600 to-emerald-700" />
+            <SmallTool to="/bookmarks" title="Bookmarks" subtitle="Saved questions bank" icon={RefreshCw} tint="from-teal-600 to-emerald-600" />
+          </div>
 
           <ToolCard
             to="/score-predictor"
             title="Score Predictor"
-            subtitle="AI NEET score & rank forecast"
+            subtitle="AI NEET score forecast & percentile rank analysis"
             icon={Target}
-            tint="from-red-500 to-orange-600"
+            tint="from-emerald-600 to-teal-700"
             bonus={25}
           />
 
           <ToolCard
             to="/progress"
             title="Weekly Progress Report"
-            subtitle="Parent dashboard analytics"
+            subtitle="Detailed accuracy, subject analysis & parent reporting"
             icon={TrendingUp}
             tint="from-teal-500 to-emerald-600"
           />
         </div>
       </Section>
 
-
-      {/* More — Community, Refer & Earn, Feedback */}
-      <Section title="More">
+      {/* Community & Referrals */}
+      <Section title="Community & Support">
         <div className="grid grid-cols-2 gap-3">
-          <SmallTool to="/community" title="Our Community" subtitle="WhatsApp & Telegram channels" icon={Users} tint="from-green-500 to-emerald-600" tall />
-          <SmallTool to="/referrals" title="Refer & Earn" subtitle="Invite friends, get rewards" icon={Gift} bonus={50} tint="from-yellow-500 to-amber-600" tall />
+          <SmallTool to="/community" title="Our Community" subtitle="WhatsApp & Telegram groups" icon={Users} tint="from-emerald-500 to-teal-600" tall />
+          <SmallTool to="/referrals" title="Refer & Earn" subtitle="Invite friends, get coins" icon={Gift} bonus={50} tint="from-green-500 to-emerald-600" tall />
           <Link to="/feedback" className="col-span-2 block h-full">
-            <div className="flex h-full min-h-[88px] items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft transition-transform hover:-translate-y-0.5">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-sm">
+            <div className="flex h-full min-h-[76px] items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft transition-transform hover:-translate-y-0.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
                 <MessageSquare className="h-5 w-5" strokeWidth={1.8} />
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-bold leading-tight text-foreground">Feedback</div>
-                <div className="mt-0.5 text-xs text-muted-foreground">Tell us what to improve</div>
+                <div className="text-sm font-bold text-foreground">Feedback & Requests</div>
+                <div className="text-xs text-muted-foreground">Tell us what features you need next</div>
               </div>
             </div>
           </Link>
         </div>
       </Section>
 
-
-
       {isAdmin && (
-        <Section title="Admin">
-          <Card className="border-primary/30 bg-gradient-primary text-primary-foreground shadow-elegant">
+        <Section title="Admin Controls">
+          <Card className="border-emerald-500/30 bg-gradient-primary text-primary-foreground shadow-elegant">
             <CardContent className="flex items-center justify-between gap-3 p-5">
               <div>
-                <div className="text-xs uppercase tracking-widest opacity-80">Admin</div>
+                <div className="text-xs uppercase tracking-widest opacity-80">Admin Console</div>
                 <div className="mt-1 text-base font-semibold">Manage tests, contests & questions</div>
               </div>
               <Button asChild variant="secondary" size="sm">
@@ -273,35 +459,31 @@ function Section({ title, children, first }: { title: string; children: React.Re
   );
 }
 
-function StatPill({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
+function StatCard({ icon: Icon, label, value, sub, tint }: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  sub: string;
+  tint?: string;
+}) {
   return (
-    <div className="flex min-w-0 items-center gap-1.5 rounded-full border border-border bg-card px-2 py-1.5 shadow-sm">
-      <Icon className="h-3.5 w-3.5 shrink-0 text-primary" />
-      <div className="min-w-0 leading-tight">
-        <div className="truncate text-[8px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</div>
-        <div className="truncate text-[11px] font-bold">{value}</div>
+    <div className="rounded-2xl border border-border bg-card p-3.5 shadow-soft transition-transform hover:-translate-y-0.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+        <Icon className={`h-4 w-4 ${tint ?? "text-primary"}`} />
       </div>
+      <div className="mt-2 text-xl font-extrabold text-foreground">{value}</div>
+      <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>
     </div>
   );
 }
 
-// Map gradient tints to subtle tile backgrounds + border + bonus pill colors (works in light & dark)
 function tintStyles(tint?: string) {
-  const t = tint ?? "from-primary to-blue-600";
-  // Extract the "from-xxx-500" base color name
-  const m = t.match(/from-([a-z]+)-\d+/);
-  const c = m?.[1] ?? "primary";
-  if (c === "primary") {
-    return {
-      bg: "bg-gradient-to-br from-primary/15 via-card to-primary/25",
-      border: "border-primary/40 hover:border-primary/70",
-      pill: "bg-primary/20 text-primary",
-    };
-  }
+  const t = tint ?? "from-emerald-500 to-teal-700";
   return {
-    bg: `bg-gradient-to-br from-${c}-500/20 via-card to-${c}-500/25 dark:from-${c}-500/25 dark:to-${c}-500/35`,
-    border: `border-${c}-500/40 hover:border-${c}-500/70`,
-    pill: `bg-${c}-500/20 text-${c}-700 dark:text-${c}-300`,
+    bg: "bg-card hover:bg-emerald-500/[0.04]",
+    border: "border-border hover:border-emerald-500/40",
+    pill: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300",
   };
 }
 
@@ -310,22 +492,29 @@ function ToolCard({ to, params, title, subtitle, icon: Icon, bonus, tint, badge 
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   bonus?: number; tint?: string; badge?: string;
 }) {
-  const grad = tint ?? "from-primary to-blue-600";
   const s = tintStyles(tint);
   return (
     <Link to={to as never} params={params as never} className="block">
-      <div className={`relative overflow-hidden rounded-2xl border ${s.border} ${s.bg} p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-elegant`}>
+      <div className={`relative overflow-hidden rounded-2xl border ${s.border} ${s.bg} p-5 shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elegant`}>
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <div className="text-[15px] font-bold uppercase tracking-wide text-foreground">{title}</div>
-              {badge && <BadgePill text={badge} />}
+              <span className="text-base font-extrabold text-foreground sm:text-lg">{title}</span>
+              {badge && (
+                <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[9px] font-extrabold tracking-wider text-emerald-800 dark:text-emerald-300">
+                  {badge}
+                </span>
+              )}
+              {bonus && (
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${s.pill}`}>
+                  +{bonus} XP
+                </span>
+              )}
             </div>
-            <div className="mt-1 text-sm text-muted-foreground">{subtitle}</div>
-            {bonus !== undefined && <BonusPill amount={bonus} className={`mt-2 ${s.pill}`} />}
+            <div className="mt-1 text-xs text-muted-foreground sm:text-sm">{subtitle}</div>
           </div>
-          <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${grad} text-white shadow-md`}>
-            <Icon className="h-7 w-7" strokeWidth={1.6} />
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-soft">
+            <Icon className="h-5 w-5" strokeWidth={2} />
           </div>
         </div>
       </div>
@@ -333,76 +522,41 @@ function ToolCard({ to, params, title, subtitle, icon: Icon, bonus, tint, badge 
   );
 }
 
-function SmallTool({ to, title, subtitle, icon: Icon, bonus, tall, tint, badge, onClick }: {
+function SmallTool({ to, title, subtitle, icon: Icon, bonus, tint, badge, tall, onClick }: {
   to: string; title: string; subtitle: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  bonus?: number; tall?: boolean; tint?: string; badge?: string;
+  bonus?: number; tint?: string; badge?: string; tall?: boolean;
   onClick?: (e: React.MouseEvent) => void;
 }) {
-  const grad = tint ?? "from-primary to-blue-600";
   const s = tintStyles(tint);
   return (
     <Link to={to as never} onClick={onClick} className="block h-full">
-      <div className={`flex h-full ${tall ? "min-h-[132px]" : ""} flex-col justify-between rounded-2xl border ${s.border} ${s.bg} p-4 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-elegant`}>
+      <div className={`group flex h-full ${tall ? "min-h-[105px]" : "min-h-[85px]"} flex-col justify-between rounded-2xl border ${s.border} ${s.bg} p-4 shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elegant`}>
         <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <div className="text-sm font-bold uppercase tracking-wide leading-tight text-foreground">{title}</div>
-            {badge && <div className="mt-1"><BadgePill text={badge} /></div>}
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm">
+            <Icon className="h-4 w-4" strokeWidth={2} />
           </div>
-          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${grad} text-white shadow-sm`}>
-            <Icon className="h-4 w-4" strokeWidth={1.8} />
+          <div className="flex items-center gap-1">
+            {badge && (
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[9px] font-extrabold tracking-wider text-emerald-800 dark:text-emerald-300">
+                {badge}
+              </span>
+            )}
+            {bonus && (
+              <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${s.pill}`}>
+                +{bonus}
+              </span>
+            )}
           </div>
         </div>
-        <div>
-          <div className="mt-2 text-xs text-muted-foreground">{subtitle}</div>
-          {bonus !== undefined && <BonusPill amount={bonus} className={`mt-2 ${s.pill}`} />}
+        <div className="mt-2 min-w-0">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-bold text-foreground group-hover:text-primary">{title}</div>
+            <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+          </div>
+          <div className="mt-0.5 line-clamp-2 text-[11px] text-muted-foreground">{subtitle}</div>
         </div>
       </div>
     </Link>
   );
 }
-
-function BadgePill({ text }: { text: string }) {
-  const isLive = text.toUpperCase() === "LIVE";
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
-      isLive
-        ? "bg-red-500/15 text-red-600 dark:text-red-400"
-        : "bg-muted text-muted-foreground"
-    }`}>
-      {isLive && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />}
-      {text}
-    </span>
-  );
-}
-
-function ComingSoonTile({ title, subtitle, icon: Icon, onClick, tint = "from-primary/90 via-accent/80 to-primary/70" }: {
-  title: string; subtitle: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  onClick: () => void;
-  tint?: string;
-}) {
-  return (
-    <button type="button" onClick={onClick} className="block h-full w-full text-left">
-      <div className={`relative flex h-full min-h-[132px] flex-col justify-between overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br ${tint} p-4 text-primary-foreground shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-elegant`}>
-        <div className="flex items-start justify-between gap-2">
-          <div className="text-sm font-bold uppercase tracking-wide leading-tight">{title}</div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-background/20 text-primary-foreground shadow-sm backdrop-blur">
-            <Icon className="h-4 w-4" strokeWidth={1.8} />
-          </div>
-        </div>
-        <div>
-          <div className="mt-2 text-xs text-primary-foreground/90">{subtitle}</div>
-          <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-background/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground backdrop-blur">Coming Soon</span>
-        </div>
-      </div>
-    </button>
-  );
-}
-
-
-function BonusPill(_props: { amount: number; className?: string }) {
-  // Bonus system removed — pill is a no-op to preserve layout without any user-facing bonus wording.
-  return null;
-}
-

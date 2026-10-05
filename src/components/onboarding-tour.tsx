@@ -13,9 +13,9 @@ type Step = {
 };
 
 const STEPS: Step[] = [
-  { route: "/dashboard", title: "Welcome to NEETIQ Prime 👋", body: "Quick tour of every feature. The app stays fully interactive — tap around and explore as we go. Skip anytime." },
-  { route: "/daily", title: "Daily DPP", body: "A fresh AI-generated Daily Practice Problem set every morning. Free, forever." },
-  { route: "/generate", title: "Generate a test", body: "Pick subject, chapters and difficulty. AI builds you a custom test in seconds." },
+  { route: "/dashboard", title: "Welcome to NEET Track 👋", body: "Quick tour of every feature. The app stays fully interactive — tap around and explore as we go. Skip anytime." },
+  { route: "/daily", title: "DPP HUB", body: "A fresh AI-generated Daily Practice Problem set every morning. Free, forever." },
+  { route: "/generate", title: "Custom Test", body: "Pick subject, chapters and difficulty. AI builds you a custom test in seconds." },
   { route: "/flashcards", title: "Flashcards 🧠", body: "Flip through high-yield cards, reveal the answer, then rate yourself Easy / Medium / Hard. Open a deck to try it now." },
   { route: "/ncert-highlights", title: "NCERT Highlights ✨", body: "The most-repeated NCERT lines that show up in NEET. Quick, exam-focused revision." },
   { route: "/ai-path", title: "AI Path 🧭", body: "A personalized 7-day study plan generated from your performance — knows exactly what to fix next." },

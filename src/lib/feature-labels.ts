@@ -1,6 +1,6 @@
 // Shared feature-key → user-facing label map (client-safe; no server imports).
 export const FEATURE_LABEL_MAP: Record<string, string> = {
-  daily_dpp: "Daily DPP",
+  daily_dpp: "DPP HUB",
   ai_mock_tests: "AI Mock Tests",
   unlimited_ai_quizzes: "Unlimited AI quizzes",
   flashcards: "Flashcards",

@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/dpp")({
-  head: () => ({ meta: [{ title: "DPP & Quiz — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "ALL DPP — NEET Track" }] }),
   component: () => (<FeatureLock feature="daily_dpp"><DppPage/></FeatureLock>),
 });
 
@@ -64,7 +64,7 @@ function DppPage() {
   }
 
   return (
-    <PageShell eyebrow="Practice" title="All DPP & Quiz" description="Daily Practice Problems and topic quizzes.">
+    <PageShell eyebrow="Practice" title="ALL DPP" description="Daily Practice Problems and topic quizzes.">
       <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
         <strong>Live DPP is free.</strong> Attempting any past (ended) DPP costs <strong>{DPP_PAST_COST_BONUS} bonus</strong>. Resuming an in-progress attempt is free.
       </div>

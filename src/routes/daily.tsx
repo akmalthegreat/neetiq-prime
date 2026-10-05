@@ -12,7 +12,7 @@ import { FeatureLock } from "@/components/feature-lock";
 type Test = { id: string; title: string; description: string | null; difficulty: string; duration_min: number; total_questions: number; source: string; created_at: string };
 
 export const Route = createFileRoute("/daily")({
-  head: () => ({ meta: [{ title: "Daily Free Quiz — NEETIQ Prime" }, { name: "description", content: "A fresh free NEET quiz every day. 10 questions, 15 minutes." }] }),
+  head: () => ({ meta: [{ title: "DPP HUB — NEET Track" }, { name: "description", content: "A fresh free NEET quiz every day. 10 questions, 15 minutes." }] }),
   component: () => (<FeatureLock feature="daily_dpp"><DailyPage/></FeatureLock>),
 });
 
@@ -39,7 +39,7 @@ function DailyPage() {
   }, []);
 
   return (
-    <PageShell eyebrow="Free everyday" title="Daily quiz" description="Stay sharp with a free quiz, refreshed daily.">
+    <PageShell eyebrow="Practice Arena" title="DPP HUB" description="Stay sharp with a free quiz, refreshed daily.">
       {today === undefined ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> : !today ? (
         <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">No daily quiz yet. Check back soon.</CardContent></Card>
       ) : (
