@@ -4,9 +4,7 @@ import "katex/dist/katex.min.css";
 import { cn } from "@/lib/utils";
 import { Tikz } from "@/components/tikz";
 import { Mermaid } from "@/components/mermaid";
-import { SUPABASE_URL } from "@/integrations/supabase/config";
-
-const STORAGE_IMG_BASE = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/question-images`;
+import { JSDELIVR_CDN_BASE, RAW_GITHUB_CDN_BASE, QUESTION_IMAGE_CDN_BASE } from "@/lib/cdn";
 
 /**
  * Diagram- and Image-aware rich text renderer for NEET exam questions.
@@ -39,15 +37,54 @@ export function resolveAnyImageUrl(url?: string | null): string | null {
   if (!url) return null;
   const trimmed = url.trim().replace(/^['"\s]+|['"\s]+$/g, "");
   if (!trimmed) return null;
+
+  // External or absolute URLs
   if (/^(?:https?:|data:|blob:)/i.test(trimmed)) {
-    // Keep external assets intact, but point this project's own Supabase object URLs
-    // at the configured project URL rather than a stale hard-coded host.
-    return trimmed.replace(/^https?:\/\/[^/]+\/storage\/v1\/object\/public\/question-images(?=\/)/i, STORAGE_IMG_BASE);
+    // 1. Map old Supabase question-images URLs to the CDN
+    const sbMatch = trimmed.match(/\/storage\/v1\/object\/public\/question-images\/(.+)$/i);
+    if (sbMatch && sbMatch[1]) {
+      return formatCdnUrl(sbMatch[1]);
+    }
+
+    // 2. Map old neet_track GitHub raw URLs to the new CDN
+    const ntMatch = trimmed.match(/neet_track\/[^/]+\/public\/img\/data\/(.+)$/i);
+    if (ntMatch && ntMatch[1]) {
+      return formatCdnUrl(ntMatch[1]);
+    }
+
+    // Keep all other external URLs (Cloudinary, Mathpix, etc.) intact
+    return trimmed;
   }
-  // Normalize legacy relative paths and paths that already include the bucket name.
-  const clean = trimmed.replace(/^\/+/, "").replace(/^img\/data\//i, "").replace(/^question-images\//i, "");
+
+  // Relative paths: e.g. "/img/data/biology/...", "biology/...", "physics/...", "question-images/..."
+  const clean = trimmed
+    .replace(/^\/+/, "")
+    .replace(/^public\//i, "")
+    .replace(/^img\/data\//i, "")
+    .replace(/^question-images\//i, "");
+
   if (!clean || clean.split("/").some((part) => part === "..")) return null;
-  return `${STORAGE_IMG_BASE}/${clean.split("/").map((part) => encodeURIComponent(decodeURIComponentSafe(part))).join("/")}`;
+
+  return formatCdnUrl(clean);
+}
+
+function formatCdnUrl(relPath: string): string {
+  const clean = relPath.replace(/^\/+/, "");
+  const encodedParts = clean
+    .split("/")
+    .map((part) => encodeURIComponent(decodeURIComponentSafe(part)))
+    .join("/");
+  return `${QUESTION_IMAGE_CDN_BASE}/${encodedParts}`;
+}
+
+export function handleImageFallback(image: HTMLImageElement) {
+  const currentSrc = image.getAttribute("src") || "";
+  // Seamlessly fall back from jsDelivr to raw GitHub if needed
+  if (currentSrc.startsWith(JSDELIVR_CDN_BASE)) {
+    image.src = currentSrc.replace(JSDELIVR_CDN_BASE, RAW_GITHUB_CDN_BASE);
+    return;
+  }
+  showImageFallback(image);
 }
 
 function decodeURIComponentSafe(value: string) {
@@ -215,7 +252,7 @@ function renderInline(src: string): ReactNode[] {
             alt="question diagram"
             loading="lazy"
             className="my-3 block max-h-96 max-w-full rounded-xl border border-border/80 bg-white p-1 object-contain shadow-md"
-            onError={(e) => showImageFallback(e.currentTarget)}
+            onError={(e) => handleImageFallback(e.currentTarget)}
           />,
         );
       }
@@ -230,7 +267,7 @@ function renderInline(src: string): ReactNode[] {
             alt={m[2] || "diagram"}
             loading="lazy"
             className="my-3 block max-h-96 max-w-full rounded-xl border border-border/80 bg-white p-1 object-contain shadow-md"
-            onError={(e) => showImageFallback(e.currentTarget)}
+            onError={(e) => handleImageFallback(e.currentTarget)}
           />,
         );
       }
@@ -245,7 +282,7 @@ function renderInline(src: string): ReactNode[] {
             alt="diagram"
             loading="lazy"
             className="my-3 block max-h-96 max-w-full rounded-xl border border-border/80 bg-white p-1 object-contain shadow-md"
-            onError={(e) => showImageFallback(e.currentTarget)}
+            onError={(e) => handleImageFallback(e.currentTarget)}
           />,
         );
       }

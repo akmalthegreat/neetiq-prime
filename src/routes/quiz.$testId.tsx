@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, Clock, User, Check, AlertCircle, FileText, Maximize2, Laptop } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { RichText, resolveAnyImageUrl } from "@/components/rich-text";
+import { RichText, resolveAnyImageUrl, handleImageFallback } from "@/components/rich-text";
 import { ReportQuestionButton } from "@/components/report-question-button";
 import { AntiCheatGate, hasAckedAntiCheat } from "@/components/anti-cheat-gate";
 
@@ -913,6 +913,7 @@ function QuizPlayer() {
                     alt="Question diagram"
                     className="my-3 max-h-80 w-auto object-contain"
                     loading="lazy"
+                    onError={(e) => handleImageFallback(e.currentTarget)}
                   />
                 )}
                 <div className="mt-4 space-y-3">
