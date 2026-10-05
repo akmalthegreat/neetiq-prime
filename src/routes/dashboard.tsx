@@ -73,16 +73,29 @@ function Dashboard() {
   const { user, profile, loading, refresh } = useAuth();
   const nav = useNavigate();
   const [daily, setDaily] = useState<Test | null | undefined>(undefined);
-  const [subjectCounts, setSubjectCounts] = useState({ physics: 16047, chemistry: 15602, biology: 15146 });
+  const [subjectCounts, setSubjectCounts] = useState({
+    physics: 16047,
+    chemistry: 15602,
+    biology: 15146,
+  });
 
   // Fetch real counts from Supabase
   useEffect(() => {
     async function fetchCounts() {
       try {
         const [p, c, b] = await Promise.all([
-          supabase.from("questions").select("id", { count: "exact", head: true }).eq("subject_id", "physics"),
-          supabase.from("questions").select("id", { count: "exact", head: true }).eq("subject_id", "chemistry"),
-          supabase.from("questions").select("id", { count: "exact", head: true }).eq("subject_id", "biology"),
+          supabase
+            .from("questions")
+            .select("id", { count: "exact", head: true })
+            .eq("subject_id", "physics"),
+          supabase
+            .from("questions")
+            .select("id", { count: "exact", head: true })
+            .eq("subject_id", "chemistry"),
+          supabase
+            .from("questions")
+            .select("id", { count: "exact", head: true })
+            .eq("subject_id", "biology"),
         ]);
         setSubjectCounts({
           physics: p.count ?? 16047,
@@ -177,25 +190,27 @@ function Dashboard() {
   }, [user?.id]);
 
   // Calculations for today's stats matching screenshot values as baseline
-  const { todayQuestions, todayCorrect, todayWrong, todayAccuracy, progressPercent } = useMemo(() => {
-    const questions = todayAttempts.reduce(
-      (sum, a) => sum + (a.correct_count ?? 0) + (a.wrong_count ?? 0) + (a.unattempted_count ?? 0),
-      0,
-    );
-    const correct = todayAttempts.reduce((sum, a) => sum + (a.correct_count ?? 0), 0);
-    const wrong = todayAttempts.reduce((sum, a) => sum + (a.wrong_count ?? 0), 0);
-    const solved = correct + wrong;
-    const accuracy = solved > 0 ? Math.round((correct / solved) * 100) : 83;
-    const pct = Math.min(100, Math.round((solved / dailyGoal) * 100));
+  const { todayQuestions, todayCorrect, todayWrong, todayAccuracy, progressPercent } =
+    useMemo(() => {
+      const questions = todayAttempts.reduce(
+        (sum, a) =>
+          sum + (a.correct_count ?? 0) + (a.wrong_count ?? 0) + (a.unattempted_count ?? 0),
+        0,
+      );
+      const correct = todayAttempts.reduce((sum, a) => sum + (a.correct_count ?? 0), 0);
+      const wrong = todayAttempts.reduce((sum, a) => sum + (a.wrong_count ?? 0), 0);
+      const solved = correct + wrong;
+      const accuracy = solved > 0 ? Math.round((correct / solved) * 100) : 83;
+      const pct = Math.min(100, Math.round((solved / dailyGoal) * 100));
 
-    return {
-      todayQuestions: questions,
-      todayCorrect: correct,
-      todayWrong: wrong,
-      todayAccuracy: solved > 0 ? accuracy : 0,
-      progressPercent: dailyGoal > 0 ? Math.min(100, Math.round((solved / dailyGoal) * 100)) : 0,
-    };
-  }, [todayAttempts, dailyGoal]);
+      return {
+        todayQuestions: questions,
+        todayCorrect: correct,
+        todayWrong: wrong,
+        todayAccuracy: solved > 0 ? accuracy : 0,
+        progressPercent: dailyGoal > 0 ? Math.min(100, Math.round((solved / dailyGoal) * 100)) : 0,
+      };
+    }, [todayAttempts, dailyGoal]);
 
   const saveDailyGoal = async () => {
     if (!user) return;
@@ -283,7 +298,7 @@ function Dashboard() {
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/10">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[#10b981] via-[#06b6d4] to-[#14b8a6] transition-all duration-700 shadow-sm shadow-cyan-500/50"
-                  style={{ width:  }}
+                  style={{ width: `${progressPercent}%` }}
                 />
               </div>
             </div>
@@ -370,8 +385,12 @@ function Dashboard() {
               </div>
 
               <div className="mt-3">
-                <div className="text-base font-bold text-white group-hover:text-blue-200">Physics</div>
-                <div className="text-xs text-blue-200/80">{subjectCounts.physics.toLocaleString()} Questions</div>
+                <div className="text-base font-bold text-white group-hover:text-blue-200">
+                  Physics
+                </div>
+                <div className="text-xs text-blue-200/80">
+                  {subjectCounts.physics.toLocaleString()} Questions
+                </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
@@ -399,8 +418,12 @@ function Dashboard() {
               </div>
 
               <div className="mt-3">
-                <div className="text-base font-bold text-white group-hover:text-teal-200">Chemistry</div>
-                <div className="text-xs text-teal-200/80">{subjectCounts.chemistry.toLocaleString()} Questions</div>
+                <div className="text-base font-bold text-white group-hover:text-teal-200">
+                  Chemistry
+                </div>
+                <div className="text-xs text-teal-200/80">
+                  {subjectCounts.chemistry.toLocaleString()} Questions
+                </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
@@ -428,8 +451,12 @@ function Dashboard() {
               </div>
 
               <div className="mt-3">
-                <div className="text-base font-bold text-white group-hover:text-purple-200">Biology</div>
-                <div className="text-xs text-purple-200/80">Zoology + Botany • {subjectCounts.biology.toLocaleString()} Questions</div>
+                <div className="text-base font-bold text-white group-hover:text-purple-200">
+                  Biology
+                </div>
+                <div className="text-xs text-purple-200/80">
+                  Zoology + Botany • {subjectCounts.biology.toLocaleString()} Questions
+                </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
@@ -474,9 +501,7 @@ function Dashboard() {
                 </Link>
               </div>
 
-              <p className="mt-1 text-xs text-emerald-100/70">
-                Analyse. Learn. Improve Faster.
-              </p>
+              <p className="mt-1 text-xs text-emerald-100/70">Analyse. Learn. Improve Faster.</p>
             </div>
 
             {/* 3 Pills at bottom matching screenshot */}
@@ -543,11 +568,21 @@ function Dashboard() {
                     onChange={(e) => setGenQuestions(Number(e.target.value))}
                     className="w-full rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400"
                   >
-                    <option value={20} className="bg-slate-900 text-white">20</option>
-                    <option value={30} className="bg-slate-900 text-white">30</option>
-                    <option value={50} className="bg-slate-900 text-white">50</option>
-                    <option value={90} className="bg-slate-900 text-white">90</option>
-                    <option value={180} className="bg-slate-900 text-white">180</option>
+                    <option value={20} className="bg-slate-900 text-white">
+                      20
+                    </option>
+                    <option value={30} className="bg-slate-900 text-white">
+                      30
+                    </option>
+                    <option value={50} className="bg-slate-900 text-white">
+                      50
+                    </option>
+                    <option value={90} className="bg-slate-900 text-white">
+                      90
+                    </option>
+                    <option value={180} className="bg-slate-900 text-white">
+                      180
+                    </option>
                   </select>
                 </div>
 
@@ -558,10 +593,18 @@ function Dashboard() {
                     onChange={(e) => setGenDifficulty(e.target.value)}
                     className="w-full rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400"
                   >
-                    <option value="Mixed" className="bg-slate-900 text-white">Mixed</option>
-                    <option value="Easy" className="bg-slate-900 text-white">Easy</option>
-                    <option value="Medium" className="bg-slate-900 text-white">Medium</option>
-                    <option value="Hard" className="bg-slate-900 text-white">Hard</option>
+                    <option value="Mixed" className="bg-slate-900 text-white">
+                      Mixed
+                    </option>
+                    <option value="Easy" className="bg-slate-900 text-white">
+                      Easy
+                    </option>
+                    <option value="Medium" className="bg-slate-900 text-white">
+                      Medium
+                    </option>
+                    <option value="Hard" className="bg-slate-900 text-white">
+                      Hard
+                    </option>
                   </select>
                 </div>
 
@@ -572,10 +615,18 @@ function Dashboard() {
                     onChange={(e) => setGenTimer(Number(e.target.value))}
                     className="w-full rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400"
                   >
-                    <option value={30} className="bg-slate-900 text-white">30 min</option>
-                    <option value={60} className="bg-slate-900 text-white">60 min</option>
-                    <option value={90} className="bg-slate-900 text-white">90 min</option>
-                    <option value={180} className="bg-slate-900 text-white">180 min</option>
+                    <option value={30} className="bg-slate-900 text-white">
+                      30 min
+                    </option>
+                    <option value={60} className="bg-slate-900 text-white">
+                      60 min
+                    </option>
+                    <option value={90} className="bg-slate-900 text-white">
+                      90 min
+                    </option>
+                    <option value={180} className="bg-slate-900 text-white">
+                      180 min
+                    </option>
                   </select>
                 </div>
               </div>
@@ -587,7 +638,10 @@ function Dashboard() {
                 asChild
                 className="w-full rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#10b981] font-bold text-slate-950 transition-all hover:from-[#0891b2] hover:to-[#059669] hover:shadow-lg shadow-cyan-500/20"
               >
-                <Link to="/generate" search={{ q: genQuestions, diff: genDifficulty, timer: genTimer } as never}>
+                <Link
+                  to="/generate"
+                  search={{ q: genQuestions, diff: genDifficulty, timer: genTimer } as never}
+                >
                   <span>Create Test →</span>
                 </Link>
               </Button>
@@ -652,9 +706,7 @@ function Dashboard() {
                     <BookOpen className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black tracking-wide text-white uppercase">
-                      PYQs
-                    </h3>
+                    <h3 className="text-sm font-black tracking-wide text-white uppercase">PYQs</h3>
                   </div>
                 </div>
 
@@ -885,7 +937,11 @@ function Dashboard() {
                       key={preset}
                       type="button"
                       onClick={() => setGoalDraft(preset)}
-                      className={}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        goalDraft === preset
+                          ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
+                          : "border-white/15 bg-white/5 text-slate-300 hover:border-emerald-400/50 hover:text-white"
+                      }`}
                     >
                       {preset} MCQs
                     </button>
@@ -913,7 +969,10 @@ function Dashboard() {
               <Button variant="ghost" onClick={() => setGoalDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={saveDailyGoal} className="bg-primary text-primary-foreground font-bold">
+              <Button
+                onClick={saveDailyGoal}
+                className="bg-primary text-primary-foreground font-bold"
+              >
                 Save Target
               </Button>
             </DialogFooter>
@@ -937,7 +996,7 @@ function TypewriterGreeting({ name }: { name: string }) {
     if (hour >= 12 && hour < 17) prefix = "Good afternoon";
     else if (hour >= 17) prefix = "Good evening";
 
-    const target = ;
+    const target = `${prefix}, ${name}!`;
     let idx = 0;
     setDisplayText("");
     setIsDone(false);
@@ -960,7 +1019,7 @@ function TypewriterGreeting({ name }: { name: string }) {
       <h1 className="text-lg font-black tracking-tight text-white sm:text-2xl">
         <span>{displayText}</span>
         <span
-          className={}
+          className={`ml-1 inline-block h-5 w-0.5 bg-emerald-300 align-middle ${isDone ? "opacity-0" : "animate-pulse"}`}
         />
       </h1>
     </div>
@@ -992,16 +1051,14 @@ function StudyToolItem({
       className="group flex items-center justify-between rounded-2xl border border-white/10 bg-card p-3 shadow-sm transition-all hover:border-emerald-400/50 hover:bg-muted/50 dark:border-white/10 dark:bg-white/[0.03]"
     >
       <div className="flex items-center gap-2.5 min-w-0">
-        <div className={}>
+        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBg}`}>
           <Icon className="h-4 w-4" />
         </div>
         <div className="min-w-0">
           <div className="truncate text-xs font-bold text-foreground group-hover:text-emerald-500">
             {title}
           </div>
-          <div className="truncate text-[10px] text-muted-foreground">
-            {subtitle}
-          </div>
+          <div className="truncate text-[10px] text-muted-foreground">{subtitle}</div>
         </div>
       </div>
       <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground" />

@@ -45,6 +45,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SubjectsSubjectRouteImport } from './routes/subjects.$subject'
 import { Route as QuizTestIdRouteImport } from './routes/quiz.$testId'
+import { Route as PreviewHumanReproductionRouteImport } from './routes/preview.human-reproduction'
 import { Route as ContestContestIdRouteImport } from './routes/contest.$contestId'
 import { Route as BattlegroundsViewAllRouteImport } from './routes/battlegrounds.view-all'
 import { Route as BattlegroundsHistoryRouteImport } from './routes/battlegrounds.history'
@@ -249,6 +250,12 @@ const QuizTestIdRoute = QuizTestIdRouteImport.update({
   path: '/quiz/$testId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PreviewHumanReproductionRoute =
+  PreviewHumanReproductionRouteImport.update({
+    id: '/preview/human-reproduction',
+    path: '/preview/human-reproduction',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ContestContestIdRoute = ContestContestIdRouteImport.update({
   id: '/contest/$contestId',
   path: '/contest/$contestId',
@@ -415,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/battlegrounds/history': typeof BattlegroundsHistoryRoute
   '/battlegrounds/view-all': typeof BattlegroundsViewAllRoute
   '/contest/$contestId': typeof ContestContestIdRouteWithChildren
+  '/preview/human-reproduction': typeof PreviewHumanReproductionRoute
   '/quiz/$testId': typeof QuizTestIdRoute
   '/subjects/$subject': typeof SubjectsSubjectRoute
   '/api/public/app-version': typeof ApiPublicAppVersionRoute
@@ -476,6 +484,7 @@ export interface FileRoutesByTo {
   '/battlegrounds/history': typeof BattlegroundsHistoryRoute
   '/battlegrounds/view-all': typeof BattlegroundsViewAllRoute
   '/contest/$contestId': typeof ContestContestIdRouteWithChildren
+  '/preview/human-reproduction': typeof PreviewHumanReproductionRoute
   '/quiz/$testId': typeof QuizTestIdRoute
   '/subjects/$subject': typeof SubjectsSubjectRoute
   '/api/public/app-version': typeof ApiPublicAppVersionRoute
@@ -538,6 +547,7 @@ export interface FileRoutesById {
   '/battlegrounds/history': typeof BattlegroundsHistoryRoute
   '/battlegrounds/view-all': typeof BattlegroundsViewAllRoute
   '/contest/$contestId': typeof ContestContestIdRouteWithChildren
+  '/preview/human-reproduction': typeof PreviewHumanReproductionRoute
   '/quiz/$testId': typeof QuizTestIdRoute
   '/subjects/$subject': typeof SubjectsSubjectRoute
   '/api/public/app-version': typeof ApiPublicAppVersionRoute
@@ -601,6 +611,7 @@ export interface FileRouteTypes {
     | '/battlegrounds/history'
     | '/battlegrounds/view-all'
     | '/contest/$contestId'
+    | '/preview/human-reproduction'
     | '/quiz/$testId'
     | '/subjects/$subject'
     | '/api/public/app-version'
@@ -662,6 +673,7 @@ export interface FileRouteTypes {
     | '/battlegrounds/history'
     | '/battlegrounds/view-all'
     | '/contest/$contestId'
+    | '/preview/human-reproduction'
     | '/quiz/$testId'
     | '/subjects/$subject'
     | '/api/public/app-version'
@@ -723,6 +735,7 @@ export interface FileRouteTypes {
     | '/battlegrounds/history'
     | '/battlegrounds/view-all'
     | '/contest/$contestId'
+    | '/preview/human-reproduction'
     | '/quiz/$testId'
     | '/subjects/$subject'
     | '/api/public/app-version'
@@ -780,6 +793,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   AnalysisAttemptIdRoute: typeof AnalysisAttemptIdRoute
   ContestContestIdRoute: typeof ContestContestIdRouteWithChildren
+  PreviewHumanReproductionRoute: typeof PreviewHumanReproductionRoute
   QuizTestIdRoute: typeof QuizTestIdRoute
   SubjectsSubjectRoute: typeof SubjectsSubjectRoute
   ApiPublicAppVersionRoute: typeof ApiPublicAppVersionRoute
@@ -1052,6 +1066,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizTestIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/preview/human-reproduction': {
+      id: '/preview/human-reproduction'
+      path: '/preview/human-reproduction'
+      fullPath: '/preview/human-reproduction'
+      preLoaderRoute: typeof PreviewHumanReproductionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contest/$contestId': {
       id: '/contest/$contestId'
       path: '/contest/$contestId'
@@ -1294,6 +1315,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   AnalysisAttemptIdRoute: AnalysisAttemptIdRoute,
   ContestContestIdRoute: ContestContestIdRouteWithChildren,
+  PreviewHumanReproductionRoute: PreviewHumanReproductionRoute,
   QuizTestIdRoute: QuizTestIdRoute,
   SubjectsSubjectRoute: SubjectsSubjectRoute,
   ApiPublicAppVersionRoute: ApiPublicAppVersionRoute,
