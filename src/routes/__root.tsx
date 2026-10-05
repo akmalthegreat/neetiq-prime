@@ -6,17 +6,21 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/hooks/use-auth";
+import { AccessProvider } from "@/hooks/use-access";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { Toaster } from "@/components/ui/sonner";
 import { OnboardingTour } from "@/components/onboarding-tour";
 import { SupportWidget } from "@/components/support-widget";
 import { AppVersionGate } from "@/components/app-version-gate";
+import { PremiumGate } from "@/components/premium-gate";
+import { getPublicSupabaseConfig } from "@/integrations/supabase/config";
 
-const THEME_INIT = `(function(){try{var t=localStorage.getItem('neetiq-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();`;
+const THEME_INIT = `(function(){try{var t=localStorage.getItem('neetiq-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){}})();`;
 
 function NotFoundComponent() {
   return (
@@ -40,7 +44,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
 
@@ -75,22 +79,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "NEET Track" },
-      { name: "description", content: "Cozy Creator is a web application for managing and participating in contests." },
+      { title: "NEETIQ prime" },
+      { name: "description", content: "NEETIQ Prime brings together NEET practice questions, CBT exams, NCERT study tools, and progress tracking." },
       { name: "author", content: "SΛNSKΛƦ" },
       { name: "theme-color", content: "#1d4ed8" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "NEET Track" },
+      { name: "apple-mobile-web-app-title", content: "NEETIQ" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { property: "og:title", content: "NEET Track" },
-      { property: "og:description", content: "Cozy Creator is a web application for managing and participating in contests." },
+      { property: "og:title", content: "NEETIQ prime" },
+      { property: "og:description", content: "NEET practice questions, CBT exams, NCERT study tools, and progress tracking." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "NEETIQ prime" },
-      { name: "twitter:description", content: "Cozy Creator is a web application for managing and participating in contests." },
-      { property: "og:image", content: "/icons/icon-512.png" },
-      { name: "twitter:image", content: "/icons/icon-512.png" },
+      { name: "twitter:description", content: "NEET practice questions, CBT exams, NCERT study tools, and progress tracking." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -108,6 +110,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
+  const supabaseConfig = getPublicSupabaseConfig();
+  const supabaseConfigInit = `globalThis.__MY_SUPABASE_CONFIG__=${JSON.stringify(supabaseConfig)};`;
+
   return (
     <html lang="en">
       <head>
@@ -116,6 +121,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <script dangerouslySetInnerHTML={{ __html: supabaseConfigInit }} />
         <Scripts />
       </body>
     </html>
@@ -128,11 +134,14 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <Outlet />
-          <Toaster richColors position="top-center" />
-          <OnboardingTour />
-          <SupportWidget />
-          <AppVersionGate />
+          <AccessProvider>
+            <Outlet />
+            <Toaster richColors position="top-center" />
+            <OnboardingTour />
+            <SupportWidget />
+            <AppVersionGate />
+            <PremiumGate />
+          </AccessProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

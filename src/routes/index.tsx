@@ -16,6 +16,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Daily DPPs, AI-generated quizzes, full mock tests, flashcards, NCERT highlights, AI study path and live contests — built for NEET-UG aspirants." },
       { property: "og:title", content: "NEETIQ Prime — AI-powered NEET prep" },
       { property: "og:description", content: "Daily DPPs, AI-generated quizzes, full mock tests, flashcards, NCERT highlights and live contests for NEET aspirants." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LandingPage,
@@ -49,7 +51,6 @@ function LandingPage() {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 bg-gradient-hero opacity-[0.06]" />
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="mx-auto max-w-3xl text-center animate-fade-in-up">

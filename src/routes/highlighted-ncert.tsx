@@ -1,3 +1,4 @@
+import { locked } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useState, useMemo } from "react";
@@ -10,7 +11,6 @@ import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, ArrowLeft, BookOpen } from "lucide-react";
-import { FeatureLock } from "@/components/feature-lock";
 
 const ncertQuery = queryOptions({
   queryKey: ["ncert-explorer"],
@@ -22,12 +22,16 @@ export const Route = createFileRoute("/highlighted-ncert")({
   head: () => ({ meta: [
     { title: "Highlighted NCERT — NEETIQ Prime" },
     { name: "description", content: "NCERT Biology chapters with PYQ-highlighted lines and diagrams." },
+    { property: "og:title", content: "Highlighted NCERT \u2014 NEETIQ Prime" },
+    { property: "og:description", content: "NCERT Biology chapters with PYQ-highlighted lines and diagrams." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
   ] }),
   loader: ({ context }) => context.queryClient.ensureQueryData(ncertQuery),
-  component: () => (<FeatureLock feature="ncert_highlights"><Page/></FeatureLock>),
+  component: locked("ncert_highlights", Page),
   errorComponent: ({ error }) => (
     <Shell>
-      <div className="py-10 text-center text-sm text-muted-foreground">Failed to load NCERT data. {error.message}</div>
+      <div className="py-10 text-center text-sm text-muted-foreground">Failed to load NCERT data. {error instanceof Error ? error.message : "Please try again."}</div>
     </Shell>
   ),
   pendingComponent: () => (
