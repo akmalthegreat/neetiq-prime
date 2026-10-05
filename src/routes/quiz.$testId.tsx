@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -648,9 +649,11 @@ function QuizPlayer() {
 
   if (loading || authLoading)
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
+      <DrAkzaLoader
+        fullScreen
+        message="Dr. Akza is preparing your quiz..."
+        subMessage="Setting up your questions, timer, and CBT exam environment"
+      />
     );
 
   if (!test)

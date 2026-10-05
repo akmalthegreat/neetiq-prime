@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -104,6 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
+  pendingComponent: () => <DrAkzaLoader message="Dr. Akza is preparing the page..." fullScreen />,
   errorComponent: ErrorComponent,
 });
 

@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -81,7 +82,7 @@ function ContestsPage() {
   // which handles pre / live / post states + confirm-join dialog.
   const goToContest = (c: Contest) => nav({ to: "/contest/$contestId", params: { contestId: c.id } });
 
-  if (loading || !user) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+  if (loading || !user) return <DrAkzaLoader fullScreen message="Dr. Akza is preparing the contest arena..." subMessage="Fetching upcoming live contests & registrations" />;
 
   const live = (contests ?? []).filter((c) => { const n = Date.now(); return n >= new Date(c.starts_at).getTime() && n < new Date(c.ends_at).getTime(); });
   const upcoming = (contests ?? []).filter((c) => Date.now() < new Date(c.starts_at).getTime());

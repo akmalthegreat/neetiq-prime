@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -60,7 +61,7 @@ function ScorePredictorPage() {
   }
 
   if (loading || !user || latest === undefined) {
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+    return <DrAkzaLoader fullScreen message="Dr. Akza is calculating your NEET score prediction..." subMessage="Evaluating past mock performances & chapter weightage" />;
   }
 
   return (

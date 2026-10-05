@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { PageShell } from "@/components/page-shell";
@@ -602,10 +603,14 @@ function GeneratePage() {
             </div>
 
             {launching && (
-              <div className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-primary/5 p-3 text-sm font-medium text-primary">
-                <Loader2 className="h-4 w-4 animate-spin" /> Preparing your {totalQuestions}-question test...
-              </div>
-            )}
+          <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+            <DrAkzaLoader
+              size="sm"
+              message="Dr. Akza is generating test questions..."
+              subMessage={`Crafting your ${totalQuestions}-question customized test`}
+            />
+          </div>
+        )}
           </div>
 
           <Button variant="outline" onClick={() => setStep(2)}>

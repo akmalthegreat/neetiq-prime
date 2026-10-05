@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,7 +70,7 @@ function AnalysisPage() {
     })();
   }, [attemptId, nav]);
 
-  if (loading || authLoading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+  if (loading || authLoading) return <DrAkzaLoader fullScreen message="Dr. Akza is analyzing your performance..." subMessage="Calculating score, chapter accuracy, and question insights" />;
   if (!attempt || !test) return (
     <div className="flex min-h-screen items-center justify-center p-6 text-center">
       <div>
