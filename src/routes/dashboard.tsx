@@ -515,7 +515,7 @@ function Dashboard() {
               </Link>
 
               <Link
-                to="/analytics"
+                to="/mistakes"
                 className="flex items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] font-medium text-slate-200 transition-colors hover:border-emerald-400/40 hover:bg-white/10 hover:text-white"
               >
                 <FileText className="h-3 w-3 text-emerald-400" />

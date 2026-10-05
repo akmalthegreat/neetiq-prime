@@ -21,6 +21,7 @@ import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as NeetlabRouteImport } from './routes/neetlab'
 import { Route as NcertHighlightsRouteImport } from './routes/ncert-highlights'
 import { Route as MocksRouteImport } from './routes/mocks'
+import { Route as MistakesRouteImport } from './routes/mistakes'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as InfiniteRunRouteImport } from './routes/infinite-run'
@@ -128,6 +129,11 @@ const NcertHighlightsRoute = NcertHighlightsRouteImport.update({
 const MocksRoute = MocksRouteImport.update({
   id: '/mocks',
   path: '/mocks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MistakesRoute = MistakesRouteImport.update({
+  id: '/mistakes',
+  path: '/mistakes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -403,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/infinite-run': typeof InfiniteRunRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
+  '/mistakes': typeof MistakesRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
   '/neetlab': typeof NeetlabRoute
@@ -465,6 +472,7 @@ export interface FileRoutesByTo {
   '/infinite-run': typeof InfiniteRunRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
+  '/mistakes': typeof MistakesRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
   '/neetlab': typeof NeetlabRoute
@@ -528,6 +536,7 @@ export interface FileRoutesById {
   '/infinite-run': typeof InfiniteRunRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
+  '/mistakes': typeof MistakesRoute
   '/mocks': typeof MocksRoute
   '/ncert-highlights': typeof NcertHighlightsRoute
   '/neetlab': typeof NeetlabRoute
@@ -592,6 +601,7 @@ export interface FileRouteTypes {
     | '/infinite-run'
     | '/leaderboard'
     | '/login'
+    | '/mistakes'
     | '/mocks'
     | '/ncert-highlights'
     | '/neetlab'
@@ -654,6 +664,7 @@ export interface FileRouteTypes {
     | '/infinite-run'
     | '/leaderboard'
     | '/login'
+    | '/mistakes'
     | '/mocks'
     | '/ncert-highlights'
     | '/neetlab'
@@ -716,6 +727,7 @@ export interface FileRouteTypes {
     | '/infinite-run'
     | '/leaderboard'
     | '/login'
+    | '/mistakes'
     | '/mocks'
     | '/ncert-highlights'
     | '/neetlab'
@@ -779,6 +791,7 @@ export interface RootRouteChildren {
   InfiniteRunRoute: typeof InfiniteRunRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
+  MistakesRoute: typeof MistakesRoute
   MocksRoute: typeof MocksRoute
   NcertHighlightsRoute: typeof NcertHighlightsRoute
   NeetlabRoute: typeof NeetlabRoute
@@ -896,6 +909,13 @@ declare module '@tanstack/react-router' {
       path: '/mocks'
       fullPath: '/mocks'
       preLoaderRoute: typeof MocksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mistakes': {
+      id: '/mistakes'
+      path: '/mistakes'
+      fullPath: '/mistakes'
+      preLoaderRoute: typeof MistakesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1301,6 +1321,7 @@ const rootRouteChildren: RootRouteChildren = {
   InfiniteRunRoute: InfiniteRunRoute,
   LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,
+  MistakesRoute: MistakesRoute,
   MocksRoute: MocksRoute,
   NcertHighlightsRoute: NcertHighlightsRoute,
   NeetlabRoute: NeetlabRoute,

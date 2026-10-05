@@ -70,39 +70,29 @@ async function getChapterQuestionIds(
   const pageSize = 1000;
   const ids: string[] = [];
   for (let from = 0; ; from += pageSize) {
-    let q = supabase
+    let query = supabase
       .from("questions")
       .select("id")
       .eq("chapter_id", chapterId);
-    // DB stores capitalized difficulty values and the column is `qtype`.
-    // Try exact value first, then case-insensitive fallbacks for robustness.
+
     if (difficulty !== "any") {
-      const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-      const { data: exact, error: exactErr } = await supabase
-        .from("questions")
-        .select("id")
-        .eq("chapter_id", chapterId)
-        .eq("difficulty", cap)
-        .order("created_at", { ascending: false })
-        .range(from, from + pageSize - 1);
-      void exactErr;
-      if (exact && exact.length > 0) {
-        ids.push(...exact.map((r: any) => r.id));
-        if (exact.length < pageSize) break;
-        continue;
-      }
-      q = (q as any).ilike("difficulty", difficulty);
+      const value = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+      query = (query as any).ilike("difficulty", value);
     }
-        if (qtype !== "any") {
+    if (qtype !== "any") {
       const dbType = QTYPE_MAP[qtype];
-      if (dbType) q = (q as any).eq("qtype", dbType);
+      if (dbType) query = (query as any).eq("qtype", dbType);
     }
-    const { data, error } = await q
+
+    const { data, error } = await query
       .order("created_at", { ascending: false })
       .range(from, from + pageSize - 1);
-    if (error) break;
+    if (error) {
+      console.error("Could not load filtered chapter questions", error);
+      return [];
+    }
     const batch = data ?? [];
-    ids.push(...batch.map((q) => q.id));
+    ids.push(...batch.map((question) => question.id));
     if (batch.length < pageSize) break;
   }
   return ids;
@@ -220,11 +210,11 @@ function SubjectPage() {
 
           if (difficulty !== "any") {
             const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-            q = q.eq("difficulty", cap);
+            q = (q as any).ilike("difficulty", cap);
           }
           if (qtype !== "any") {
             const dbType = QTYPE_MAP[qtype];
-            if (dbType) q = q.eq("qtype", dbType);
+            if (dbType) q = (q as any).eq("qtype", dbType);
           }
 
           const { count } = await q;

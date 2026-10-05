@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, Clock, User, Check, AlertCircle, FileText, Maximize2, Laptop } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { RichText } from "@/components/rich-text";
+import { RichText, resolveAnyImageUrl } from "@/components/rich-text";
 import { ReportQuestionButton } from "@/components/report-question-button";
 import { AntiCheatGate, hasAckedAntiCheat } from "@/components/anti-cheat-gate";
 
@@ -34,21 +34,17 @@ type Question = {
   explanation?: string | null;
   explanation_image_url?: string | null;
   question_image_url?: string | null;
+  image_url?: string | null;
+  diagram_url?: string | null;
+  qtype?: string | null;
   subject_id?: string | null;
   chapter_id?: string | null;
 };
 
 function resolveImageUrl(url?: string | null) {
-  if (!url) return null;
-  const trimmed = url.trim();
-  if (!trimmed) return null;
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
-    return trimmed;
-  }
-  // Strip leading slashes and legacy img/data/ prefixes to match the storage layout
-  const clean = trimmed.replace(/^\/+/, "").replace(/^img\/data\//, "");
-  return "https://cupvxfoikjkufudgehsr.supabase.co/storage/v1/object/public/question-images/" + clean;
+  return resolveAnyImageUrl(url);
 }
+
 type Test = {
   id: string;
   title: string;
@@ -945,7 +941,7 @@ function QuizPlayer() {
             {idx + 1}
           </span>
           <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
-            Type: single
+            Type: {q.qtype || "MCQ"}
           </span>
           <div className="ml-auto">
             <ReportQuestionButton questionId={q.id} />
@@ -956,23 +952,20 @@ function QuizPlayer() {
           <RichText>{q.text}</RichText>
         </div>
 
-        {resolveImageUrl(q.question_image_url) && (
-          <div
-            className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs"
-            onError={(e) => {
-              (e.currentTarget as HTMLElement).style.display = "none";
-            }}
-          >
+        {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
+          <div className="my-3 flex flex-col items-center justify-center overflow-hidden rounded-xl border border-border bg-card p-2 text-center shadow-xs">
             <img
-              src={resolveImageUrl(q.question_image_url)!}
-              alt="Question Diagram"
+              src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
+              alt="Question diagram"
               className="max-h-80 w-auto rounded-lg object-contain"
               loading="lazy"
               onError={(e) => {
-                const frame = (e.currentTarget as HTMLElement).parentElement;
-                if (frame) frame.style.display = "none";
+                e.currentTarget.classList.add("hidden");
+                const fallback = e.currentTarget.parentElement?.querySelector("[data-image-fallback]");
+                fallback?.classList.remove("hidden");
               }}
             />
+            <span data-image-fallback className="hidden p-3 text-xs text-muted-foreground">Question image could not be loaded.</span>
           </div>
         )}
 

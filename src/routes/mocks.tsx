@@ -49,22 +49,22 @@ function MocksPage() {
       .then(({ data }) => setTests(((data ?? []) as unknown) as Test[]));
   }, []);
 
-  // Group mocks into a subject-wise grid (each subject column shows the mocks that include it).
-  const groupedBySubject = useMemo(() => {
-    if (!tests) return null;
-    const map = new Map<string, { subjectName: string; tests: Test[] }>();
-    const all: Test[] = [];
-    for (const t of tests) {
-      all.push(t);
-      const syl = Array.isArray(t.syllabus) ? t.syllabus : [];
-      for (const s of syl) {
-        const key = s.subjectId || s.subjectName;
-        if (!map.has(key)) map.set(key, { subjectName: s.subjectName, tests: [] });
-        map.get(key)!.tests.push(t);
-      }
-    }
-    return { subjects: Array.from(map.values()), all };
+  const [category, setCategory] = useState("all");
+  const categories = useMemo(() => {
+    if (!tests) return [];
+    const subjects = [...new Set(tests.flatMap((t) =>
+      (Array.isArray(t.syllabus) ? t.syllabus : []).map((s) => s.subjectName).filter(Boolean),
+    ))].sort((a, b) => a.localeCompare(b));
+    return ["all", "full", ...subjects];
   }, [tests]);
+  const filteredTests = useMemo(() => {
+    if (!tests || category === "all") return tests ?? [];
+    if (category === "full") return tests.filter((t) => {
+      const names = (Array.isArray(t.syllabus) ? t.syllabus : []).map((s) => s.subjectName.toLowerCase());
+      return names.length >= 3 || /full|neet|complete/i.test(t.title);
+    });
+    return tests.filter((t) => (Array.isArray(t.syllabus) ? t.syllabus : []).some((s) => s.subjectName === category));
+  }, [tests, category]);
 
   return (
     <PageShell eyebrow="Practice" title="Mock tests" description={`Full-length NEET-pattern tests. First mock is FREE — every later mock costs ${MOCK_COST_BONUS} bonus coins.`}>
@@ -85,49 +85,26 @@ function MocksPage() {
               </CardContent>
             </Card>
 
-            {/* Subject-wise grid (matches the wireframe layout) */}
-            {groupedBySubject && groupedBySubject.subjects.length > 0 && (
-              <section>
-                <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">Browse by subject</h2>
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  {groupedBySubject.subjects.map((s) => (
-                    <Card key={s.subjectName} className="hover-lift">
-                      <CardContent className="space-y-3 p-5">
-                        <div className="flex items-center justify-between">
-                          <div className="text-base font-semibold">{s.subjectName}</div>
-                          <Badge variant="secondary">{s.tests.length} mock{s.tests.length === 1 ? "" : "s"}</Badge>
-                        </div>
-                        <div className="space-y-1.5">
-                          {s.tests.slice(0, 4).map((t) => (
-                            <Link
-                              key={t.id}
-                              to="/quiz/$testId"
-                              params={{ testId: t.id }} search={{ mode: "cbt" } as never}
-                              className="flex items-center justify-between rounded-md border bg-card px-2.5 py-1.5 text-xs hover:bg-accent"
-                            >
-                              <span className="line-clamp-1">{t.title}</span>
-                              <span className="ml-2 inline-flex items-center gap-1 text-muted-foreground">
-                                <Clock className="h-3 w-3" />{t.duration_min}m
-                              </span>
-                            </Link>
-                          ))}
-                          {s.tests.length > 4 && (
-                            <p className="text-[11px] text-muted-foreground">+ {s.tests.length - 4} more below</p>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </section>
-            )}
+            <section aria-label="Filter mock tests by category">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">Categories</h2>
+              <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-2" role="group" aria-label="Mock test categories">
+                {categories.map((item) => {
+                  const selected = category === item;
+                  const label = item === "all" ? "All tests" : item === "full" ? "Full syllabus" : item;
+                  return <button key={item} type="button" onClick={() => setCategory(item)} aria-pressed={selected}
+                    className={`shrink-0 snap-start rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
+                    {label}
+                  </button>;
+                })}
+              </div>
+            </section>
 
             {/* All mocks list */}
             <section>
-              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">All mocks</h2>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {tests.map((t) => <MockCard key={t.id} t={t} />)}
-              </div>
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">{category === "all" ? "All mock tests" : category === "full" ? "Full syllabus tests" : `${category} tests`}</h2>
+              {filteredTests.length ? <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredTests.map((t) => <MockCard key={t.id} t={t} />)}
+              </div> : <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">No mock tests in this category yet.</CardContent></Card>}
             </section>
           </div>
         )}

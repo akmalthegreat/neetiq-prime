@@ -54,6 +54,7 @@ const GROUPS: Group[] = [
       { to: "/neetlab", label: "NEETLab 3D" },
       { to: "/mocks", label: "Mock Tests" },
       { to: "/bookmarks", label: "Bookmarks" },
+      { to: "/mistakes", label: "My Mistakes" },
     ],
   },
   {
