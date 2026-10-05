@@ -374,7 +374,7 @@ function Dashboard() {
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
             {/* Physics Card */}
             <Link
-              to="/subjects/"
+              to="/subjects/$subject"
               params={{ subject: "Physics" }}
               className="group relative overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-[#0c2356] via-[#08183c] to-[#040e24] p-3.5 text-white shadow-md transition-all hover:border-blue-400/60 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0a1e46] dark:to-[#040e24] light:border-blue-200 light:bg-gradient-to-br light:from-blue-900 light:to-slate-900"
             >
@@ -407,7 +407,7 @@ function Dashboard() {
 
             {/* Chemistry Card */}
             <Link
-              to="/subjects/"
+              to="/subjects/$subject"
               params={{ subject: "Chemistry" }}
               className="group relative overflow-hidden rounded-2xl border border-teal-500/30 bg-gradient-to-br from-[#053228] via-[#03231b] to-[#01140e] p-3.5 text-white shadow-md transition-all hover:border-teal-400/60 hover:shadow-lg dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#042d22] dark:to-[#01140e] light:border-teal-200 light:bg-gradient-to-br light:from-teal-950 light:to-slate-900"
             >
@@ -440,7 +440,7 @@ function Dashboard() {
 
             {/* Biology Card */}
             <Link
-              to="/subjects/"
+              to="/subjects/$subject"
               params={{ subject: "Biology" }}
               className="group relative overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-br from-[#2a0e4e] via-[#1c0836] to-[#100320] p-3.5 text-white shadow-md transition-all hover:border-purple-400/60 hover:shadow-lg dark:border-purple-500/30 dark:bg-gradient-to-br dark:from-[#230b42] dark:to-[#100320] light:border-purple-200 light:bg-gradient-to-br light:from-purple-950 light:to-slate-900"
             >
@@ -775,7 +775,7 @@ function Dashboard() {
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 md:grid-cols-3">
             {/* Tool 1: DPP Hub (Blue square) */}
             <StudyToolItem
-              to={daily ? "/quiz/" : "/daily"}
+              to={daily ? "/quiz/$testId" : "/daily"}
               params={daily ? { testId: daily.id } : undefined}
               title="DPP Hub"
               subtitle="Daily Practice Problems"

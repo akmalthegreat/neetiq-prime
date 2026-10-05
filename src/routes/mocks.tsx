@@ -89,7 +89,7 @@ function MocksPage() {
             {groupedBySubject && groupedBySubject.subjects.length > 0 && (
               <section>
                 <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">Browse by subject</h2>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {groupedBySubject.subjects.map((s) => (
                     <Card key={s.subjectName} className="hover-lift">
                       <CardContent className="space-y-3 p-5">
