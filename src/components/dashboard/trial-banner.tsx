@@ -42,7 +42,7 @@ export function TrialBanner() {
             Trial ended
           </div>
           <div className="text-xs text-rose-800/80 dark:text-rose-200/80">
-            Purchase a batch to continue using NEETIQ Prime.
+            Purchase a batch to continue using NEET Track.
           </div>
         </div>
         <Button asChild size="sm" className="bg-rose-600 text-white hover:bg-rose-700">

@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/progress")({
-  head: () => ({ meta: [{ title: "Weekly Progress — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Weekly Progress — NEET Track" }] }),
   component: () => (<FeatureLock feature="weekly_progress"><ProgressPage/></FeatureLock>),
 });
 

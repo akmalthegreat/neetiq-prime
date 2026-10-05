@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { applyReferralCode, getMyReferralInfo, generateReferralCode } from "@/lib/referrals.functions";
 
 export const Route = createFileRoute("/referrals")({
-  head: () => ({ meta: [{ title: "Refer & Earn — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Refer & Earn — NEET Track" }] }),
   component: ReferralsPage,
 });
 

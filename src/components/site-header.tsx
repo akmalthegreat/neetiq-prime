@@ -92,7 +92,7 @@ export function SiteHeader() {
           </div>
           <div className="leading-tight">
             <div className="text-[17px] font-black tracking-tight text-foreground">
-              NEET <span className="text-emerald-500 dark:text-emerald-400">Track</span>
+              NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-black">Track</span>
             </div>
             <div className="text-[10px] font-medium tracking-wider text-muted-foreground">
               Learn <span className="opacity-40">•</span> Practice <span className="opacity-40">•</span> Achieve

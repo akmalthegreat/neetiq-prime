@@ -125,8 +125,8 @@ function LoginPage() {
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-4 py-10">
         <Link to="/" className="mb-7 flex items-center gap-2">
-          <img src="/icons/icon-192.png" alt="NEETIQ Prime" className="h-10 w-10 rounded-xl shadow-glow" />
-          <span className="text-lg font-bold">NEETIQ <span className="text-gradient-primary">Prime</span></span>
+          <img src="/icons/icon-192.png" alt="NEET Track" className="h-10 w-10 rounded-xl shadow-glow" />
+          <span className="text-lg font-bold">NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-bold">Track</span></span>
         </Link>
 
         <div className="w-full rounded-3xl border border-border bg-card p-6 shadow-elegant animate-fade-in-up">

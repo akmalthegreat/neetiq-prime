@@ -13,7 +13,7 @@ import { RichText } from "@/components/rich-text";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/bookmarks")({
-  head: () => ({ meta: [{ title: "My Bookmarks — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "My Bookmarks — NEET Track" }] }),
   component: () => (<FeatureLock feature="bookmarks"><BookmarksPage/></FeatureLock>),
 });
 

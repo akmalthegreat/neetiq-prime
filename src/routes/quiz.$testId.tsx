@@ -15,7 +15,7 @@ import { ReportQuestionButton } from "@/components/report-question-button";
 import { AntiCheatGate, hasAckedAntiCheat } from "@/components/anti-cheat-gate";
 
 export const Route = createFileRoute("/quiz/$testId")({
-  head: () => ({ meta: [{ title: "Quiz — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Quiz — NEET Track" }] }),
   validateSearch: (s: Record<string, unknown>): { mode?: "quiz" | "cbt" } => ({
     mode: (s.mode === "quiz" ? "quiz" : "cbt") as "quiz" | "cbt",
   }),

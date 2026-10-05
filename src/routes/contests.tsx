@@ -13,7 +13,7 @@ import { FeatureLock } from "@/components/feature-lock";
 
 
 export const Route = createFileRoute("/contests")({
-  head: () => ({ meta: [{ title: "Contests — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Contests — NEET Track" }] }),
   component: () => (<FeatureLock feature="contests"><ContestsPage/></FeatureLock>),
 });
 

@@ -32,7 +32,7 @@ export function FeatureLock({ feature, children }: { feature: string; children: 
             <p className="mt-1 text-sm text-muted-foreground">
               {trialActive
                 ? "This feature isn't part of your trial. Purchase a batch to unlock it."
-                : "Your trial has ended. Purchase a batch to continue using NEETIQ Prime."}
+                : "Your trial has ended. Purchase a batch to continue using NEET Track."}
             </p>
           </div>
           <Button asChild className="w-full bg-gradient-to-r from-primary to-fuchsia-500 text-white">

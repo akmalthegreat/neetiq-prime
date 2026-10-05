@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/flashcards")({
-  head: () => ({ meta: [{ title: "Flashcards — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Flashcards — NEET Track" }] }),
   component: () => (<FeatureLock feature="flashcards"><FlashcardsPage/></FeatureLock>),
 });
 

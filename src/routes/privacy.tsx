@@ -4,8 +4,8 @@ import { PageShell } from "@/components/page-shell";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — NEETIQ Prime" },
-      { name: "description", content: "How NEETIQ Prime collects, uses, and protects your personal data." },
+      { title: "Privacy Policy — NEET Track" },
+      { name: "description", content: "How NEET Track collects, uses, and protects your personal data." },
     ],
   }),
   component: PrivacyPage,
@@ -17,7 +17,7 @@ function PrivacyPage() {
     <PageShell eyebrow="Legal" title="Privacy Policy" description={`Last updated: ${updated}`} showFooter>
       <div className="prose prose-sm dark:prose-invert mx-auto max-w-3xl text-foreground">
         <p>
-          NEETIQ Prime ("we", "our", "us") respects your privacy. This Privacy Policy
+          NEET Track ("we", "our", "us") respects your privacy. This Privacy Policy
           explains what information we collect, how we use it, and the choices you have
           when you use our website and mobile-web application (the "Service").
         </p>
@@ -91,7 +91,7 @@ function PrivacyPage() {
 
         <h2>10. Anti-cheat &amp; fair-play policy</h2>
         <p>
-          NEETIQ Prime Battlegrounds and contests are competitive, real-money quizzes.
+          NEET Track Battlegrounds and contests are competitive, real-money quizzes.
           To keep them fair we operate the following anti-cheat program:
         </p>
         <ul>
@@ -103,7 +103,7 @@ function PrivacyPage() {
           <li><strong>Server-side authority.</strong> All scoring, opponent selection, prize calculation and wallet movement is final and decided by our servers. Client-reported values are treated as advisory only.</li>
           <li><strong>Detection &amp; enforcement.</strong> We monitor for signals including (but not limited to) tab/app switching, viewport overlay events, suspicious response timing, IP / device-fingerprint clustering, and impossible score patterns. Confirmed violations may result in: voided results, forfeited stake, refund of opponent stake, account suspension, permanent ban, and report to law-enforcement where applicable.</li>
           <li><strong>Reporting.</strong> If you believe a player or match is acting unfairly, report it via the in-app Feedback or Support page with the match ID. We review every report.</li>
-          <li><strong>Appeals.</strong> Suspended users may appeal in writing to <a href="mailto:support@neetiq.app">support@neetiq.app</a>. Decisions of the NEETIQ Prime moderation team are final.</li>
+          <li><strong>Appeals.</strong> Suspended users may appeal in writing to <a href="mailto:support@neetiq.app">support@neetiq.app</a>. Decisions of the NEET Track moderation team are final.</li>
         </ul>
 
         <h2>11. Contact</h2>

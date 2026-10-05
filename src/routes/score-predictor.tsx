@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/score-predictor")({
-  head: () => ({ meta: [{ title: "Score Predictor — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Score Predictor — NEET Track" }] }),
   component: () => (<FeatureLock feature="score_predictor"><ScorePredictorPage/></FeatureLock>),
 });
 

@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [
-    { title: "Profile — NEETIQ Prime" },
+    { title: "Profile — NEET Track" },
     { name: "description", content: "Your XP, level, streak, badges, daily goal and competitive profile card." },
   ] }),
   component: ProfilePage,

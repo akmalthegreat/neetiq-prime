@@ -12,7 +12,7 @@ type Attempt = { id: string; test_id: string; score: number; correct_count: numb
 type Test = { id: string; title: string; type: string };
 
 export const Route = createFileRoute("/analytics")({
-  head: () => ({ meta: [{ title: "Analytics — NEETIQ Prime" }, { name: "description", content: "Track your accuracy, scores and progress across attempts." }] }),
+  head: () => ({ meta: [{ title: "Analytics — NEET Track" }, { name: "description", content: "Track your accuracy, scores and progress across attempts." }] }),
   component: AnalyticsPage,
 });
 

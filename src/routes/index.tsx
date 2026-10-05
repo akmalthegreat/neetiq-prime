@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NEETIQ Prime — AI-powered NEET prep" },
+      { title: "NEET Track — AI-powered NEET prep" },
       { name: "description", content: "Daily DPPs, AI-generated quizzes, full mock tests, flashcards, NCERT highlights, AI study path and live contests — built for NEET-UG aspirants." },
-      { property: "og:title", content: "NEETIQ Prime — AI-powered NEET prep" },
+      { property: "og:title", content: "NEET Track — AI-powered NEET prep" },
       { property: "og:description", content: "Daily DPPs, AI-generated quizzes, full mock tests, flashcards, NCERT highlights and live contests for NEET aspirants." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -11,7 +11,7 @@ export function SiteFooter() {
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary">
                 <Sparkles className="h-5 w-5 text-primary-foreground" />
               </div>
-              <div className="text-base font-bold">NEET <span className="text-gradient-primary">Track</span></div>
+              <div className="text-base font-bold">NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-bold">Track</span></div>
             </Link>
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">
               Premium NEET preparation — daily DPPs, AI quizzes, mock tests, live contests, and analytics that actually move your score.
@@ -44,9 +44,7 @@ export function SiteFooter() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
           <div>© {new Date().getFullYear()} NEET Track. All rights reserved.</div>
-          <div className="font-medium tracking-wider">
-            Made by <span className="text-gradient-primary font-bold">SΛNSKΛƦ</span>
-          </div>
+
         </div>
       </div>
     </footer>

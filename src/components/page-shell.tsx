@@ -48,7 +48,7 @@ export function ComingSoonCard({ note }: { note?: string }) {
       <div className="mx-auto h-12 w-12 rounded-2xl bg-gradient-primary opacity-90 shadow-glow" />
       <div className="mt-4 text-lg font-semibold">Wiring up next</div>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-        {note ?? "This page is part of the NEETIQ Prime build. Auth, database, and full features land in the next phase."}
+        {note ?? "This page is part of the NEET Track build. Auth, database, and full features land in the next phase."}
       </p>
     </div>
   );

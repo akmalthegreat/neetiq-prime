@@ -10,7 +10,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getLeaderboardData, getStreakLeaderboard } from "@/lib/leaderboard.functions";
 
 export const Route = createFileRoute("/leaderboard")({
-  head: () => ({ meta: [{ title: "Leaderboard — NEETIQ Prime" }, { name: "description", content: "Top XP earners and longest streaks across NEETIQ Prime." }] }),
+  head: () => ({ meta: [{ title: "Leaderboard — NEET Track" }, { name: "description", content: "Top XP earners and longest streaks across NEET Track." }] }),
   component: LeaderboardPage,
 });
 

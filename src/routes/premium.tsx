@@ -16,7 +16,7 @@ import { FEATURE_LABEL_MAP } from "@/lib/feature-labels";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/premium")({
-  head: () => ({ meta: [{ title: "Premium Batches — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Premium Batches — NEET Track" }] }),
   component: PremiumPage,
 });
 
@@ -63,7 +63,7 @@ function PremiumPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold sm:text-3xl">Premium Batches</h1>
-            <p className="text-sm text-muted-foreground">Unlock the full NEETIQ Prime experience.</p>
+            <p className="text-sm text-muted-foreground">Unlock the full NEET Track experience.</p>
           </div>
         </div>
 
@@ -163,7 +163,7 @@ function OrderSummary({ batch, onClose, userEmail, userName, onSuccess }: { batc
       await new Promise<void>((resolve) => {
         const rzp = new window.Razorpay({
           key: order.keyId, amount: order.amount, currency: order.currency,
-          name: "NEETIQ Prime", description: batch.title, order_id: order.orderId,
+          name: "NEET Track", description: batch.title, order_id: order.orderId,
           prefill: { name: userName ?? "", email: userEmail ?? "" },
           theme: { color: "#0ea5e9" },
           handler: async (resp: any) => {

@@ -42,7 +42,7 @@ export function AppVersionGate() {
       <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 text-center shadow-2xl">
         <div className="text-base font-semibold">Update available</div>
         <p className="mt-2 text-sm text-muted-foreground">
-          A new version of NEETIQ Prime is live. Please refresh to continue —
+          A new version of NEET Track is live. Please refresh to continue —
           older versions can show wrong question counts and other glitches.
         </p>
         <button

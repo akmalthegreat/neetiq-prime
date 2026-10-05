@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/pyqs")({
-  head: () => ({ meta: [{ title: "NEET PYQs — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "NEET PYQs — NEET Track" }] }),
   component: () => (<FeatureLock feature="pyqs"><PyqPage/></FeatureLock>),
 });
 

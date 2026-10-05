@@ -18,7 +18,7 @@ import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.funct
 import { requestWithdrawal, listMyWithdrawals } from "@/lib/wallet.functions";
 
 export const Route = createFileRoute("/wallet")({
-  head: () => ({ meta: [{ title: "Wallet — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Wallet — NEET Track" }] }),
   component: WalletPage,
 });
 
@@ -93,7 +93,7 @@ function WalletPage() {
       await new Promise<void>((resolve) => {
         const rzp = new window.Razorpay({
           key: order.keyId, amount: order.amount, currency: order.currency,
-          name: "NEETIQ Prime", description: "Wallet recharge", order_id: order.orderId,
+          name: "NEET Track", description: "Wallet recharge", order_id: order.orderId,
           prefill: { name: profile?.full_name ?? "", email: user.email ?? "" },
           theme: { color: "#0ea5e9" },
           handler: async (resp: any) => {
@@ -129,7 +129,7 @@ function WalletPage() {
       await new Promise<void>((resolve) => {
         const rzp = new window.Razorpay({
           key: order.keyId, amount: order.amount, currency: order.currency,
-          name: "NEETIQ Prime", description: "Bonus pack (₹10 → 100 bonus)", order_id: order.orderId,
+          name: "NEET Track", description: "Bonus pack (₹10 → 100 bonus)", order_id: order.orderId,
           prefill: { name: profile?.full_name ?? "", email: user.email ?? "" },
           theme: { color: "#0ea5e9" },
           handler: async (resp: any) => {

@@ -39,7 +39,7 @@ import { AdminCouponsTab } from "@/components/admin-coupons";
 import { AdminGrantPremium } from "@/components/admin-grant-premium";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Admin — NEET Track" }] }),
   component: AdminPanel,
 });
 

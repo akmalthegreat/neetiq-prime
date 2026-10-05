@@ -29,7 +29,7 @@ type Test = {
 };
 
 export const Route = createFileRoute("/mocks")({
-  head: () => ({ meta: [{ title: "Mock Tests — NEETIQ Prime" }, { name: "description", content: "Full-length NEET mock tests with detailed solutions and analytics." }] }),
+  head: () => ({ meta: [{ title: "Mock Tests — NEET Track" }, { name: "description", content: "Full-length NEET mock tests with detailed solutions and analytics." }] }),
   component: () => (<FeatureLock feature="ai_mock_tests"><MocksPage/></FeatureLock>),
 });
 
