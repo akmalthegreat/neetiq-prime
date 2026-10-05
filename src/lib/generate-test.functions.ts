@@ -38,7 +38,7 @@ export const createCustomTest = createServerFn({ method: "POST" })
     const { data: t, error: tErr } = await supabaseAdmin
       .from("tests")
       .insert({
-        title: ,
+        title: `${data.subject_name} Custom Test (${ids.length} Qs)`,
         type: "custom",
         difficulty: data.difficulty,
         duration_min: data.duration_min,

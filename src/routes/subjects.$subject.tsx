@@ -19,7 +19,16 @@ export const Route = createFileRoute("/subjects/$subject")({
 type Chapter = { id: string; name: string; order_index: number; q_count?: number };
 
 type Difficulty = "any" | "easy" | "medium" | "hard";
-type QType = "any" | "standard" | "assertion_reason" | "match_following" | "statement_based";
+type QType = "any" | "standard" | "assertion_reason" | "match_following" | "statement_based" | "graph_figure";
+
+const QTYPE_MAP: Record<QType, string | null> = {
+  any: null,
+  standard: "MCQ",
+  assertion_reason: "Assertion and Reason",
+  match_following: "Match the following",
+  statement_based: "MCQ type-2",
+  graph_figure: "Graph/Figure",
+};
 
 const BOTANY_CHAPTER_KEYWORDS = [
   "plant",
@@ -65,8 +74,29 @@ async function getChapterQuestionIds(
       .from("questions")
       .select("id")
       .eq("chapter_id", chapterId);
-    if (difficulty !== "any") q = q.eq("difficulty", difficulty);
-    if (qtype !== "any") q = (q as any).eq("question_type", qtype);
+    // DB stores capitalized difficulty values and the column is `qtype`.
+    // Try exact value first, then case-insensitive fallbacks for robustness.
+    if (difficulty !== "any") {
+      const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+      const { data: exact, error: exactErr } = await supabase
+        .from("questions")
+        .select("id")
+        .eq("chapter_id", chapterId)
+        .eq("difficulty", cap)
+        .order("created_at", { ascending: false })
+        .range(from, from + pageSize - 1);
+      void exactErr;
+      if (exact && exact.length > 0) {
+        ids.push(...exact.map((r: any) => r.id));
+        if (exact.length < pageSize) break;
+        continue;
+      }
+      q = (q as any).ilike("difficulty", difficulty);
+    }
+        if (qtype !== "any") {
+      const dbType = QTYPE_MAP[qtype];
+      if (dbType) q = (q as any).eq("qtype", dbType);
+    }
     const { data, error } = await q
       .order("created_at", { ascending: false })
       .range(from, from + pageSize - 1);
@@ -256,7 +286,8 @@ function SubjectPage() {
     }
     setLaunching(null);
     setSetIdx(null);
-    nav({ to: "/quiz/$testId", params: { testId: testId! }, search: { mode } as never });
+    const targetMode = mode === "cbt" ? "exam" : "quiz";
+    nav({ to: "/quiz/$testId", params: { testId: testId! }, search: { mode: targetMode } as never });
   };
 
   const meta = META[normalizedSubject] ?? META.Physics;
@@ -303,6 +334,7 @@ function SubjectPage() {
               <SelectItem value="assertion_reason">Assertion & Reason</SelectItem>
               <SelectItem value="match_following">Match the following</SelectItem>
               <SelectItem value="statement_based">Statement based</SelectItem>
+              <SelectItem value="graph_figure">Graph & Figure</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -7,25 +7,17 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid } from "lucide-react";
+import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, Clock, User, Check, AlertCircle, FileText, Maximize2, Laptop } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { RichText } from "@/components/rich-text";
 import { ReportQuestionButton } from "@/components/report-question-button";
 import { AntiCheatGate, hasAckedAntiCheat } from "@/components/anti-cheat-gate";
 
-
 export const Route = createFileRoute("/quiz/$testId")({
-  head: () => ({ meta: [
-    { title: "Practice Quiz & CBT Exam — NEETIQ Prime" },
-    { name: "description", content: "Take a NEET practice quiz or timed CBT exam and review your answers after submission." },
-    { property: "og:title", content: "Practice Quiz & CBT Exam — NEETIQ Prime" },
-    { property: "og:description", content: "Take a NEET practice quiz or timed CBT exam." },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary_large_image" },
-  ] }),
-  validateSearch: (s: Record<string, unknown>): { mode?: "quiz" | "exam" } => ({
-    mode: (s.mode === "quiz" ? "quiz" : "exam") as "quiz" | "exam",
+  head: () => ({ meta: [{ title: "Quiz — NEETIQ Prime" }] }),
+  validateSearch: (s: Record<string, unknown>): { mode?: "quiz" | "cbt" } => ({
+    mode: (s.mode === "quiz" ? "quiz" : "cbt") as "quiz" | "cbt",
   }),
   component: QuizPlayer,
 });
@@ -40,9 +32,22 @@ type Question = {
   marks_correct: number;
   marks_wrong: number;
   explanation?: string | null;
+  explanation_image_url?: string | null;
+  question_image_url?: string | null;
   subject_id?: string | null;
   chapter_id?: string | null;
 };
+
+function resolveImageUrl(url?: string | null) {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
+    return trimmed;
+  }
+  const clean = trimmed.replace(/^\/+/, "");
+  return "https://cupvxfoikjkufudgehsr.supabase.co/storage/v1/object/public/question-images/" + clean;
+}
 type Test = {
   id: string;
   title: string;
@@ -80,10 +85,10 @@ function QuizPlayer() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [wrongMarks, setWrongMarks] = useState<Set<string>>(new Set());
-  const isExam = mode === "exam";
+  const isCbt = mode === "cbt";
   const isQuiz = mode === "quiz";
   // Chapter-wise practice = no submit, persist answers, lock-on-pick reveal.
-  const isChapterPractice = test?.type === "practice";
+  const isChapterPractice = test?.type === "practice" && isQuiz;
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState<{
@@ -98,6 +103,9 @@ function QuizPlayer() {
   const [contestDone, setContestDone] = useState<null | { score: number; correct: number; wrong: number; attempted: number }>(null);
   const [alreadyAttempted, setAlreadyAttempted] = useState<null | { contestId: string | null; score: number | null }>(null);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+  // NTA CBT state: visited questions + marked-for-review set
+  const [visitedIds, setVisitedIds] = useState<Set<number>>(new Set());
+  const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
   const startedAt = useRef<number>(Date.now());
   const paletteRef = useRef<HTMLDivElement>(null);
   const isContest = test?.type === "contest";
@@ -109,11 +117,8 @@ function QuizPlayer() {
   }, [user, authLoading, nav]);
 
   useEffect(() => {
-    if (authLoading || !user) return;
     (async () => {
-      setLoading(true);
-      const { data: t, error: testError } = await supabase.from("tests").select("*").eq("id", testId).maybeSingle();
-      if (testError) throw new Error("Your test could not load. Please refresh and try again.");
+      const { data: t } = await supabase.from("tests").select("*").eq("id", testId).maybeSingle();
       if (!t) {
         toast.error("Test not found");
         setLoading(false);
@@ -180,9 +185,14 @@ function QuizPlayer() {
         setLoading(false);
         return;
       }
-      const { data: qs, error: questionError } = await supabase.from("questions").select("*").in("id", ids);
-      if (questionError) throw new Error("Questions could not load. Please refresh and try again.");
-      if ((qs?.length ?? 0) !== ids.length) throw new Error("Some test questions are unavailable. Please generate a new test.");
+      const chunks: string[][] = [];
+      for (let i = 0; i < ids.length; i += 60) {
+        chunks.push(ids.slice(i, i + 60));
+      }
+      const qsResults = await Promise.all(
+        chunks.map((chunk) => supabase.from("questions").select("*").in("id", chunk))
+      );
+      const qs = qsResults.flatMap((r) => r.data ?? []);
       let ordered = ids.map((id) => qs?.find((q) => q.id === id)).filter(Boolean) as Question[];
 
       const subjIds = Array.from(
@@ -266,11 +276,8 @@ function QuizPlayer() {
 
       setLoading(false);
       startedAt.current = Date.now();
-    })().catch((error: unknown) => {
-      toast.error(error instanceof Error ? error.message : "Could not load test");
-      setLoading(false);
-    });
-  }, [testId, user, authLoading]);
+    })();
+  }, [testId, user]);
 
   // Persist answers in real-time for chapter-wise quizzes (no submit button).
   const persistAnswers = async (next: Record<string, number>) => {
@@ -324,7 +331,7 @@ function QuizPlayer() {
     }
     const result = { score, correct, wrong, unattempted };
     if (user) {
-      const { data: ins, error: saveError } = await supabase
+      const { data: ins } = await supabase
         .from("attempts")
         .insert({
           user_id: user.id,
@@ -341,12 +348,6 @@ function QuizPlayer() {
         })
         .select("id")
         .maybeSingle();
-
-      if (saveError || !ins) {
-        toast.error("Your answers could not be saved. Please try submitting again.");
-        setSubmitting(false);
-        return;
-      }
 
       // ===== XP management =====
       // Determine attempt kind:
@@ -396,14 +397,14 @@ function QuizPlayer() {
   }, [answers, bookmarks, nav, questions, submitted, submitting, testId, user, test, battleMatchId]);
 
   useEffect(() => {
-    if (loading || submitted || !isExam || questions.length === 0) return;
+    if (loading || submitted || !isCbt) return;
     if (secondsLeft <= 0) {
       submit();
       return;
     }
     const t = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
-  }, [secondsLeft, loading, submitted, isExam, submit, questions.length]);
+  }, [secondsLeft, loading, submitted, isCbt, submit]);
 
   // ===== Contest anti-cheat =====
   // Disable text copy / selection / context menu on the whole document while
@@ -464,7 +465,7 @@ function QuizPlayer() {
 
   // Leaving the app/tab for more than 10 seconds during a contest auto-submits.
   useEffect(() => {
-    if (!isContest || !isExam || submitted || contestDone || alreadyAttempted || loading) return;
+    if (!isContest || !isCbt || submitted || contestDone || alreadyAttempted || loading) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
     let warned = false;
     const start = () => {
@@ -497,7 +498,7 @@ function QuizPlayer() {
       window.removeEventListener("focus", stop);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [isContest, isExam, submitted, contestDone, alreadyAttempted, loading, submit]);
+  }, [isContest, isCbt, submitted, contestDone, alreadyAttempted, loading, submit]);
 
 
   useEffect(() => {
@@ -506,12 +507,74 @@ function QuizPlayer() {
       ?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, [idx]);
 
+  // Track which questions the candidate has visited (NTA CBT "Not Visited" state)
+  useEffect(() => {
+    setVisitedIds((v) => {
+      if (v.has(idx)) return v;
+      const n = new Set(v);
+      n.add(idx);
+      return n;
+    });
+  }, [idx]);
+
   const q = questions[idx];
   const total = questions.length;
   const progress = total ? ((idx + 1) / total) * 100 : 0;
   const hh = String(Math.floor(secondsLeft / 3600)).padStart(2, "0");
   const mm = String(Math.floor((secondsLeft % 3600) / 60)).padStart(2, "0");
   const ss = String(secondsLeft % 60).padStart(2, "0");
+
+  // ===== NTA CBT helpers =====
+  type CbtStatus = "answered_marked" | "marked" | "answered" | "not_answered" | "not_visited";
+  const cbtStatus = (i: number): CbtStatus => {
+    const qq = questions[i];
+    if (!qq) return "not_visited";
+    const answered = answers[qq.id] !== undefined;
+    const marked = markedForReview.has(qq.id);
+    if (answered && marked) return "answered_marked";
+    if (marked) return "marked";
+    if (answered) return "answered";
+    if (visitedIds.has(i)) return "not_answered";
+    return "not_visited";
+  };
+
+  // Contiguous subject groups (questions arrive subject-ordered) for CBT section tabs
+  const subjectGroups = useMemo(() => {
+    const groups: { name: string; indices: number[] }[] = [];
+    questions.forEach((qq, i) => {
+      const name = (qq.subject_id ? subjects[qq.subject_id] : "Other") || "Other";
+      const last = groups[groups.length - 1];
+      if (last && last.name === name) last.indices.push(i);
+      else groups.push({ name, indices: [i] });
+    });
+    return groups;
+  }, [questions, subjects]);
+
+  const activeGroupIndex = subjectGroups.findIndex((g) => g.indices.includes(idx));
+
+  const cbtSaveAndNext = () => setIdx((i) => Math.min(total - 1, i + 1));
+  const cbtClearResponse = () => {
+    if (!q) return;
+    setAnswers((prev) => {
+      const next = { ...prev };
+      delete next[q.id];
+      return next;
+    });
+    setMarkedForReview((m) => {
+      const n = new Set(m);
+      n.delete(q.id);
+      return n;
+    });
+  };
+  const cbtSaveAndMark = (advance: boolean) => {
+    if (!q) return;
+    setMarkedForReview((m) => {
+      const n = new Set(m);
+      n.add(q.id);
+      return n;
+    });
+    if (advance) setIdx((i) => Math.min(total - 1, i + 1));
+  };
 
   const setAnswer = (i: number) => {
     if (!q) return;
@@ -687,7 +750,7 @@ function QuizPlayer() {
   const chapName = q.chapter_id ? chapters[q.chapter_id] : undefined;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className={cn("flex min-h-screen flex-col", isQuiz ? "bg-slate-50 text-slate-900 light" : "bg-background")}>
       {isContest && !submitted && !contestDone && !alreadyAttempted && !hasAckedAntiCheat("contest", testId) && (
         <AntiCheatGate
           mode="contest"
@@ -698,7 +761,7 @@ function QuizPlayer() {
       )}
 
       {/* Top bar */}
-      <header className="sticky top-0 z-40 border-b border-border bg-card">
+      <header className={cn("sticky top-0 z-40 border-b", isQuiz ? "bg-white border-blue-100/80 shadow-xs" : "border-border bg-card")}>
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2.5">
           <div className="min-w-0 flex-1">
             {(() => {
@@ -718,7 +781,7 @@ function QuizPlayer() {
                   <span className="shrink-0 rounded-md border border-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 dark:border-emerald-500/40">
                     +{test.marks_correct}/{test.marks_wrong}
                   </span>
-                  {isExam && (
+                  {isCbt && (
                     <span className="shrink-0 rounded-md border border-rose-300 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-rose-700 dark:text-rose-300 dark:border-rose-500/40">
                       {hh}:{mm}:{ss}
                     </span>
@@ -729,7 +792,6 @@ function QuizPlayer() {
             <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
               <Flag className="h-3 w-3 text-emerald-600" />
               <span className="font-semibold">NEET</span>
-              {isExam && <span className="font-semibold text-primary">CBT Exam</span>}
               <span className="ml-2">
                 Q {idx + 1} / {total}
               </span>
@@ -818,7 +880,7 @@ function QuizPlayer() {
         </div>
         {/* progress bar */}
         <div className="h-1 w-full bg-secondary">
-          <div className="h-full bg-emerald-500 transition-all" style={{ width: `${progress}%` }} />
+          <div className={cn("h-full transition-all", isQuiz ? "bg-blue-600" : "bg-emerald-500")} style={{ width: `${progress}%` }} />
         </div>
         {/* Question palette */}
         <div className="mx-auto max-w-3xl">
@@ -864,7 +926,7 @@ function QuizPlayer() {
       {/* Question */}
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-5">
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
+          <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold", isQuiz ? "bg-blue-600 text-white" : "bg-foreground text-background")}>
             {idx + 1}
           </span>
           <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
@@ -879,6 +941,20 @@ function QuizPlayer() {
           <RichText>{q.text}</RichText>
         </div>
 
+        {resolveImageUrl(q.question_image_url) && (
+          <div className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs">
+            <img
+              src={resolveImageUrl(q.question_image_url)!}
+              alt="Question Diagram"
+              className="max-h-80 w-auto rounded-lg object-contain"
+              loading="lazy"
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = "none";
+              }}
+            />
+          </div>
+        )}
+
         <div className="mt-4 space-y-2">
           {q.options.map((opt, i) => {
             const selected = answers[q.id] === i;
@@ -891,12 +967,24 @@ function QuizPlayer() {
                 onClick={() => !locked && setAnswer(i)}
                 disabled={locked}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg border bg-card p-3.5 text-left text-base transition",
-                  !locked && "hover:border-primary/50",
-                  selected && !locked && "border-primary ring-1 ring-primary/30",
-                  isCorrectOpt && "border-emerald-400/60 bg-emerald-500/5",
-                  isWrongPick && "border-rose-400/60 bg-rose-500/5",
-                  locked && !isCorrectOpt && !isWrongPick && "border-border opacity-90",
+                  "flex w-full items-center gap-3 rounded-xl border p-3.5 text-left text-base transition",
+                  isQuiz
+                    ? cn(
+                        "bg-white border-blue-100/90 text-slate-800 shadow-xs",
+                        !locked && "hover:border-blue-400 hover:bg-blue-50/40",
+                        selected && !locked && "border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/30",
+                        isCorrectOpt && "border-emerald-500 bg-emerald-50 text-emerald-950 font-medium",
+                        isWrongPick && "border-rose-400 bg-rose-50 text-rose-950",
+                        locked && !isCorrectOpt && !isWrongPick && "border-slate-200 opacity-80"
+                      )
+                    : cn(
+                        "bg-card",
+                        !locked && "hover:border-primary/50",
+                        selected && !locked && "border-primary ring-1 ring-primary/30",
+                        isCorrectOpt && "border-emerald-400/60 bg-emerald-500/5",
+                        isWrongPick && "border-rose-400/60 bg-rose-500/5",
+                        locked && !isCorrectOpt && !isWrongPick && "border-border opacity-90"
+                      )
                 )}
               >
                 <span
@@ -906,7 +994,9 @@ function QuizPlayer() {
                       ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
                       : isWrongPick
                         ? "bg-rose-500/20 text-rose-700 dark:text-rose-300"
-                        : "bg-secondary text-foreground",
+                        : isQuiz
+                          ? "bg-blue-50 text-blue-700 border border-blue-200/60"
+                          : "bg-secondary text-foreground",
                   )}
                 >
                   {i + 1}
@@ -919,12 +1009,12 @@ function QuizPlayer() {
                   className={cn(
                     "h-5 w-5 shrink-0 rounded-full border-2",
                     isCorrectOpt
-                      ? "border-emerald-400/70 bg-emerald-400/40"
+                      ? "border-emerald-500 bg-emerald-500"
                       : isWrongPick
-                        ? "border-rose-400/70 bg-rose-400/40"
+                        ? "border-rose-400 bg-rose-400"
                         : selected
-                          ? "border-primary bg-primary"
-                          : "border-border",
+                          ? (isQuiz ? "border-blue-600 bg-blue-600" : "border-primary bg-primary")
+                          : (isQuiz ? "border-blue-200" : "border-border"),
                   )}
                 />
               </button>
@@ -984,6 +1074,19 @@ function QuizPlayer() {
             {q.explanation ? (
               <div className="mt-3 text-sm leading-relaxed">
                 <RichText>{q.explanation}</RichText>
+                {resolveImageUrl(q.explanation_image_url) && (
+                  <div className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs">
+                    <img
+                      src={resolveImageUrl(q.explanation_image_url)!}
+                      alt="Solution Diagram"
+                      className="max-h-80 w-auto rounded-lg object-contain"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <div className="mt-3 text-xs text-muted-foreground">No explanation provided.</div>
@@ -993,7 +1096,7 @@ function QuizPlayer() {
       </main>
 
       {/* Bottom action */}
-      <footer className="sticky bottom-0 border-t border-border bg-card">
+      <footer className={cn("sticky bottom-0 border-t", isQuiz ? "bg-white border-blue-100/80 shadow-md" : "border-border bg-card")}>
         <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
           <Button
             variant="outline"
@@ -1017,7 +1120,7 @@ function QuizPlayer() {
           </Button>
           {idx < total - 1 ? (
             <Button
-              className="h-11 flex-1"
+              className={cn("h-11 flex-1", isQuiz && "bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs")}
               onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
             >
               Next
@@ -1040,13 +1143,48 @@ function QuizPlayer() {
 
       <Dialog open={confirmSubmit} onOpenChange={setConfirmSubmit}>
         <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-          <div className="bg-amber-50 dark:bg-amber-500/10 px-5 py-4 border-b border-amber-200/60 dark:border-amber-500/20 flex items-center gap-3">
-            <Flag className="h-5 w-5 text-amber-600" />
-            <DialogTitle className="text-lg font-bold">Confirm Submission</DialogTitle>
+          <div className="bg-primary/10 px-5 py-4 border-b border-primary/20 flex items-center gap-3">
+            <Laptop className="h-5 w-5 text-primary" />
+            <DialogTitle className="text-lg font-bold">NEET CBT — Exam Summary</DialogTitle>
           </div>
           <div className="p-5 space-y-4">
-            <div className="rounded-xl bg-muted/50 p-4 space-y-3">
-              <div className="text-center font-semibold">Submission Summary</div>
+            <div className="overflow-x-auto rounded-xl border border-border">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-muted text-muted-foreground uppercase text-[10px]">
+                  <tr>
+                    <th className="p-2 font-bold">Subject</th>
+                    <th className="p-2 text-center font-bold">Total</th>
+                    <th className="p-2 text-center font-bold text-emerald-600">Answered</th>
+                    <th className="p-2 text-center font-bold text-rose-600">Not Ans.</th>
+                    <th className="p-2 text-center font-bold text-purple-600">Marked</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {subjectGroups.map((g) => {
+                    const totalG = g.indices.length;
+                    const ansG = g.indices.filter((i) => answers[questions[i]?.id] !== undefined).length;
+                    const markedG = g.indices.filter((i) => markedForReview.has(questions[i]?.id)).length;
+                    const notAnsG = totalG - ansG;
+                    return (
+                      <tr key={g.name} className="hover:bg-muted/50">
+                        <td className="p-2 font-bold">{g.name}</td>
+                        <td className="p-2 text-center font-semibold">{totalG}</td>
+                        <td className="p-2 text-center font-semibold text-emerald-600">{ansG}</td>
+                        <td className="p-2 text-center font-semibold text-rose-600">{notAnsG}</td>
+                        <td className="p-2 text-center font-semibold text-purple-600">{markedG}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr className="bg-muted/30 font-bold border-t border-border">
+                    <td className="p-2">Total</td>
+                    <td className="p-2 text-center">{questions.length}</td>
+                    <td className="p-2 text-center text-emerald-600">{Object.keys(answers).length}</td>
+                    <td className="p-2 text-center text-rose-600">{questions.length - Object.keys(answers).length}</td>
+                    <td className="p-2 text-center text-purple-600">{markedForReview.size}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
               {(() => {
                 const total = questions.length;
                 const answered = Object.keys(answers).length;
@@ -1061,7 +1199,6 @@ function QuizPlayer() {
                   </div>
                 );
               })()}
-            </div>
             {(() => {
               const unanswered = questions.length - Object.keys(answers).length;
               if (unanswered > 0) return (
@@ -1084,6 +1221,154 @@ function QuizPlayer() {
     </div>
   );
 }
+
+
+function PalettePanelContent({
+  user,
+  questions,
+  answers,
+  markedForReview,
+  visitedIds,
+  cbtStatus,
+  idx,
+  setIdx,
+  setConfirmSubmit,
+  submitting,
+}: {
+  user: any;
+  questions: Question[];
+  answers: Record<string, number>;
+  markedForReview: Set<string>;
+  visitedIds: Set<number>;
+  cbtStatus: (i: number) => "answered_marked" | "marked" | "answered" | "not_answered" | "not_visited";
+  idx: number;
+  setIdx: (fn: (i: number) => number | number) => void;
+  setConfirmSubmit: (b: boolean) => void;
+  submitting: boolean;
+}) {
+  let countAnswered = 0;
+  let countNotAnswered = 0;
+  let countNotVisited = 0;
+  let countMarked = 0;
+  let countAnsweredMarked = 0;
+
+  for (let i = 0; i < questions.length; i++) {
+    const s = cbtStatus(i);
+    if (s === "answered") countAnswered++;
+    else if (s === "not_answered") countNotAnswered++;
+    else if (s === "marked") countMarked++;
+    else if (s === "answered_marked") countAnsweredMarked++;
+    else countNotVisited++;
+  }
+
+  return (
+    <div className="flex flex-col h-full justify-between space-y-4">
+      <div className="space-y-4">
+        {/* Candidate Profile Box */}
+        <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-secondary/30 p-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+            <User className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-xs font-bold truncate">{user?.email?.split("@")[0] ?? "Candidate"}</div>
+            <div className="text-[10px] text-muted-foreground uppercase font-mono">NEET Candidate</div>
+          </div>
+        </div>
+
+        {/* Official NTA 5-Color Status Legend */}
+        <div className="rounded-xl border border-border/70 bg-card p-3 space-y-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Legend</div>
+          <div className="grid grid-cols-2 gap-2 text-[11px]">
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-600 text-[10px] font-bold text-white shrink-0">
+                {countAnswered}
+              </span>
+              <span className="text-muted-foreground truncate">Answered</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded bg-rose-500 text-[10px] font-bold text-white shrink-0">
+                {countNotAnswered}
+              </span>
+              <span className="text-muted-foreground truncate">Not Answered</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded bg-slate-200 dark:bg-slate-700 text-[10px] font-bold text-foreground shrink-0 border border-border">
+                {countNotVisited}
+              </span>
+              <span className="text-muted-foreground truncate">Not Visited</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0">
+                {countMarked}
+              </span>
+              <span className="text-muted-foreground truncate">Marked for Review</span>
+            </div>
+            <div className="flex items-center gap-1.5 col-span-2">
+              <span className="relative flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0 after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white">
+                {countAnsweredMarked}
+              </span>
+              <span className="text-muted-foreground truncate text-[10px]">Answered & Marked (Evaluated)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Numbered Palette Grid */}
+        <div>
+          <div className="mb-2 text-xs font-bold text-foreground">Questions ({questions.length})</div>
+          <div className="grid grid-cols-5 gap-1.5 max-h-[300px] overflow-y-auto pr-1">
+            {questions.map((qq, i) => {
+              const status = cbtStatus(i);
+              const isActive = i === idx;
+              let bg = "bg-slate-200 dark:bg-slate-700 text-foreground border-border";
+              let shape = "rounded";
+
+              if (status === "answered") {
+                bg = "bg-emerald-600 text-white border-emerald-700";
+              } else if (status === "not_answered") {
+                bg = "bg-rose-500 text-white border-rose-600";
+              } else if (status === "marked") {
+                bg = "bg-purple-600 text-white border-purple-700";
+                shape = "rounded-full";
+              } else if (status === "answered_marked") {
+                bg = "bg-purple-600 text-white border-purple-700";
+                shape = "rounded-full relative after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white";
+              }
+
+              return (
+                <button
+                  key={qq.id}
+                  type="button"
+                  onClick={() => setIdx(() => i)}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center text-xs font-bold transition border cursor-pointer",
+                    shape,
+                    bg,
+                    isActive && "ring-2 ring-primary ring-offset-1"
+                  )}
+                >
+                  <span>{i + 1}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Prominent Submit Test Button */}
+      <div className="pt-3 border-t border-border">
+        <Button
+          type="button"
+          onClick={() => setConfirmSubmit(true)}
+          disabled={submitting}
+          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11"
+        >
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Test"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 
 function ResultsView({
   test,
@@ -1183,6 +1468,91 @@ function ResultsView({
             const chapName = q.chapter_id ? chapters[q.chapter_id] : undefined;
             return (
               <Card key={q.id}>
-                <CardConten
+                <CardContent className="p-5">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <Badge variant="secondary">Q{i + 1}</Badge>
+                    <Badge
+                      className={cn(
+                        ok
+                          ? "bg-emerald-600"
+                          : u === undefined
+                            ? "bg-muted text-muted-foreground"
+                            : "bg-rose-600",
+                      )}
+                    >
+                      {ok ? "Correct" : u === undefined ? "Skipped" : "Wrong"}
+                    </Badge>
+                    <span
+                      className={cn(
+                        "rounded-full border px-2.5 py-0.5 font-semibold capitalize",
+                        diffClass(q.difficulty),
+                      )}
+                    >
+                      {q.difficulty}
+                    </span>
+                    {subjName && (
+                      <span className="rounded-full bg-secondary px-2.5 py-0.5 text-muted-foreground">
+                        {subjName}
+                      </span>
+                    )}
+                    {chapName && (
+                      <span className="rounded-full bg-secondary px-2.5 py-0.5 text-muted-foreground">
+                        {chapName}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 text-sm">
+                    <RichText>{q.text}</RichText>
+                  </div>
+                  <div className="mt-2 grid gap-1.5 text-sm">
+                    {q.options.map((o, j) => (
+                      <div
+                        key={j}
+                        className={cn(
+                          "rounded-lg border px-3 py-2",
+                          j === q.correct_index && "border-emerald-500 bg-emerald-500/10",
+                          j === u && j !== q.correct_index && "border-rose-500 bg-rose-500/10",
+                        )}
+                      >
+                        <span className="font-semibold">{String.fromCharCode(65 + j)}.</span>{" "}
+                        <RichText>{o}</RichText>
+                      </div>
+                    ))}
+                  </div>
+                  {q.explanation && (
+                    <div className="mt-3 rounded-lg bg-secondary p-3 text-xs">
+                      <b>Solution:</b> <RichText>{q.explanation}</RichText>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-... [truncated — file is 54572 bytes, showing first 51200]
+        <div className="mt-8 flex justify-center">
+          <Button asChild className="bg-gradient-primary">
+            <Link to="/dashboard">Back to dashboard</Link>
+          </Button>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function Legend({ swatch, label }: { swatch: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={cn("h-3 w-6 rounded", swatch)} /> {label}
+    </span>
+  );
+}
+
+function Stat({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="rounded-xl border bg-card p-4 text-center">
+      <div className={cn("text-2xl font-extrabold", color)}>{value}</div>
+      <div className="mt-1 text-xs text-muted-foreground">{label}</div>
+    </div>
+  );
+}
