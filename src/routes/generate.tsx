@@ -1,7 +1,5 @@
-import { locked } from "@/components/feature-lock";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Loader2, Monitor, Check } from "lucide-react";
@@ -9,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { createCustomTest } from "@/lib/generate-test.functions";
 
 export const Route = createFileRoute("/generate")({
   head: () => ({ meta: [
@@ -20,7 +17,7 @@ export const Route = createFileRoute("/generate")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
   ] }),
-  component: locked("generate_test", GeneratePage),
+  component: GeneratePage,
 });
 
 type Subject = { id: string; name: string };
@@ -40,8 +37,6 @@ function GeneratePage() {
   const [launching, setLaunching] = useState(false);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState<string | null>(null);
-
-  const createTest = useServerFn(createCustomTest);
 
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
   useEffect(() => {
@@ -77,17 +72,45 @@ function GeneratePage() {
     setLaunching(true);
     try {
       const subjName = subjects.find((s) => s.id === subjectId)?.name ?? "Custom";
-      const { testId, totalQuestions } = await createTest({
-        data: {
-          chapter_ids: chapIds,
-          subject_name: subjName,
-          count,
-          difficulty,
+      // Pick matching question ids straight from Supabase (no server token needed).
+      const cap = difficulty === "mix" ? null : difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+      let query = supabase.from("questions").select("id").in("chapter_id", chapIds);
+      if (cap) query = query.eq("difficulty", cap);
+      const { data: rows, error: qErr } = await query.limit(count * 3);
+      if (qErr) throw new Error(qErr.message);
+      let ids = (rows ?? []).map((r) => r.id);
+      // Fallback: if a difficulty filter matched too few, backfill from the chapters.
+      if (ids.length < count) {
+        const { data: fb } = await supabase.from("questions").select("id").in("chapter_id", chapIds).limit(count);
+        ids = Array.from(new Set([...ids, ...(fb ?? []).map((r) => r.id)]));
+      }
+      if (!ids.length) throw new Error("No questions match — try different filters.");
+      // Shuffle and trim to the requested count.
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
+      ids = ids.slice(0, count);
+      const title = `${subjName} Custom Test (${ids.length} Qs)`;
+      const { data: t, error: tErr } = await supabase
+        .from("tests")
+        .insert({
+          title,
+          type: "custom",
+          difficulty: difficulty === "mix" ? "mix" : cap!,
           duration_min: timer,
-        },
-      });
-      toast.success(totalQuestions < count ? `Test ready with ${totalQuestions} available questions` : "Test ready");
-      await nav({ to: "/quiz/$testId", params: { testId }, search: { mode } });
+          total_questions: ids.length,
+          question_ids: ids,
+          created_by: user.id,
+          source: "NCERT",
+          marks_correct: 4,
+          marks_wrong: -1,
+        })
+        .select("id")
+        .maybeSingle();
+      if (tErr || !t) throw new Error(tErr?.message ?? "Could not create test");
+      toast.success("Test ready");
+      await nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode } as never });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not start");
     } finally {

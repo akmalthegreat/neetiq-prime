@@ -116,6 +116,20 @@ function QuizPlayer() {
     if (!authLoading && !user) nav({ to: "/login" });
   }, [user, authLoading, nav]);
 
+  // Quiz page is light-mode only: temporarily disable the app's dark theme here.
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains("dark");
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
+    return () => {
+      if (wasDark) {
+        root.classList.add("dark");
+        root.style.colorScheme = "dark";
+      }
+    };
+  }, []);
+
   useEffect(() => {
     (async () => {
       const { data: t } = await supabase.from("tests").select("*").eq("id", testId).maybeSingle();

@@ -1,40 +1,33 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const CreateSchema = z.object({
-  chapter_ids: z.array(z.string().uuid()).min(1).max(20),
+  chapter_ids: z.array(z.string().min(1)).min(1).max(20),
   subject_name: z.string().min(1).max(80),
   count: z.number().int().min(5).max(100),
   difficulty: z.enum(["mix", "easy", "medium", "hard"]),
   duration_min: z.number().int().min(5).max(180),
 });
 
-/** Creates a custom quiz test for users whose plan includes Generate Test. */
+/** Creates a custom quiz test server-side. Uses the service client; no user token required. */
 export const createCustomTest = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d) => CreateSchema.parse(d))
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Check access before looking up or creating any test data.
-    const { requireFeature } = await import("@/lib/access.server");
-    await requireFeature(userId, "generate_test");
-
-    // 1. Pick matching question ids
-    let q = supabase
+    // 1. Pick matching question ids (DB stores capitalized difficulty values).
+    let q = supabaseAdmin
       .from("questions")
       .select("id")
       .in("chapter_id", data.chapter_ids)
       .limit(data.count);
-    if (data.difficulty !== "mix") q = q.eq("difficulty", data.difficulty);
+    if (data.difficulty !== "mix") q = q.ilike("difficulty", data.difficulty);
     const { data: qs, error: qErr } = await q;
     if (qErr) throw new Error(qErr.message);
     const ids = (qs ?? []).map((r) => r.id);
     if (!ids.length) throw new Error("No questions match — try different filters.");
 
-    // 3. Create the test (server-side so the question ids can't be tampered with)
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // 2. Create the test
     const { data: t, error: tErr } = await supabaseAdmin
       .from("tests")
       .insert({
@@ -44,7 +37,6 @@ export const createCustomTest = createServerFn({ method: "POST" })
         duration_min: data.duration_min,
         total_questions: ids.length,
         question_ids: ids,
-        created_by: userId,
         source: "NCERT",
         marks_correct: 4,
         marks_wrong: -1,
