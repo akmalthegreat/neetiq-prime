@@ -1,8 +1,6 @@
 // External Supabase project configuration.
 // URL and publishable (anon) key are PUBLIC values, safe to embed in client code.
-// These are injected at build time from MY_SUPABASE_URL / MY_SUPABASE_ANON_KEY secrets
-// via vite.config.ts `define`. The service role key stays server-only (read from
-// MY_SUPABASE_SERVICE_ROLE_KEY in client.server.ts).
+// Injected at build time or fallback to configured defaults.
 
 const DEFAULT_SUPABASE_URL = "https://cupvxfoikjkufudgehsr.supabase.co";
 const DEFAULT_SUPABASE_ANON_KEY =
@@ -18,3 +16,5 @@ export const SUPABASE_URL: string =
 export const SUPABASE_PUBLISHABLE_KEY: string =
   (typeof __MY_SUPABASE_ANON_KEY__ !== "undefined" && __MY_SUPABASE_ANON_KEY__) ||
   DEFAULT_SUPABASE_ANON_KEY;
+
+export const SUPABASE_STORAGE_URL: string = `${SUPABASE_URL}/storage/v1/object/public`;

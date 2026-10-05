@@ -33,9 +33,17 @@ type Question = {
   marks_correct: number;
   marks_wrong: number;
   explanation?: string | null;
+  explanation_image_url?: string | null;
+  question_image_url?: string | null;
   subject_id?: string | null;
   chapter_id?: string | null;
 };
+
+function resolveImageUrl(url?: string | null) {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return 'https://cupvxfoikjkufudgehsr.supabase.co/storage/v1/object/public/question-images/' + url.replace(/^\/+/, '');
+}
 type Test = {
   id: string;
   title: string;
@@ -170,7 +178,14 @@ function QuizPlayer() {
         setLoading(false);
         return;
       }
-      const { data: qs } = await supabase.from("questions").select("*").in("id", ids);
+      const chunks: string[][] = [];
+      for (let i = 0; i < ids.length; i += 60) {
+        chunks.push(ids.slice(i, i + 60));
+      }
+      const qsResults = await Promise.all(
+        chunks.map((chunk) => supabase.from("questions").select("*").in("id", chunk))
+      );
+      const qs = qsResults.flatMap((r) => r.data ?? []);
       let ordered = ids.map((id) => qs?.find((q) => q.id === id)).filter(Boolean) as Question[];
 
       const subjIds = Array.from(
@@ -857,6 +872,20 @@ function QuizPlayer() {
           <RichText>{q.text}</RichText>
         </div>
 
+        {resolveImageUrl(q.question_image_url) && (
+          <div className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs">
+            <img
+              src={resolveImageUrl(q.question_image_url)!}
+              alt="Question Diagram"
+              className="max-h-80 w-auto rounded-lg object-contain"
+              loading="lazy"
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = "none";
+              }}
+            />
+          </div>
+        )}
+
         <div className="mt-4 space-y-2">
           {q.options.map((opt, i) => {
             const selected = answers[q.id] === i;
@@ -962,6 +991,19 @@ function QuizPlayer() {
             {q.explanation ? (
               <div className="mt-3 text-sm leading-relaxed">
                 <RichText>{q.explanation}</RichText>
+                {resolveImageUrl(q.explanation_image_url) && (
+                  <div className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs">
+                    <img
+                      src={resolveImageUrl(q.explanation_image_url)!}
+                      alt="Solution Diagram"
+                      className="max-h-80 w-auto rounded-lg object-contain"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <div className="mt-3 text-xs text-muted-foreground">No explanation provided.</div>

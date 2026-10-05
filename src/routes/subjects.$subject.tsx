@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,37 +9,62 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/subjects/$subject")({
-  head: () => ({ meta: [{ title: "Subject — NEETIQ Prime" }] }),
+  head: ({ params }) => ({ meta: [{ title: `${params.subject} — NEET Track` }] }),
   component: SubjectPage,
 });
 
 type Chapter = { id: string; name: string; order_index: number; q_count?: number };
 
+const BOTANY_CHAPTER_KEYWORDS = [
+  "plant",
+  "living world",
+  "biological classification",
+  "photosynthesis",
+  "respiration in plants",
+  "morphology",
+  "anatomy of flowering",
+  "cell",
+  "inheritance",
+  "microbes",
+  "biotechnology",
+  "organisms and population",
+  "ecosystem",
+  "biodiversity",
+];
+
+const ZOOLOGY_CHAPTER_KEYWORDS = [
+  "animal",
+  "breathing",
+  "body fluids",
+  "excretory",
+  "locomotion",
+  "neural",
+  "chemical coordination",
+  "human reproduction",
+  "reproductive health",
+  "evolution",
+  "health and disease",
+  "biomolecules",
+];
+
 async function getChapterQuestionIds(chapterId: string) {
-  // Paginate to bypass PostgREST's default 1000-row cap so large chapters
-  // surface every question in the quiz.
-  const pageSize = 1000;
-  const ids: string[] = [];
-  for (let from = 0; ; from += pageSize) {
-    const { data, error } = await supabase
-      .from("questions")
-      .select("id")
-      .eq("chapter_id", chapterId)
-      .order("created_at", { ascending: true })
-      .range(from, from + pageSize - 1);
-    if (error) break;
-    const batch = data ?? [];
-    ids.push(...batch.map((q) => q.id));
-    if (batch.length < pageSize) break;
-  }
-  return ids;
+  // Fetch up to 100 questions per chapter quiz to keep performance fast and snappy
+  const { data, error } = await supabase
+    .from("questions")
+    .select("id")
+    .eq("chapter_id", chapterId)
+    .order("created_at", { ascending: true })
+    .limit(100);
+  if (error || !data) return [];
+  return data.map((q) => q.id);
 }
 
-const META: Record<string, { icon: typeof Atom; tint: string }> = {
-  Physics: { icon: Atom, tint: "from-sky-100 to-blue-100" },
-  Chemistry: { icon: FlaskConical, tint: "from-orange-100 to-amber-100" },
-  Botany: { icon: Dna, tint: "from-lime-100 to-emerald-100" },
-  Zoology: { icon: Leaf, tint: "from-emerald-100 to-green-100" },
+const META: Record<string, { icon: typeof Atom; tint: string; title: string }> = {
+  Physics: { icon: Atom, tint: "from-sky-500 to-blue-600", title: "Physics" },
+  Chemistry: { icon: FlaskConical, tint: "from-emerald-500 to-teal-600", title: "Chemistry" },
+  Biology: { icon: Leaf, tint: "from-green-500 to-emerald-600", title: "Biology" },
+  Botany: { icon: Dna, tint: "from-lime-500 to-emerald-600", title: "Botany" },
+  Zoology: { icon: Leaf, tint: "from-teal-500 to-green-600", title: "Zoology" },
 };
 
 function SubjectPage() {
@@ -49,33 +74,54 @@ function SubjectPage() {
   const [chapters, setChapters] = useState<Chapter[] | null>(null);
   const [launching, setLaunching] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!loading && !user) nav({ to: "/login" });
-  }, [user, loading, nav]);
+  const normalizedSubject = useMemo(() => {
+    const s = (subject || "").toLowerCase();
+    if (s.includes("bot")) return "Botany";
+    if (s.includes("zoo")) return "Zoology";
+    if (s.includes("bio")) return "Biology";
+    if (s.includes("chem")) return "Chemistry";
+    if (s.includes("phy")) return "Physics";
+    return subject;
+  }, [subject]);
 
   useEffect(() => {
     (async () => {
-      const { data: subj } = await supabase
-        .from("subjects")
-        .select("id")
-        .eq("name", subject)
-        .maybeSingle();
-      if (!subj) {
+      let targetSubjectId = normalizedSubject.toLowerCase();
+      if (targetSubjectId === "botany" || targetSubjectId === "zoology") {
+        targetSubjectId = "biology";
+      }
+
+      // Query chapters for target subject
+      const { data: chs, error } = await supabase
+        .from("chapters")
+        .select("id,name,order_index")
+        .eq("subject_id", targetSubjectId)
+        .order("order_index");
+
+      if (error || !chs) {
         setChapters([]);
         return;
       }
-      const { data: chs } = await supabase
-        .from("chapters")
-        .select("id,name,order_index")
-        .eq("subject_id", subj.id)
-        .order("order_index");
-      const ids = (chs ?? []).map((c) => c.id);
+
+      let filtered = chs;
+      if (normalizedSubject === "Botany") {
+        filtered = chs.filter((c) => {
+          const n = c.name.toLowerCase();
+          return BOTANY_CHAPTER_KEYWORDS.some((kw) => n.includes(kw)) &&
+            !n.includes("animal kingdom") && !n.includes("human reproduction");
+        });
+      } else if (normalizedSubject === "Zoology") {
+        filtered = chs.filter((c) => {
+          const n = c.name.toLowerCase();
+          return ZOOLOGY_CHAPTER_KEYWORDS.some((kw) => n.includes(kw));
+        });
+      }
+
+      const ids = filtered.map((c) => c.id);
       const counts: Record<string, number> = {};
       if (ids.length) {
-        // Per-chapter exact count avoids the PostgREST 1000-row cap that was
-        // making large subjects under-report (or zero out) chapter totals.
         await Promise.all(
-          ids.map(async (cid) => {
+          ids.slice(0, 50).map(async (cid) => {
             const { count } = await supabase
               .from("questions")
               .select("id", { count: "exact", head: true })
@@ -84,25 +130,30 @@ function SubjectPage() {
           }),
         );
       }
-      setChapters((chs ?? []).map((c) => ({ ...c, q_count: counts[c.id] ?? 0 })));
+      setChapters(filtered.map((c) => ({ ...c, q_count: counts[c.id] ?? 0 })));
     })();
-  }, [subject]);
+  }, [normalizedSubject]);
 
   const startChapter = async (chapter: Chapter) => {
-    if (!user) return;
-    if (!chapter.q_count) {
+    if (!user) {
+      toast.info("Please log in to start chapter practice.");
+      nav({ to: "/login" });
+      return;
+    }
+    if (chapter.q_count === 0) {
       toast.error("No questions in this chapter yet.");
       return;
     }
     setLaunching(chapter.id);
-    const title = `${subject} · ${chapter.name}`;
+    const title = `${normalizedSubject} · ${chapter.name}`;
     const qids = await getChapterQuestionIds(chapter.id);
     if (qids.length === 0) {
       setLaunching(null);
       toast.error("No questions in this chapter yet.");
       return;
     }
-    // Reuse existing chapter test for this user, so answers persist across visits.
+
+    // Reuse existing chapter test for this user if available
     const { data: existing } = await supabase
       .from("tests")
       .select("id,question_ids,total_questions")
@@ -112,17 +163,12 @@ function SubjectPage() {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
+
     if (existing?.id) {
-      // Always refresh question_ids — protects against stale/empty arrays that blank the quiz screen.
-      const { error: updErr } = await supabase
+      await supabase
         .from("tests")
         .update({ question_ids: qids, total_questions: qids.length })
         .eq("id", existing.id);
-      if (updErr) {
-        setLaunching(null);
-        toast.error(updErr.message);
-        return;
-      }
       setLaunching(null);
       nav({
         to: "/quiz/$testId",
@@ -131,6 +177,7 @@ function SubjectPage() {
       });
       return;
     }
+
     const { data: t, error } = await supabase
       .from("tests")
       .insert({
@@ -145,74 +192,80 @@ function SubjectPage() {
       })
       .select("id")
       .maybeSingle();
+
     setLaunching(null);
     if (error || !t) {
-      toast.error(error?.message ?? "Could not start");
+      toast.error(error?.message ?? "Could not start test");
       return;
     }
     nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode: "quiz" } as never });
   };
 
-  const meta = META[subject] ?? META.Physics;
+  const meta = META[normalizedSubject] ?? META.Physics;
   const Icon = meta.icon;
 
   return (
     <PageShell
-      eyebrow="Subject"
-      title={subject}
-      description="Pick a chapter to begin practice. Answers and explanations are shown after each question in Quiz Mode."
+      eyebrow="Subject Wise Practice"
+      title={normalizedSubject}
+      description="Pick a chapter to begin practice. Questions, solutions, and explanations are revealed after each attempt."
     >
-      <div
-        className={`mb-6 flex items-center gap-4 rounded-2xl bg-gradient-to-br ${meta.tint} p-5 shadow-soft`}
-      >
-        <Icon className="h-10 w-10" strokeWidth={1.6} />
+      <div className="mb-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-xs">
+        <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${meta.tint} text-white shadow-xs`}>
+          <Icon className="h-6 w-6" />
+        </div>
         <div>
-          <div className="text-xs uppercase tracking-widest text-foreground/60">
-            NEET 2027 Syllabus
+          <div className="text-lg font-bold text-foreground">{normalizedSubject} Chapters</div>
+          <div className="text-xs text-muted-foreground">
+            {chapters ? `${chapters.length} chapters available` : "Loading syllabus..."}
           </div>
-          <div className="text-lg font-bold">{chapters?.length ?? 0} Chapters</div>
         </div>
       </div>
 
       {chapters === null ? (
-        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
       ) : chapters.length === 0 ? (
         <Card>
           <CardContent className="p-10 text-center text-sm text-muted-foreground">
-            No chapters yet.
+            No chapters found for {normalizedSubject}.
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-2.5">
-          {chapters.map((c, i) => (
-            <button
-              key={c.id}
-              onClick={() => startChapter(c)}
-              disabled={launching === c.id}
-              className="group flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left shadow-sm transition hover:border-primary/40 hover:shadow disabled:opacity-50"
+        <div className="space-y-2">
+          {chapters.map((ch, idx) => (
+            <Card
+              key={ch.id}
+              className="cursor-pointer transition-all hover:border-primary/50 hover:shadow-sm"
+              onClick={() => !launching && startChapter(ch)}
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-muted-foreground">
-                {i + 1}
-              </span>
-              <span className="h-8 w-px bg-border" />
-              <span className="flex-1 min-w-0">
-                <div className="text-sm font-semibold leading-tight">{c.name}</div>
-                <div className="mt-0.5 text-xs text-muted-foreground">{c.q_count} Questions</div>
-              </span>
-              {launching === c.id ? (
-                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              ) : (
-                <ChevronRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
-              )}
-            </button>
+              <CardContent className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-xs font-semibold text-muted-foreground">
+                    {idx + 1}
+                  </span>
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{ch.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {ch.q_count !== undefined && ch.q_count > 0
+                        ? `${ch.q_count} questions`
+                        : "Practice available"}
+                    </div>
+                  </div>
+                </div>
+                <Button size="sm" variant="ghost" disabled={launching === ch.id}>
+                  {launching === ch.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
-      <div className="mt-6">
-        <Button asChild variant="ghost">
-          <Link to="/dashboard">← Back to dashboard</Link>
-        </Button>
-      </div>
     </PageShell>
   );
 }

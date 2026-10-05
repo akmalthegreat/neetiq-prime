@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isAdminUser } from "@/lib/admin-bypass.server";
 
 const CreateSchema = z.object({
-  chapter_ids: z.array(z.string().uuid()).min(1).max(20),
+  chapter_ids: z.array(z.string().min(1)).min(1).max(20),
   subject_name: z.string().min(1).max(80),
   count: z.number().int().min(5).max(100),
   difficulty: z.enum(["mix", "easy", "medium", "hard"]),
