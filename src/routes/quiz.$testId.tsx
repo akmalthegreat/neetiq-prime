@@ -865,166 +865,251 @@ function QuizPlayer() {
     (acc, _qq, i) => { acc[cbtStatus(i)]++; return acc; },
     { not_visited: 0, not_answered: 0, answered: 0, marked: 0, answered_marked: 0 } as Record<CbtStatus, number>,
   );
-  const cbtTile: Record<CbtStatus, string> = {
-    not_visited: "bg-[#e9ecef] text-slate-700 border-slate-300",
-    not_answered: "bg-[#e8590c] text-white border-[#c2410c]",
-    answered: "bg-[#2f9e44] text-white border-[#237a35]",
-    marked: "bg-[#1c7ed6] text-white border-[#1864ab]",
-    answered_marked: "bg-[#1c7ed6] text-white border-[#1864ab]",
-  };
-  const cbtBtn = "h-10 rounded-[3px] border px-4 text-sm font-bold uppercase tracking-wide shadow-sm transition active:translate-y-px disabled:opacity-50";
+  const cbtBtn = "h-10 rounded-lg border px-4 text-xs sm:text-sm font-semibold tracking-wide shadow-xs transition active:scale-[0.98] disabled:opacity-50 inline-flex items-center justify-center gap-1.5 cursor-pointer";
 
   if (isCbt)
     return (
-      <div className="light min-h-screen bg-white text-slate-800" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+      <div className="light min-h-screen bg-slate-50/70 text-slate-800 antialiased">
         {isContest && !hasAckedAntiCheat("contest", testId) && (
           <AntiCheatGate mode="contest" scopeId={testId} onAccept={() => {}} onCancel={() => nav({ to: "/contests" })} />
         )}
-        {/* Candidate info */}
-        <div className="flex items-start gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-8">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-500 sm:h-16 sm:w-16">
-            <User className="h-9 w-9" />
-          </div>
-          <table className="text-sm sm:text-[15px]">
-            <tbody>
-              <tr><td className="pr-4 text-slate-600">Candidate Name</td><td className="font-semibold text-[#e8590c]">: {cbtCandidate}</td></tr>
-              <tr><td className="pr-4 text-slate-600">Exam Name</td><td className="font-semibold text-[#e8590c]">: {test.title} ({total} Qs · {test.duration_min}m)</td></tr>
-              <tr><td className="pr-4 text-slate-600">Subject</td><td className="font-semibold text-[#e8590c]">: {subjectGroups.length > 1 ? "Mixed" : subjName || "Mixed"}</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:p-5 lg:flex-row">
-          {/* Left: question area */}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between bg-[#e8590c] px-4 py-2.5 text-white">
-              <span className="text-lg font-bold">Question {idx + 1}:</span>
-              <span className="flex items-center gap-2 text-sm font-semibold">
-                Time:
-                <span className="rounded-[3px] bg-white px-2.5 py-1 font-mono text-sm font-bold tabular-nums text-[#c2410c]">{hh}:{mm}:{ss}</span>
-              </span>
-            </div>
-            <div className="border border-t-0 border-slate-300 bg-white">
-              <div className="px-5 py-4">
-                <div className="text-[15px] leading-relaxed sm:text-base"><RichText>{q.text}</RichText></div>
-                {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
-                  <img
-                    src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
-                    alt="Question diagram"
-                    className="my-3 max-h-80 w-auto object-contain"
-                    loading="lazy"
-                    onError={(e) => handleImageFallback(e.currentTarget)}
-                  />
-                )}
-                <div className="mt-4 space-y-3">
-                  {q.options.map((opt, i) => (
-                    <div key={i} className="flex gap-3 text-[15px]">
-                      <span className="shrink-0">({i + 1})</span>
-                      <div className="min-w-0"><RichText>{opt}</RichText></div>
-                    </div>
-                  ))}
+        {/* NeetIQ CBT Exam Header */}
+        <header className="border-b border-border/80 bg-white/95 backdrop-blur-xs shadow-xs px-4 py-3 sm:px-8">
+          <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/15 to-teal-500/20 text-emerald-700 font-bold border border-emerald-500/20">
+                <Laptop className="h-6 w-6" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-sm sm:text-base text-foreground tracking-tight">NeetIQ CBT Mode</span>
+                  <Badge variant="outline" className="border-emerald-600/30 bg-emerald-50 text-emerald-700 text-[10px] font-semibold py-0">
+                    Live Exam
+                  </Badge>
+                </div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {test.title} · <span className="font-medium text-foreground">{subjectGroups.length > 1 ? "Mixed Subjects" : subjName || "All Subjects"}</span>
                 </div>
               </div>
-              <div className="grid grid-cols-4 border-t border-slate-200 px-5 py-3">
-                {q.options.map((_, i) => (
-                  <label key={i} className="flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="radio"
-                      name={`cbt-${q.id}`}
-                      className="h-4 w-4 accent-[#1c7ed6]"
-                      checked={cbtSelected === i}
-                      onChange={() => setCbtPick((p) => ({ ...p, [q.id]: i }))}
+            </div>
+
+            {/* Candidate & Timer */}
+            <div className="flex items-center gap-3 sm:gap-6">
+              <div className="hidden sm:flex items-center gap-2.5 rounded-lg border border-border/60 bg-secondary/30 px-3 py-1.5 text-xs">
+                <User className="h-4 w-4 text-primary" />
+                <div className="text-left leading-tight">
+                  <div className="font-bold truncate max-w-[140px] text-foreground">{cbtCandidate}</div>
+                  <div className="text-[10px] text-muted-foreground font-mono">Roll: NEET-{String(testId).slice(0, 6)}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl bg-slate-900 text-white px-3.5 py-1.5 shadow-sm">
+                <Clock className="h-4 w-4 text-emerald-400 animate-pulse" />
+                <div className="text-right">
+                  <div className="text-[9px] uppercase tracking-wider text-slate-400 font-medium">Time Left</div>
+                  <div className="font-mono text-sm sm:text-base font-bold tabular-nums text-emerald-300">
+                    {hh}:{mm}:{ss}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-5 p-3 sm:p-5 lg:flex-row">
+          {/* Left: question area */}
+          <div className="min-w-0 flex-1 space-y-4">
+            <div className="rounded-2xl border border-border/80 bg-white shadow-xs overflow-hidden">
+              {/* Question banner */}
+              <div className="flex items-center justify-between border-b border-border/60 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 px-5 py-3 text-white">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-extrabold uppercase tracking-wider">Question {idx + 1} of {total}</span>
+                  <Badge className="bg-white/20 hover:bg-white/20 text-white text-[11px] border-none font-semibold">
+                    +{q.marks_correct} / -{q.marks_wrong}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ReportQuestionButton questionId={q.id} testId={testId} />
+                </div>
+              </div>
+
+              {/* Question body */}
+              <div className="p-5 sm:p-6 space-y-5">
+                <div className="text-base sm:text-lg leading-relaxed text-foreground font-medium">
+                  <RichText>{q.text}</RichText>
+                </div>
+
+                {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
+                  <div className="rounded-xl border border-border/70 p-2 bg-slate-50/50 inline-block max-w-full">
+                    <img
+                      src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
+                      alt="Question diagram"
+                      className="max-h-80 w-auto rounded-lg object-contain mx-auto"
+                      loading="lazy"
+                      onError={(e) => handleImageFallback(e.currentTarget)}
                     />
-                    {i + 1} )
-                  </label>
-                ))}
+                  </div>
+                )}
+
+                {/* Options list */}
+                <div className="space-y-3 pt-2">
+                  {q.options.map((opt, i) => {
+                    const isSelected = cbtSelected === i;
+                    return (
+                      <label
+                        key={i}
+                        className={cn(
+                          "flex cursor-pointer items-start gap-3.5 rounded-xl border p-3.5 text-sm sm:text-[15px] transition-all",
+                          isSelected
+                            ? "border-emerald-600 bg-emerald-50/60 text-emerald-950 font-medium shadow-xs"
+                            : "border-border/80 bg-white hover:bg-secondary/40 text-foreground"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name={`cbt-${q.id}`}
+                          className="mt-0.5 h-4 w-4 accent-emerald-600 cursor-pointer shrink-0"
+                          checked={isSelected}
+                          onChange={() => setCbtPick((p) => ({ ...p, [q.id]: i }))}
+                        />
+                        <span className="font-bold shrink-0 text-muted-foreground">({i + 1})</span>
+                        <div className="min-w-0 flex-1 leading-snug">
+                          <RichText>{opt}</RichText>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
             {/* Action buttons */}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button className={cn(cbtBtn, "border-[#237a35] bg-[#2f9e44] text-white hover:bg-[#2b8a3e]")}
-                onClick={() => { cbtCommit(); setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; }); cbtGo(idx + 1); }}>
-                Save &amp; Next
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; }); cbtClearResponse(); }}>
-                Clear
-              </button>
-              <button className={cn(cbtBtn, "inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { if (cbtCommit()) toast.success("Response saved"); else toast("Select an option first"); }}>
-                <Bookmark className="h-4 w-4" /> Save
-              </button>
-              <button className={cn(cbtBtn, "border-[#e0a800] bg-[#fab005] text-white hover:bg-[#f59f00]")}
-                onClick={() => { if (!cbtCommit()) { toast("Select an option to Save & Mark"); return; } cbtSaveAndMark(false); }}>
-                Save &amp; Mark
-              </button>
-              <button className={cn(cbtBtn, "border-[#1864ab] bg-[#1c7ed6] text-white hover:bg-[#1971c2]")}
-                onClick={() => { cbtSaveAndMark(false); cbtGo(idx + 1); }}>
-                Mark &amp; Next
-              </button>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === 0} onClick={() => cbtGo(idx - 1)}>
-                &lt;&lt; Back
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === total - 1} onClick={() => cbtGo(idx + 1)}>
-                Next &gt;&gt;
-              </button>
-              <button className={cn(cbtBtn, "ml-auto border-[#237a35] bg-[#2f9e44] px-7 text-white hover:bg-[#2b8a3e]")} disabled={submitting} onClick={() => setConfirmSubmit(true)}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
-              </button>
+            <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-border/70 bg-white p-3.5 shadow-xs">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  className={cn(cbtBtn, "bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 border-emerald-700")}
+                  onClick={() => { cbtCommit(); setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; }); cbtGo(idx + 1); }}
+                >
+                  <Check className="h-4 w-4" /> Save &amp; Next
+                </button>
+                <button
+                  className={cn(cbtBtn, "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700 border-violet-700")}
+                  onClick={() => { cbtSaveAndMark(false); cbtGo(idx + 1); }}
+                >
+                  <Bookmark className="h-4 w-4" /> Mark &amp; Next
+                </button>
+                <button
+                  className={cn(cbtBtn, "border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100")}
+                  onClick={() => { if (!cbtCommit()) { toast("Select an option to Save & Mark"); return; } cbtSaveAndMark(false); }}
+                >
+                  Save &amp; Mark
+                </button>
+                <button
+                  className={cn(cbtBtn, "border-border bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground")}
+                  onClick={() => { setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; }); cbtClearResponse(); }}
+                >
+                  Clear Response
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  className={cn(cbtBtn, "border-border bg-white text-foreground hover:bg-secondary/60")}
+                  disabled={idx === 0}
+                  onClick={() => cbtGo(idx - 1)}
+                >
+                  &larr; Previous
+                </button>
+                <button
+                  className={cn(cbtBtn, "border-border bg-white text-foreground hover:bg-secondary/60")}
+                  disabled={idx === total - 1}
+                  onClick={() => cbtGo(idx + 1)}
+                >
+                  Next &rarr;
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Right: status + palette */}
-          <aside className="w-full shrink-0 space-y-3 lg:w-[360px]">
-            <div className="space-y-2 rounded border border-slate-200 bg-slate-50 p-3 text-sm">
-              {([
-                ["not_visited", "Not Visited"],
-                ["not_answered", "Not Answered"],
-                ["answered", "Answered"],
-                ["marked", "Marked"],
-                ["answered_marked", "Marked & Ans"],
-              ] as [CbtStatus, string][]).map(([k, label]) => (
-                <div key={k} className="flex items-center gap-2.5">
-                  <span className={cn("relative flex h-6 min-w-6 items-center justify-center rounded-[3px] border px-1 text-xs font-bold", cbtTile[k])}>
-                    {cbtCounts[k]}
-                    {k === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-white bg-[#2f9e44]" />}
-                  </span>
-                  <span className="text-slate-700">{label}</span>
+          <aside className="w-full shrink-0 space-y-4 lg:w-[360px]">
+            {/* Custom NeetIQ Symbol Legend */}
+            <div className="rounded-2xl border border-border/80 bg-white p-4 shadow-xs space-y-3">
+              <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">NeetIQ Status Legend</span>
+                <span className="text-[11px] font-mono text-muted-foreground">Total: {total}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <CbtStatusSymbol status="answered" size="sm" number={cbtCounts.answered} />
+                  <span className="text-foreground font-medium truncate">Answered</span>
                 </div>
-              ))}
+                <div className="flex items-center gap-2.5">
+                  <CbtStatusSymbol status="not_answered" size="sm" number={cbtCounts.not_answered} />
+                  <span className="text-foreground font-medium truncate">Not Answered</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <CbtStatusSymbol status="not_visited" size="sm" number={cbtCounts.not_visited} />
+                  <span className="text-foreground font-medium truncate">Not Visited</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <CbtStatusSymbol status="marked" size="sm" number={cbtCounts.marked} />
+                  <span className="text-foreground font-medium truncate">Marked</span>
+                </div>
+                <div className="flex items-center gap-2.5 col-span-2 pt-1 border-t border-border/50">
+                  <CbtStatusSymbol status="answered_marked" size="sm" number={cbtCounts.answered_marked} />
+                  <span className="text-foreground font-medium truncate text-[11px]">Answered &amp; Marked for Review</span>
+                </div>
+              </div>
             </div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">
-              <div className="mb-3 text-sm font-bold uppercase text-slate-700">Question Palette</div>
-              <div className="grid max-h-[420px] grid-cols-6 gap-2 overflow-y-auto pr-1">
+
+            {/* Question Palette Grid */}
+            <div className="rounded-2xl border border-border/80 bg-white p-4 shadow-xs space-y-3">
+              <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                <div className="text-xs font-bold uppercase tracking-wider text-foreground">Question Palette</div>
+                <span className="text-[11px] text-muted-foreground font-mono">Q{idx + 1} Selected</span>
+              </div>
+              <div className="grid max-h-[380px] grid-cols-6 gap-2 overflow-y-auto pr-1 py-1">
                 {questions.map((qq, i) => {
                   const s = cbtStatus(i);
+                  const isCurrent = i === idx;
                   return (
                     <button
                       key={qq.id}
+                      type="button"
                       onClick={() => cbtGo(i)}
                       aria-label={`Question ${i + 1}`}
-                      className={cn(
-                        "relative flex h-10 w-full items-center justify-center rounded-md border text-sm font-semibold",
-                        cbtTile[s],
-                        i === idx && "ring-2 ring-[#e8590c] ring-offset-1",
-                      )}
+                      className="flex items-center justify-center p-0.5 cursor-pointer focus:outline-hidden"
                     >
-                      {i + 1}
-                      {s === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-white bg-[#2f9e44]" />}
+                      <CbtStatusSymbol status={s} number={i + 1} isActive={isCurrent} size="md" />
                     </button>
                   );
                 })}
               </div>
+
+              {/* Submit Test Button */}
+              <div className="pt-2 border-t border-border/60">
+                <Button
+                  type="button"
+                  onClick={() => setConfirmSubmit(true)}
+                  disabled={submitting}
+                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold h-11 rounded-xl shadow-xs"
+                >
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Test"}
+                </Button>
+                <div className="mt-2 text-center">
+                  <Link to="/dashboard" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+                    Exit Exam
+                  </Link>
+                </div>
+              </div>
             </div>
-            <Link to="/dashboard" className="block text-right text-xs text-slate-500 hover:underline">Exit test</Link>
           </aside>
         </div>
         {cbtSubmitDialog}
       </div>
     );
+
 
   return (
     <div className={cn("flex min-h-screen flex-col", isQuiz ? "bg-slate-50 text-slate-900 light" : "bg-background")}>
@@ -1433,6 +1518,97 @@ function QuizPlayer() {
 }
 
 
+
+export type CbtSymbolStatus = "answered_marked" | "marked" | "answered" | "not_answered" | "not_visited";
+
+export function CbtStatusSymbol({
+  status,
+  number,
+  isActive = false,
+  size = "md",
+  className,
+}: {
+  status: CbtSymbolStatus;
+  number?: number | string;
+  isActive?: boolean;
+  size?: "sm" | "md" | "lg";
+  className?: string;
+}) {
+  const sizeClasses = {
+    sm: "h-6 w-6 text-[10px]",
+    md: "h-9 w-9 text-xs",
+    lg: "h-10 w-10 text-sm",
+  }[size];
+
+  // Distinct custom NeetIQ shapes & color profiles for CBT mode
+  let shapeStyle = "";
+  let badgeIcon = null;
+
+  switch (status) {
+    case "answered":
+      // NeetIQ Shield: rounded top-left and bottom-right crest in emerald-teal gradient
+      shapeStyle = "rounded-tl-xl rounded-br-xl rounded-tr-xs rounded-bl-xs bg-gradient-to-br from-emerald-500 to-teal-600 text-white border border-emerald-600 shadow-xs";
+      badgeIcon = (
+        <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-emerald-700 text-white border border-white text-[7px] font-bold leading-none">
+          ✓
+        </span>
+      );
+      break;
+
+    case "not_answered":
+      // Inverted chamfer diamond in sunset coral-amber gradient
+      shapeStyle = "rounded-tr-xl rounded-bl-xl rounded-tl-xs rounded-br-xs bg-gradient-to-br from-rose-500 to-amber-500 text-white border border-rose-600 shadow-xs";
+      badgeIcon = (
+        <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-rose-700 text-white border border-white text-[7px] font-bold leading-none">
+          !
+        </span>
+      );
+      break;
+
+    case "marked":
+      // Royal violet/indigo circular coin with review star indicator
+      shapeStyle = "rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-white border border-violet-500 shadow-xs";
+      badgeIcon = (
+        <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-indigo-800 text-white border border-white text-[7px] leading-none">
+          ★
+        </span>
+      );
+      break;
+
+    case "answered_marked":
+      // Dual-action coin: Violet base with glowing emerald check badge
+      shapeStyle = "rounded-full bg-gradient-to-br from-violet-600 to-indigo-700 text-white ring-2 ring-emerald-400 ring-offset-1 border border-violet-700 shadow-xs";
+      badgeIcon = (
+        <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 text-white border border-white text-[8px] font-bold leading-none shadow-xs">
+          ✓
+        </span>
+      );
+      break;
+
+    case "not_visited":
+    default:
+      // Neutral rounded squircle with dashed border
+      shapeStyle = "rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300";
+      break;
+  }
+
+  return (
+    <div
+      className={cn(
+        "relative flex items-center justify-center font-bold font-mono transition-all duration-150 select-none",
+        sizeClasses,
+        shapeStyle,
+        isActive && "ring-2 ring-primary ring-offset-2 scale-105 z-10 shadow-md",
+        className
+      )}
+    >
+      {number !== undefined && <span>{number}</span>}
+      {badgeIcon}
+    </div>
+  );
+}
+
+
 function PalettePanelContent({
   user,
   questions,
@@ -1485,39 +1661,29 @@ function PalettePanelContent({
           </div>
         </div>
 
-        {/* Official NTA 5-Color Status Legend */}
-        <div className="rounded-xl border border-border/70 bg-card p-3 space-y-2">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Legend</div>
+        {/* NeetIQ 5-Status Legend */}
+        <div className="rounded-xl border border-border/70 bg-card p-3 space-y-2.5">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">NeetIQ CBT Legend</div>
           <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-600 text-[10px] font-bold text-white shrink-0">
-                {countAnswered}
-              </span>
+            <div className="flex items-center gap-2">
+              <CbtStatusSymbol status="answered" size="sm" number={countAnswered} />
               <span className="text-muted-foreground truncate">Answered</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded bg-rose-500 text-[10px] font-bold text-white shrink-0">
-                {countNotAnswered}
-              </span>
+            <div className="flex items-center gap-2">
+              <CbtStatusSymbol status="not_answered" size="sm" number={countNotAnswered} />
               <span className="text-muted-foreground truncate">Not Answered</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded bg-slate-200 dark:bg-slate-700 text-[10px] font-bold text-foreground shrink-0 border border-border">
-                {countNotVisited}
-              </span>
+            <div className="flex items-center gap-2">
+              <CbtStatusSymbol status="not_visited" size="sm" number={countNotVisited} />
               <span className="text-muted-foreground truncate">Not Visited</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0">
-                {countMarked}
-              </span>
-              <span className="text-muted-foreground truncate">Marked for Review</span>
+            <div className="flex items-center gap-2">
+              <CbtStatusSymbol status="marked" size="sm" number={countMarked} />
+              <span className="text-muted-foreground truncate">Marked</span>
             </div>
-            <div className="flex items-center gap-1.5 col-span-2">
-              <span className="relative flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0 after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white">
-                {countAnsweredMarked}
-              </span>
-              <span className="text-muted-foreground truncate text-[10px]">Answered & Marked (Evaluated)</span>
+            <div className="flex items-center gap-2 col-span-2 pt-1 border-t border-border/50">
+              <CbtStatusSymbol status="answered_marked" size="sm" number={countAnsweredMarked} />
+              <span className="text-muted-foreground truncate text-[10px]">Answered &amp; Marked for Review</span>
             </div>
           </div>
         </div>
@@ -1525,38 +1691,18 @@ function PalettePanelContent({
         {/* Numbered Palette Grid */}
         <div>
           <div className="mb-2 text-xs font-bold text-foreground">Questions ({questions.length})</div>
-          <div className="grid grid-cols-5 gap-1.5 max-h-[300px] overflow-y-auto pr-1">
+          <div className="grid grid-cols-5 gap-2 max-h-[300px] overflow-y-auto pr-1 py-1">
             {questions.map((qq, i) => {
               const status = cbtStatus(i);
               const isActive = i === idx;
-              let bg = "bg-slate-200 dark:bg-slate-700 text-foreground border-border";
-              let shape = "rounded";
-
-              if (status === "answered") {
-                bg = "bg-emerald-600 text-white border-emerald-700";
-              } else if (status === "not_answered") {
-                bg = "bg-rose-500 text-white border-rose-600";
-              } else if (status === "marked") {
-                bg = "bg-purple-600 text-white border-purple-700";
-                shape = "rounded-full";
-              } else if (status === "answered_marked") {
-                bg = "bg-purple-600 text-white border-purple-700";
-                shape = "rounded-full relative after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white";
-              }
-
               return (
                 <button
                   key={qq.id}
                   type="button"
                   onClick={() => setIdx(() => i)}
-                  className={cn(
-                    "flex h-9 w-9 items-center justify-center text-xs font-bold transition border cursor-pointer",
-                    shape,
-                    bg,
-                    isActive && "ring-2 ring-primary ring-offset-1"
-                  )}
+                  className="flex items-center justify-center p-0.5 cursor-pointer focus:outline-hidden"
                 >
-                  <span>{i + 1}</span>
+                  <CbtStatusSymbol status={status} number={i + 1} isActive={isActive} size="md" />
                 </button>
               );
             })}
