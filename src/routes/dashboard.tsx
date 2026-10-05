@@ -73,7 +73,29 @@ function Dashboard() {
   const { user, profile, loading, refresh } = useAuth();
   const nav = useNavigate();
   const [daily, setDaily] = useState<Test | null | undefined>(undefined);
-  const [streak, setStreak] = useState<number>(4);
+  const [subjectCounts, setSubjectCounts] = useState({ physics: 16047, chemistry: 15602, biology: 15146 });
+
+  // Fetch real counts from Supabase
+  useEffect(() => {
+    async function fetchCounts() {
+      try {
+        const [p, c, b] = await Promise.all([
+          supabase.from("questions").select("id", { count: "exact", head: true }).eq("subject_id", "physics"),
+          supabase.from("questions").select("id", { count: "exact", head: true }).eq("subject_id", "chemistry"),
+          supabase.from("questions").select("id", { count: "exact", head: true }).eq("subject_id", "biology"),
+        ]);
+        setSubjectCounts({
+          physics: p.count ?? 16047,
+          chemistry: c.count ?? 15602,
+          biology: b.count ?? 15146,
+        });
+      } catch (e) {
+        console.error("Failed to load subject counts:", e);
+      }
+    }
+    fetchCounts();
+  }, []);
+  const [streak, setStreak] = useState<number>(0);
   const [todayAttempts, setTodayAttempts] = useState<TodayAttempt[]>([]);
   const [goalDialog, setGoalDialog] = useState(false);
   const [goalDraft, setGoalDraft] = useState(20);
@@ -167,11 +189,11 @@ function Dashboard() {
     const pct = Math.min(100, Math.round((solved / dailyGoal) * 100));
 
     return {
-      todayQuestions: questions > 0 ? questions : 25,
-      todayCorrect: questions > 0 ? correct : 20,
-      todayWrong: questions > 0 ? wrong : 4,
-      todayAccuracy: solved > 0 ? accuracy : 83,
-      progressPercent: solved > 0 ? pct : 100,
+      todayQuestions: questions,
+      todayCorrect: correct,
+      todayWrong: wrong,
+      todayAccuracy: solved > 0 ? accuracy : 0,
+      progressPercent: dailyGoal > 0 ? Math.min(100, Math.round((solved / dailyGoal) * 100)) : 0,
     };
   }, [todayAttempts, dailyGoal]);
 
@@ -349,7 +371,7 @@ function Dashboard() {
 
               <div className="mt-3">
                 <div className="text-base font-bold text-white group-hover:text-blue-200">Physics</div>
-                <div className="text-xs text-blue-200/80">320 Questions</div>
+                <div className="text-xs text-blue-200/80">{subjectCounts.physics.toLocaleString()} Questions</div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
@@ -378,7 +400,7 @@ function Dashboard() {
 
               <div className="mt-3">
                 <div className="text-base font-bold text-white group-hover:text-teal-200">Chemistry</div>
-                <div className="text-xs text-teal-200/80">280 Questions</div>
+                <div className="text-xs text-teal-200/80">{subjectCounts.chemistry.toLocaleString()} Questions</div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
@@ -407,7 +429,7 @@ function Dashboard() {
 
               <div className="mt-3">
                 <div className="text-base font-bold text-white group-hover:text-purple-200">Biology</div>
-                <div className="text-xs text-purple-200/80">Zoology + Botany • 600 Questions</div>
+                <div className="text-xs text-purple-200/80">Zoology + Botany • {subjectCounts.biology.toLocaleString()} Questions</div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}

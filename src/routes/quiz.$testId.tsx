@@ -41,8 +41,13 @@ type Question = {
 
 function resolveImageUrl(url?: string | null) {
   if (!url) return null;
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  return 'https://cupvxfoikjkufudgehsr.supabase.co/storage/v1/object/public/question-images/' + url.replace(/^\/+/, '');
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
+    return trimmed;
+  }
+  const clean = trimmed.replace(/^\/+/, "");
+  return "https://cupvxfoikjkufudgehsr.supabase.co/storage/v1/object/public/question-images/" + clean;
 }
 type Test = {
   id: string;

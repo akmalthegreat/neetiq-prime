@@ -5,13 +5,17 @@ import { cn } from "@/lib/utils";
 import { Tikz } from "@/components/tikz";
 import { Mermaid } from "@/components/mermaid";
 
+const STORAGE_IMG_BASE = "https://cupvxfoikjkufudgehsr.supabase.co/storage/v1/object/public/question-images";
+
 /**
- * Diagram-aware rich text renderer for exam questions.
+ * Diagram- and Image-aware rich text renderer for NEET exam questions.
  * Handles:
+ *  - HTML <img> tags with local or remote src
+ *  - Cloudinary, Mathpix, Supabase, and generic image URLs
+ *  - Relative image paths (/img/data/..., physics/..., etc.)
  *  - Inline LaTeX: $...$ or \(...\)
  *  - Block LaTeX: $$...$$ or \[...\]
- *  - Markdown & standalone images: ![alt](url) and raw https://... (Cloudinary, Mathpix, etc.)
- *  - HTML tags: <br>, <strong>, <b>, <em>, <i>, <sub>, <sup>, <div>
+ *  - HTML tags: <br>, <strong>, <b>, <em>, <i>, <sub>, <sup>, <p>
  *  - TikZ and Mermaid diagrams
  *  - Safe fallback when LaTeX fails
  */
@@ -20,7 +24,7 @@ export function RichText({ children, className }: { children?: string | null; cl
   try {
     const normalized = normalizeRichText(children);
     return (
-      <span className={cn("whitespace-pre-wrap break-words leading-relaxed", className)}>
+      <span className={cn("whitespace-pre-wrap break-words leading-relaxed inline-block max-w-full", className)}>
         {renderBlocks(normalized)}
       </span>
     );
@@ -30,11 +34,29 @@ export function RichText({ children, className }: { children?: string | null; cl
   }
 }
 
+export function resolveAnyImageUrl(url?: string | null): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("/img/data/")) {
+    return `${STORAGE_IMG_BASE}${trimmed}`;
+  }
+  if (trimmed.startsWith("img/data/")) {
+    return `${STORAGE_IMG_BASE}/${trimmed}`;
+  }
+  return `${STORAGE_IMG_BASE}/${trimmed.replace(/^\/+/, "")}`;
+}
+
 function normalizeRichText(src: string): string {
   let s = src.replace(/\r\n/g, "\n");
 
-  // Replace common HTML tags with manageable markers or clean representation
+  // Standardize <br> tags
   s = s.replace(/<br\s*\/?>/gi, "\n");
+
+  // Standardize font styling tags
   s = s.replace(/<strong>([\s\S]*?)<\/strong>/gi, "**$1**");
   s = s.replace(/<b>([\s\S]*?)<\/b>/gi, "**$1**");
   s = s.replace(/<em>([\s\S]*?)<\/em>/gi, "*$1*");
@@ -45,11 +67,13 @@ function normalizeRichText(src: string): string {
   s = s.replace(/\\{4,}(?=\s*(?:\n|$))/g, "\\\\");
   s = s.replace(/\\{2,}([\[\](){}])/g, "\\$1");
 
-  // Clean unclosed HTML divs/spans that might surround question columns
+  // Clean unclosed HTML divs/spans while preserving content
   s = s.replace(/<div[^>]*>/gi, "");
   s = s.replace(/<\/div>/gi, "\n");
   s = s.replace(/<span[^>]*>/gi, "");
   s = s.replace(/<\/span>/gi, "");
+  s = s.replace(/<p[^>]*>/gi, "");
+  s = s.replace(/<\/p>/gi, "\n");
 
   return s;
 }
@@ -143,12 +167,13 @@ function renderInline(src: string): ReactNode[] {
   const out: ReactNode[] = [];
 
   // Match:
-  // 1. Markdown image: ![alt](url)
-  // 2. Standalone image URL: https://...(png|jpg|jpeg|webp|svg|mathpix|cloudinary)
-  // 3. Inline LaTeX: $...$ or \(...\)
-  // 4. Bold / italic / code
+  // 1. HTML img tag: <img[^>]+src=["']([^"']+)["'][^>]*>
+  // 2. Markdown image: ![alt](url)
+  // 3. Standalone image URL: https://...(png|jpg|jpeg|webp|svg|mathpix|cloudinary)
+  // 4. Inline LaTeX: $...$ or \(...\)
+  // 5. Bold / italic / code
   const re =
-    /!\[([^\]]*)\]\(((?:https?:\/\/|\/)[^\s)]+)\)|(https?:\/\/[^\s<>]+\.(?:png|jpg|jpeg|webp|svg)(?:\?[^\s<>]*)?|https?:\/\/(?:res\.cloudinary\.com|cdn\.mathpix\.com)[^\s<>]+)|\$([^$\n]+?)\$|\\\(([^\n]+?)\\\)|\*\*([^*\n]+?)\*\*|\*([^*\n]+?)\*|`([^`\n]+?)`/gi;
+    /<img[^>]+src=["']([^"']+)["'][^>]*\/?>|!\[([^\]]*)\]\(((?:https?:\/\/|\/)[^\s)]+)\)|(https?:\/\/[^\s<>]+\.(?:png|jpg|jpeg|webp|svg)(?:\?[^\s<>]*)?|https?:\/\/(?:res\.cloudinary\.com|cdn\.mathpix\.com|image\.cleverb\.in)[^\s<>]+)|\$([^$\n]+?)\$|\\\(([^\n]+?)\\\)|\*\*([^*\n]+?)\*\*|\*([^*\n]+?)\*|`([^`\n]+?)`/gi;
 
   let last = 0;
   let m: RegExpExecArray | null;
@@ -160,37 +185,66 @@ function renderInline(src: string): ReactNode[] {
     }
 
     if (m[1] !== undefined) {
-      // Markdown image
-      out.push(
-        <img
-          key={k++}
-          src={m[2]}
-          alt={m[1] || "diagram"}
-          loading="lazy"
-          className="my-2 block max-h-80 max-w-full rounded-lg border border-border/60 bg-card object-contain shadow-xs"
-        />,
-      );
-    } else if (m[3] !== undefined) {
-      // Standalone image URL
-      out.push(
-        <img
-          key={k++}
-          src={m[3]}
-          alt="diagram"
-          loading="lazy"
-          className="my-2 block max-h-80 max-w-full rounded-lg border border-border/60 bg-card object-contain shadow-xs"
-        />,
-      );
-    } else if (m[4] !== undefined || m[5] !== undefined) {
+      // HTML <img src="..."> tag
+      const resolved = resolveAnyImageUrl(m[1]);
+      if (resolved) {
+        out.push(
+          <img
+            key={k++}
+            src={resolved}
+            alt="question diagram"
+            loading="lazy"
+            className="my-3 block max-h-96 max-w-full rounded-xl border border-border/80 bg-white p-1 object-contain shadow-md"
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = "none";
+            }}
+          />,
+        );
+      }
+    } else if (m[2] !== undefined || m[3] !== undefined) {
+      // Markdown image: ![alt](url)
+      const resolved = resolveAnyImageUrl(m[3]);
+      if (resolved) {
+        out.push(
+          <img
+            key={k++}
+            src={resolved}
+            alt={m[2] || "diagram"}
+            loading="lazy"
+            className="my-3 block max-h-96 max-w-full rounded-xl border border-border/80 bg-white p-1 object-contain shadow-md"
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = "none";
+            }}
+          />,
+        );
+      }
+    } else if (m[4] !== undefined) {
+      // Standalone image URL (Cloudinary, Mathpix, etc.)
+      const resolved = resolveAnyImageUrl(m[4]);
+      if (resolved) {
+        out.push(
+          <img
+            key={k++}
+            src={resolved}
+            alt="diagram"
+            loading="lazy"
+            className="my-3 block max-h-96 max-w-full rounded-xl border border-border/80 bg-white p-1 object-contain shadow-md"
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = "none";
+            }}
+          />,
+        );
+      }
+    } else if (m[5] !== undefined || m[6] !== undefined) {
       // Inline LaTeX
-      const tex = (m[4] ?? m[5]) as string;
+      const tex = (m[5] ?? m[6]) as string;
       out.push(<SafeInlineMath key={k++} tex={tex} />);
-    } else if (m[6] !== undefined) {
-      out.push(<strong key={k++}>{m[6]}</strong>);
     } else if (m[7] !== undefined) {
-      out.push(<em key={k++}>{m[7]}</em>);
+      out.push(<strong key={k++}>{m[7]}</strong>);
     } else if (m[8] !== undefined) {
-      out.push(<code key={k++} className="rounded bg-secondary px-1 py-0.5 text-[0.9em]">{m[8]}</code>);
+      out.push(<em key={k++}>{m[8]}</em>);
+    } else if (m[9] !== undefined) {
+      out.push(<code key={k++} className="rounded bg-secondary px-1 py-0.5 text-[0.9em]">{m[9]}</code>);
     }
 
     last = m.index + m[0].length;
