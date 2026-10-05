@@ -51,19 +51,61 @@ function MocksPage() {
 
   const [category, setCategory] = useState("all");
   const categories = useMemo(() => {
-    if (!tests) return [];
-    const subjects = [...new Set(tests.flatMap((t) =>
-      (Array.isArray(t.syllabus) ? t.syllabus : []).map((s) => s.subjectName).filter(Boolean),
-    ))].sort((a, b) => a.localeCompare(b));
-    return ["all", "full", ...subjects];
-  }, [tests]);
+    return [
+      { id: "all", label: "All Tests" },
+      { id: "full", label: "Full Test" },
+      { id: "class_11", label: "Class 11th" },
+      { id: "class_12", label: "Class 12th" },
+      { id: "part", label: "Part Test" },
+    ];
+  }, []);
+
   const filteredTests = useMemo(() => {
     if (!tests || category === "all") return tests ?? [];
-    if (category === "full") return tests.filter((t) => {
-      const names = (Array.isArray(t.syllabus) ? t.syllabus : []).map((s) => s.subjectName.toLowerCase());
-      return names.length >= 3 || /full|neet|complete/i.test(t.title);
+
+    return tests.filter((t) => {
+      const title = (t.title || "").toLowerCase();
+      const desc = (t.description || "").toLowerCase();
+      const source = (t.source || "").toLowerCase();
+      const combined = `${title} ${desc} ${source}`;
+
+      if (category === "full") {
+        return (
+          /full|complete|grand|major|all india|neet-ug|mock \d+/i.test(title) ||
+          t.total_questions >= 180 ||
+          (!/11th|12th|class 11|class 12|part/i.test(combined) && !/chapter|unit/i.test(combined))
+        );
+      }
+
+      if (category === "class_11") {
+        return (
+          /11th|class 11|xi|class-11/i.test(combined) ||
+          (Array.isArray(t.syllabus) &&
+            t.syllabus.some((s) =>
+              /11th|xi/i.test(s.subjectName) || s.chapters?.some((c) => /11th|xi/i.test(c.name))
+            ))
+        );
+      }
+
+      if (category === "class_12") {
+        return (
+          /12th|class 12|xii|class-12/i.test(combined) ||
+          (Array.isArray(t.syllabus) &&
+            t.syllabus.some((s) =>
+              /12th|xii/i.test(s.subjectName) || s.chapters?.some((c) => /12th|xii/i.test(c.name))
+            ))
+        );
+      }
+
+      if (category === "part") {
+        return (
+          /part|minor|unit|section|chapter|module/i.test(combined) ||
+          (t.total_questions < 180 && !/11th|12th/i.test(combined))
+        );
+      }
+
+      return true;
     });
-    return tests.filter((t) => (Array.isArray(t.syllabus) ? t.syllabus : []).some((s) => s.subjectName === category));
   }, [tests, category]);
 
   return (
@@ -89,12 +131,22 @@ function MocksPage() {
               <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">Categories</h2>
               <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-2" role="group" aria-label="Mock test categories">
                 {categories.map((item) => {
-                  const selected = category === item;
-                  const label = item === "all" ? "All tests" : item === "full" ? "Full syllabus" : item;
-                  return <button key={item} type="button" onClick={() => setCategory(item)} aria-pressed={selected}
-                    className={`shrink-0 snap-start rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
-                    {label}
-                  </button>;
+                  const selected = category === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setCategory(item.id)}
+                      aria-pressed={selected}
+                      className={`shrink-0 snap-start rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                        selected
+                          ? "border-primary bg-primary text-primary-foreground shadow-xs"
+                          : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
                 })}
               </div>
             </section>

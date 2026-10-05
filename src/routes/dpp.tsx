@@ -46,7 +46,7 @@ function DppPage() {
     })();
   }, [user]);
 
-  async function attemptDpp(t: Test) {
+  async function attemptDpp(t: Test, mode: "quiz" | "cbt" = "quiz") {
     if (gating) return;
     setGating(t.id);
     try {
@@ -55,7 +55,7 @@ function DppPage() {
         toast.success(`−${r.charged} bonus deducted for past DPP`);
         await refresh();
       }
-      nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode: "quiz" } as never });
+      nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode } as never });
     } catch (e: any) {
       toast.error(e?.message ?? "Could not start DPP");
     } finally {
@@ -107,16 +107,26 @@ function DppPage() {
                       ) : a?.status === "in_progress" ? (
                         <Button asChild size="sm" className="bg-warning text-warning-foreground hover:bg-warning/90"><Link to="/quiz/$testId" params={{ testId: t.id }} search={{ mode: "quiz" } as never}><RotateCw className="mr-1.5 h-3.5 w-3.5" /> Resume</Link></Button>
                       ) : (
-                        <Button
-                          size="sm"
-                          className={isExpired ? "" : "bg-gradient-primary"}
-                          variant={isExpired ? "outline" : "default"}
-                          disabled={gating === t.id}
-                          onClick={() => attemptDpp(t)}
-                        >
-                          {gating === t.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Play className="mr-1.5 h-3.5 w-3.5" />}
-                          {isExpired ? `Attempt · ${DPP_PAST_COST_BONUS} bonus` : "Attempt"}
-                        </Button>
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            className={isExpired ? "" : "bg-gradient-primary"}
+                            variant={isExpired ? "outline" : "default"}
+                            disabled={gating === t.id}
+                            onClick={() => attemptDpp(t, "quiz")}
+                          >
+                            {gating === t.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Play className="mr-1.5 h-3.5 w-3.5" />}
+                            {isExpired ? `Quiz · ${DPP_PAST_COST_BONUS} bonus` : "Quiz"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={gating === t.id}
+                            onClick={() => attemptDpp(t, "cbt")}
+                          >
+                            NEET NTA CBT
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>

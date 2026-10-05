@@ -318,7 +318,7 @@ function SubjectPage() {
     <PageShell
       eyebrow="Subject Wise Practice"
       title={normalizedSubject}
-      description="Pick a chapter to begin practice. Choose filters, select a test batch, and practice in Quiz or CBT mode."
+      description="Pick a chapter to begin practice. Choose filters, select a test batch, and practice in Quiz or NEET NTA CBT mode."
     >
       <div className="mb-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-xs">
         <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${meta.tint} text-white shadow-xs`}>
@@ -380,7 +380,7 @@ function SubjectPage() {
               onClick={() => launchSet("cbt")}
               className="rounded-xl border border-border bg-card p-4 text-left transition hover:border-primary/50 disabled:opacity-50"
             >
-              <div className="font-semibold">CBT Mode</div>
+              <div className="font-semibold">NEET NTA CBT Mode</div>
               <div className="mt-1 text-xs text-muted-foreground">NTA-style timed test with question palette; results at the end.</div>
             </button>
           </div>

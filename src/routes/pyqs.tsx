@@ -27,9 +27,9 @@ function PyqPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("questions").select("pyq_year").eq("is_pyq", true);
+      const { data } = await supabase.from("questions").select("year").eq("is_pyq", true).limit(10000);
       const counts: Record<number, number> = {};
-      (data ?? []).forEach((r) => { if (r.pyq_year) counts[r.pyq_year] = (counts[r.pyq_year] ?? 0) + 1; });
+      (data ?? []).forEach((r: any) => { if (r.year) counts[r.year] = (counts[r.year] ?? 0) + 1; });
       const arr: Row[] = Object.entries(counts).map(([y, c]) => ({ year: Number(y), count: c })).sort((a, b) => b.year - a.year);
       setRows(arr);
     })();
@@ -38,7 +38,7 @@ function PyqPage() {
   const start = async (year: number, mode: "quiz" | "cbt") => {
     if (!user) return;
     setLaunching(year);
-    const { data: qs } = await supabase.from("questions").select("id").eq("is_pyq", true).eq("pyq_year", year);
+    const { data: qs } = await supabase.from("questions").select("id").eq("is_pyq", true).eq("year", year).limit(500);
     const ids = (qs ?? []).map((q) => q.id);
     const { data: t, error } = await supabase.from("tests").insert({
       title: `NEET ${year} PYQ`, type: "custom", difficulty: "medium",
@@ -65,7 +65,7 @@ function PyqPage() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Button size="sm" className="bg-gradient-primary" disabled={launching === r.year} onClick={() => start(r.year, "quiz")}>Quiz</Button>
-                  <Button size="sm" variant="outline" disabled={launching === r.year} onClick={() => start(r.year, "cbt")}>CBT Mode</Button>
+                  <Button size="sm" variant="outline" disabled={launching === r.year} onClick={() => start(r.year, "cbt")}>NEET NTA CBT Mode</Button>
                 </div>
               </CardContent>
             </Card>
