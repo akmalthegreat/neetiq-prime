@@ -17,30 +17,28 @@ export function DrAkzaLoader({
   className = "",
 }: DrAkzaLoaderProps) {
   const imageSizes = {
-    sm: "w-20 h-20",
-    md: "w-32 h-32 md:w-36 md:h-36",
-    lg: "w-44 h-44 md:w-52 md:h-52",
+    sm: "w-24 h-24",
+    md: "w-36 h-36 md:w-44 md:h-44",
+    lg: "w-48 h-48 md:w-56 md:h-56",
   };
 
   const content = (
     <div className={`flex flex-col items-center justify-center text-center p-6 select-none ${className}`}>
-      {/* Avatar Container with pulse glow and float animation */}
-      <div className="relative mb-5 group">
-        <div className="absolute -inset-2 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-cyan-500/30 rounded-full blur-xl animate-pulse" />
-        <div
-          className={`relative ${imageSizes[size]} rounded-2xl p-1 bg-gradient-to-b from-white/95 to-white/60 dark:from-slate-900/90 dark:to-slate-800/60 shadow-xl border border-teal-500/20 backdrop-blur flex items-center justify-center overflow-hidden transition-transform duration-500`}
-        >
-          <img
-            src="/dr-akza.png"
-            alt="Dr. Akza"
-            className="w-full h-full object-contain drop-shadow-md animate-bounce"
-            style={{ animationDuration: "3s" }}
-          />
-        </div>
+      {/* Frameless Mascot: Dr. Akza floats freely without clipping or frame box */}
+      <div className="relative mb-4 flex flex-col items-center">
+        {/* Soft atmospheric ambient glow behind mascot */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 sm:w-52 sm:h-52 bg-gradient-to-tr from-teal-400/30 via-emerald-400/25 to-cyan-400/30 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Name pill badge */}
-        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-0.5 rounded-full bg-emerald-600 dark:bg-emerald-500 text-white text-xs font-semibold shadow-md flex items-center gap-1 border border-white/20">
-          <Sparkles className="w-3 h-3 text-amber-300 fill-amber-300" />
+        <img
+          src="/dr-akza.png"
+          alt="Dr. Akza"
+          className={`relative z-10 ${imageSizes[size]} object-contain drop-shadow-xl animate-bounce pointer-events-none select-none`}
+          style={{ animationDuration: "3s" }}
+        />
+
+        {/* Name pill badge neatly placed below without covering her body or face */}
+        <div className="relative z-10 mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 border border-white/20">
+          <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
           <span>Dr. Akza</span>
         </div>
       </div>
