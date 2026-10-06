@@ -1177,7 +1177,47 @@ function QuizPlayer() {
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <Button size="icon" className="h-11 w-11" aria-label="Next question" title="Next question"
-            disabled={idx === total - 1} onClick={() => setIdx((i) => Math.min(tot
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11"
+            aria-label="Next question"
+            title="Next question"
+            disabled={idx === total - 1}
+            onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+        )}
+      </footer>
 
-... [truncated — file is 67197 bytes, showing first 51200]
+      <Dialog open={confirmSubmit} onOpenChange={setConfirmSubmit}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Submit {isContest ? "contest" : "test"}?</DialogTitle>
+            <DialogDescription>
+              You have answered {Object.keys(answers).length} of {total} questions.
+              {total - Object.keys(answers).length > 0 && ` ${total - Object.keys(answers).length} question${total - Object.keys(answers).length === 1 ? " is" : "s are"} unanswered.`}
+              {" "}You can review your answers before submitting.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmSubmit(false)}>
+              Continue reviewing
+            </Button>
+            <Button
+              onClick={() => {
+                setConfirmSubmit(false);
+                void submit();
+              }}
+              disabled={submitting}
+            >
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit test"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
