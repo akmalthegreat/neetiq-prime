@@ -111,6 +111,11 @@ function Dashboard() {
     fetchCounts();
   }, []);
   const [streak, setStreak] = useState<number>(0);
+  const [subjectProgress, setSubjectProgress] = useState<Record<string, number>>({
+    physics: 0,
+    chemistry: 0,
+    biology: 0,
+  });
   const [todayAttempts, setTodayAttempts] = useState<TodayAttempt[]>([]);
   const [goalDialog, setGoalDialog] = useState(false);
   const [goalDraft, setGoalDraft] = useState(20);
@@ -158,7 +163,7 @@ function Dashboard() {
 
     supabase
       .from("attempts")
-      .select("id,correct_count,wrong_count,unattempted_count,submitted_at")
+      .select("id,correct_count,wrong_count,unattempted_count,submitted_at,answers")
       .eq("user_id", user.id)
       .eq("status", "completed")
       .gte("submitted_at", sixtyDaysAgo.toISOString())
@@ -188,6 +193,47 @@ function Dashboard() {
           cur.setDate(cur.getDate() - 1);
         }
         if (s > 0) setStreak(s);
+
+        // Fetch subject breakdown from user completed attempts
+        (async () => {
+          try {
+            const allAnswers = attempts.flatMap((a: any) => Object.keys(a.answers || {}));
+            const qIds = Array.from(new Set(allAnswers)).slice(0, 300);
+            if (qIds.length > 0) {
+              const { data: qData } = await supabase
+                .from("questions")
+                .select("id, subject_id, correct_index")
+                .in("id", qIds);
+              const qMap = new Map((qData || []).map((q: any) => [String(q.id), q]));
+              const counts: Record<string, { total: number; correct: number }> = {
+                physics: { total: 0, correct: 0 },
+                chemistry: { total: 0, correct: 0 },
+                biology: { total: 0, correct: 0 },
+              };
+              for (const a of attempts as any[]) {
+                const ans = a.answers || {};
+                for (const [qid, picked] of Object.entries(ans)) {
+                  const q = qMap.get(String(qid));
+                  if (!q || !q.subject_id) continue;
+                  const sId = q.subject_id.toLowerCase();
+                  if (counts[sId]) {
+                    counts[sId].total++;
+                    if (Number(picked) === Number(q.correct_index)) {
+                      counts[sId].correct++;
+                    }
+                  }
+                }
+              }
+              setSubjectProgress({
+                physics: counts.physics.total > 0 ? Math.min(100, Math.round((counts.physics.correct / counts.physics.total) * 100)) : 0,
+                chemistry: counts.chemistry.total > 0 ? Math.min(100, Math.round((counts.chemistry.correct / counts.chemistry.total) * 100)) : 0,
+                biology: counts.biology.total > 0 ? Math.min(100, Math.round((counts.biology.correct / counts.biology.total) * 100)) : 0,
+              });
+            }
+          } catch (err) {
+            console.error("Error computing subject progress:", err);
+          }
+        })();
       });
   }, [user?.id]);
 
@@ -202,7 +248,7 @@ function Dashboard() {
       const correct = todayAttempts.reduce((sum, a) => sum + (a.correct_count ?? 0), 0);
       const wrong = todayAttempts.reduce((sum, a) => sum + (a.wrong_count ?? 0), 0);
       const solved = correct + wrong;
-      const accuracy = solved > 0 ? Math.round((correct / solved) * 100) : 83;
+      const accuracy = solved > 0 ? Math.round((correct / solved) * 100) : 0;
       const pct = Math.min(100, Math.round((solved / dailyGoal) * 100));
 
       return {
@@ -235,7 +281,7 @@ function Dashboard() {
     );
   }
 
-  const firstName = profile?.full_name?.trim()?.split(" ")[0] || "Akmal";
+  const firstName = profile?.full_name?.trim()?.split(" ")[0] || user?.email?.split("@")[0] || "Doctor";
 
   return (
     <PageShell>
@@ -399,9 +445,9 @@ function Dashboard() {
               {/* Bottom Progress Bar + Chevron */}
               <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
                 <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-[68%] rounded-full bg-cyan-400" />
+                  <div className="h-full rounded-full bg-cyan-400" style={{ width: `${subjectProgress.physics}%` }} />
                 </div>
-                <span className="text-[10px] sm:text-xs font-bold text-cyan-300">68%</span>
+                <span className="text-[10px] sm:text-xs font-bold text-cyan-300">{subjectProgress.physics}%</span>
                 <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
@@ -432,9 +478,9 @@ function Dashboard() {
               {/* Bottom Progress Bar + Chevron */}
               <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
                 <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-[72%] rounded-full bg-emerald-400" />
+                  <div className="h-full rounded-full bg-emerald-400" style={{ width: `${subjectProgress.chemistry}%` }} />
                 </div>
-                <span className="text-[10px] sm:text-xs font-bold text-emerald-300">72%</span>
+                <span className="text-[10px] sm:text-xs font-bold text-emerald-300">{subjectProgress.chemistry}%</span>
                 <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
@@ -465,9 +511,9 @@ function Dashboard() {
               {/* Bottom Progress Bar + Chevron */}
               <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
                 <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-[65%] rounded-full bg-purple-400" />
+                  <div className="h-full rounded-full bg-purple-400" style={{ width: `${subjectProgress.biology}%` }} />
                 </div>
-                <span className="text-[10px] sm:text-xs font-bold text-purple-300">65%</span>
+                <span className="text-[10px] sm:text-xs font-bold text-purple-300">{subjectProgress.biology}%</span>
                 <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
