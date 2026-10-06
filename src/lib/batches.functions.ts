@@ -245,8 +245,7 @@ export const adminGrantPremium = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await ensureAdmin(context);
-    const db = await admin();
-    const { data: expires, error } = await db.rpc("admin_grant_premium", {
+    const { data: expires, error } = await context.supabase.rpc("admin_grant_premium", {
       _user_id: data.user_id,
       _days: data.days,
       _note: data.note ?? null,
