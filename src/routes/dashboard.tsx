@@ -471,7 +471,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Physics" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-sky-200/80 bg-gradient-to-br from-sky-50/90 via-white to-sky-100/40 dark:from-slate-900 dark:via-slate-900/95 dark:to-sky-950/30 p-2.5 sm:p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/20 active:scale-[0.98] dark:border-sky-900/40"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-sky-200/70 bg-sky-50/50 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/15 active:scale-[0.98] dark:border-sky-900/40"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/15 text-sky-600 sm:h-8 sm:w-8 dark:bg-sky-500/20 dark:text-sky-400">
@@ -501,7 +501,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Chemistry" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-teal-200/80 bg-gradient-to-br from-teal-50/90 via-white to-teal-100/40 dark:from-slate-900 dark:via-slate-900/95 dark:to-teal-950/30 p-2.5 sm:p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md hover:shadow-teal-500/20 active:scale-[0.98] dark:border-teal-900/40"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-teal-200/70 bg-teal-50/50 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md hover:shadow-teal-500/15 active:scale-[0.98] dark:border-teal-900/40"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 sm:h-8 sm:w-8 dark:bg-teal-500/20 dark:text-teal-400">
@@ -531,7 +531,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Biology" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-purple-200/80 bg-gradient-to-br from-purple-50/90 via-white to-purple-100/40 dark:from-slate-900 dark:via-slate-900/95 dark:to-purple-950/30 p-2.5 sm:p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-400 hover:shadow-md hover:shadow-purple-500/20 active:scale-[0.98] dark:border-purple-900/40"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-purple-200/70 bg-purple-50/50 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-400 hover:shadow-md hover:shadow-purple-500/15 active:scale-[0.98] dark:border-purple-900/40"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 sm:h-8 sm:w-8 dark:bg-purple-500/20 dark:text-purple-400">
@@ -564,7 +564,7 @@ function Dashboard() {
               ========================================================= */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {/* Card 1: Quick Test Generator */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50/70 via-white to-blue-50/40 p-3.5 shadow-xs backdrop-blur-md transition-all hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/10 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-sky-900 sm:p-4">
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-200/70 bg-sky-50/30 p-3.5 shadow-2xs backdrop-blur-md transition-all hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/10 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-sky-900 sm:p-4">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -714,7 +714,7 @@ function Dashboard() {
             </div>
 
             {/* Card 3: Mocks & PYQs Hub */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 p-3.5 shadow-xs backdrop-blur-md transition-all hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-amber-900 sm:p-4">
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-200/70 bg-amber-50/30 p-3.5 shadow-2xs backdrop-blur-md transition-all hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-amber-900 sm:p-4">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
