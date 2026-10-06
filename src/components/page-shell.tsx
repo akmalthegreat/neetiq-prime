@@ -17,27 +17,29 @@ export function PageShell({
 }) {
   const hasHeader = !!(eyebrow || title || description);
   return (
-    <div className="flex min-h-screen flex-col bg-background page-enter">
+    <div className="flex min-h-screen flex-col md:flex-row bg-background page-enter">
       <SiteHeader />
-      <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-          {hasHeader && (
-            <div className="animate-fade-in-up">
-              {eyebrow && (
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                  {eyebrow}
-                </div>
-              )}
-              {title && <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>}
-              {description && (
-                <p className="mt-3 max-w-2xl text-muted-foreground">{description}</p>
-              )}
-            </div>
-          )}
-          <div className={hasHeader ? "mt-10" : ""}>{children}</div>
-        </div>
-      </main>
-      {showFooter && <SiteFooter />}
+      <div className="flex-1 min-w-0 md:pl-64 flex flex-col">
+        <main className="flex-1">
+          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+            {hasHeader && (
+              <div className="animate-fade-in-up mb-8">
+                {eyebrow && (
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                    {eyebrow}
+                  </div>
+                )}
+                {title && <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>}
+                {description && (
+                  <p className="mt-3 max-w-2xl text-muted-foreground">{description}</p>
+                )}
+              </div>
+            )}
+            <div>{children}</div>
+          </div>
+        </main>
+        {showFooter && <SiteFooter />}
+      </div>
     </div>
   );
 }
@@ -54,5 +56,4 @@ export function ComingSoonCard({ note }: { note?: string }) {
   );
 }
 
-// Re-export footer so opt-in pages can place it themselves where appropriate.
 export { SiteFooter };

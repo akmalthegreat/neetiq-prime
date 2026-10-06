@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, LogOut, Sun, Moon, ChevronDown, User, Search } from "lucide-react";
+import { Menu, X, LogOut, Sun, Moon, User, Search, LayoutDashboard, Zap, Wrench, Sparkles, Trophy, Users, Crown, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,14 +7,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { NotificationBell } from "@/components/notification-bell";
 import { avatarUrl } from "@/lib/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 
 function ThemeToggle() {
   const { theme, toggle } = useTheme();
@@ -29,13 +21,14 @@ function ThemeToggle() {
   );
 }
 
-type Item = { to: string; label: string };
-type Group = { label: string; to?: string; items?: Item[] };
+type Item = { to: string; label: string; icon?: React.ComponentType<{ className?: string }> };
+type Group = { label: string; to?: string; icon?: React.ComponentType<{ className?: string }>; items?: Item[] };
 
 const GROUPS: Group[] = [
-  { label: "Dashboard", to: "/dashboard" },
+  { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
   {
     label: "Quick Practice",
+    icon: Zap,
     items: [
       { to: "/daily", label: "DPP HUB" },
       { to: "/dpp", label: "ALL DPP" },
@@ -47,6 +40,7 @@ const GROUPS: Group[] = [
   },
   {
     label: "Study Tools",
+    icon: Wrench,
     items: [
       { to: "/flashcards", label: "Flashcards" },
       { to: "/ncert-highlights", label: "NCERT Highlights" },
@@ -59,6 +53,7 @@ const GROUPS: Group[] = [
   },
   {
     label: "AI Tools",
+    icon: Sparkles,
     items: [
       { to: "/generate", label: "Custom Test" },
       { to: "/ai-path", label: "AI Path" },
@@ -67,14 +62,72 @@ const GROUPS: Group[] = [
   },
   {
     label: "Earn & Compete",
+    icon: Trophy,
     items: [
       { to: "/contests", label: "Cash Contests" },
       { to: "/battlegrounds", label: "Battlegrounds (1v1)" },
     ],
   },
-  { label: "Refer & Earn", to: "/referrals" },
-  { label: "Leaderboard", to: "/leaderboard" },
+  { label: "Refer & Earn", to: "/referrals", icon: Users },
+  { label: "Leaderboard", to: "/leaderboard", icon: Crown },
 ];
+
+function NavLinks({ path, onNavigate }: { path: string; onNavigate?: () => void }) {
+  return (
+    <nav className="flex flex-col gap-0.5">
+      {GROUPS.map((g) => {
+        if (g.to) {
+          const active = path.startsWith(g.to);
+          const Icon = g.icon;
+          return (
+            <Link
+              key={g.label}
+              to={g.to}
+              onClick={onNavigate}
+              className={cn(
+                "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition-colors",
+                active
+                  ? "bg-gradient-to-r from-teal-500/15 to-emerald-500/15 text-foreground ring-1 ring-teal-500/30"
+                  : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+              )}
+            >
+              {Icon && <Icon className={cn("h-4 w-4", active ? "text-teal-600 dark:text-teal-400" : "")} />}
+              <span>{g.label}</span>
+            </Link>
+          );
+        }
+        return (
+          <div key={g.label} className="mt-3">
+            <div className="flex items-center gap-1.5 px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/70">
+              {g.icon && <g.icon className="h-3 w-3" />}
+              {g.label}
+            </div>
+            <div className="flex flex-col gap-0.5">
+              {g.items!.map((i) => {
+                const active = path === i.to || (i.to.startsWith("/subjects/") && path === i.to);
+                return (
+                  <Link
+                    key={i.label}
+                    to={i.to}
+                    onClick={onNavigate}
+                    className={cn(
+                      "rounded-lg px-3 py-1.5 pl-8 text-xs font-medium transition-colors",
+                      active
+                        ? "bg-secondary text-foreground"
+                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+                    )}
+                  >
+                    {i.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -84,220 +137,150 @@ export function SiteHeader() {
   const avatar = user ? avatarUrl(displayName || user.id, profile?.avatar_url ?? null) : null;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3.5 sm:px-6 lg:px-8">
-        {/* Brand Logo & Name matching screenshot */}
-        <Link to="/dashboard" className="flex items-center gap-2.5">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-sky-400/40 bg-[#060b18] p-0.5 shadow-md shadow-sky-500/10">
-            <img src="/logo.jpg" alt="NEET Track" className="h-full w-full rounded-full object-cover" />
-          </div>
-          <div className="leading-tight">
-            <div className="text-[17px] font-black tracking-tight text-foreground">
-              NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-black">Track</span>
+    <>
+      {/* Desktop Left Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border/60 bg-background/80 backdrop-blur-xl lg:flex">
+        <div className="flex items-center gap-2.5 px-4 py-5">
+          <Link to="/dashboard" className="flex items-center gap-2.5">
+            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-sky-400/40 bg-[#060b18] p-0.5 shadow-md shadow-sky-500/10">
+              <img src="/logo.jpg" alt="NEET Track" className="h-full w-full rounded-full object-cover" />
             </div>
-            <div className="text-[10px] font-medium tracking-wider text-muted-foreground">
-              Learn <span className="opacity-40">•</span> Practice <span className="opacity-40">•</span> Achieve
+            <div className="leading-tight">
+              <div className="text-[17px] font-black tracking-tight text-foreground">
+                NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-black">Track</span>
+              </div>
+              <div className="text-[10px] font-medium tracking-wider text-muted-foreground">
+                Learn <span className="opacity-40">•</span> Practice <span className="opacity-40">•</span> Achieve
+              </div>
             </div>
+          </Link>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-3 pb-4">
+          <NavLinks path={path} />
+        </div>
+
+        {/* Sidebar bottom actions */}
+        <div className="border-t border-border/60 px-3 py-3">
+          <div className="flex items-center gap-1.5">
+            <Link
+              to="/dpp"
+              aria-label="Search questions"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <Search className="h-4 w-4" />
+            </Link>
+            <ThemeToggle />
+            {user && <NotificationBell />}
+            {isAdmin && (
+              <Button asChild size="sm" variant="outline" className="h-8 rounded-xl text-xs">
+                <Link to="/admin">Admin</Link>
+              </Button>
+            )}
           </div>
-        </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1 lg:flex">
-          {GROUPS.map((g) => {
-            if (g.to) {
-              const active = path.startsWith(g.to);
-              return (
-                <Link
-                  key={g.label}
-                  to={g.to}
-                  className={cn(
-                    "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
-                    active
-                      ? "bg-secondary text-foreground"
-                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
-                  )}
-                >
-                  {g.label}
-                </Link>
-              );
-            }
-            return (
-              <DropdownMenu key={g.label}>
-                <DropdownMenuTrigger className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground focus:outline-none">
-                  {g.label} <ChevronDown className="h-3.5 w-3.5" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="min-w-44">
-                  <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {g.label}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {g.items!.map((i) => (
-                    <DropdownMenuItem key={i.label} asChild>
-                      <Link to={i.to}>{i.label}</Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            );
-          })}
-        </nav>
+          {user ? (
+            <div className="mt-3 flex items-center gap-2">
+              <Link
+                to="/profile"
+                className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-secondary/60 py-1 pl-1 pr-3 transition-colors hover:bg-secondary"
+                title={displayName || "Profile"}
+              >
+                {avatar ? (
+                  <img src={avatar} alt={displayName || "Profile"} className="h-7 w-7 rounded-full object-cover" />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+                <span className="min-w-0 truncate text-xs font-semibold">{displayName || "Profile"}</span>
+              </Link>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => signOut()}
+                className="h-8 shrink-0 rounded-xl px-2 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-3 flex items-center gap-2">
+              <Button asChild variant="ghost" size="sm" className="h-8 flex-1 text-xs">
+                <Link to="/login">Log in</Link>
+              </Button>
+              <Button asChild size="sm" className="h-8 flex-1 rounded-xl bg-primary text-xs font-bold text-primary-foreground">
+                <Link to="/login">Get started</Link>
+              </Button>
+            </div>
+          )}
+        </div>
+      </aside>
 
-        {/* Right Action Icons matching screenshot */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Quick Search Button */}
-          <Link
-            to="/dpp"
-            aria-label="Search questions"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            <Search className="h-4 w-4" />
+      {/* Mobile Top Bar */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl lg:hidden">
+        <div className="flex h-16 items-center justify-between px-3.5 sm:px-6">
+          <Link to="/dashboard" className="flex items-center gap-2.5">
+            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-sky-400/40 bg-[#060b18] p-0.5 shadow-md shadow-sky-500/10">
+              <img src="/logo.jpg" alt="NEET Track" className="h-full w-full rounded-full object-cover" />
+            </div>
+            <div className="leading-tight">
+              <div className="text-[17px] font-black tracking-tight text-foreground">
+                NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-black">Track</span>
+              </div>
+              <div className="text-[10px] font-medium tracking-wider text-muted-foreground">
+                Learn <span className="opacity-40">•</span> Practice <span className="opacity-40">•</span> Achieve
+              </div>
+            </div>
           </Link>
 
-          <ThemeToggle />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ThemeToggle />
+            {user && <NotificationBell />}
+            <button
+              aria-label="Toggle menu"
+              onClick={() => setOpen((v) => !v)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 text-muted-foreground"
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
 
-          {user && <NotificationBell />}
-
-          {/* Desktop User Profile / Auth */}
-          <div className="hidden items-center gap-2 lg:flex">
-            {user ? (
-              <>
-                {isAdmin && (
-                  <Button asChild size="sm" variant="outline" className="h-8 rounded-xl text-xs">
-                    <Link to="/admin">Admin</Link>
-                  </Button>
-                )}
+        {/* Mobile Drawer */}
+        {open && (
+          <div className="border-t border-border bg-background/95 backdrop-blur-xl animate-fade-in-up">
+            <div className="max-h-[75vh] overflow-y-auto px-4 py-3">
+              {user && (
                 <Link
                   to="/profile"
-                  className="flex items-center gap-2 rounded-full border border-border bg-secondary/60 py-1 pl-1 pr-3 transition-colors hover:bg-secondary"
-                  title={displayName || "Profile"}
+                  onClick={() => setOpen(false)}
+                  className="mb-3 flex items-center gap-2 rounded-full border border-border bg-secondary/60 py-1 pl-1 pr-3"
                 >
                   {avatar ? (
                     <img src={avatar} alt={displayName || "Profile"} className="h-7 w-7 rounded-full object-cover" />
                   ) : (
                     <User className="h-4 w-4" />
                   )}
-                  <span className="max-w-[7rem] truncate text-xs font-semibold">{displayName || "Profile"}</span>
+                  <span className="truncate text-xs font-semibold">{displayName || "Profile"}</span>
                 </Link>
+              )}
+              <NavLinks path={path} onNavigate={() => setOpen(false)} />
+              {user ? (
                 <Button
-                  size="sm"
                   variant="ghost"
                   onClick={() => signOut()}
-                  className="h-8 rounded-xl px-2 text-xs text-muted-foreground hover:text-foreground"
+                  className="mt-3 h-9 w-full rounded-xl text-xs text-muted-foreground hover:text-foreground"
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4 w-4" /> Log out
                 </Button>
-              </>
-            ) : (
-              <>
-                <Button asChild variant="ghost" size="sm" className="h-8 text-xs">
-                  <Link to="/login">Log in</Link>
-                </Button>
-                <Button asChild size="sm" className="h-8 rounded-xl bg-primary text-xs font-bold text-primary-foreground">
-                  <Link to="/login">Get started</Link>
-                </Button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Hamburger */}
-          <button
-            aria-label="Toggle menu"
-            onClick={() => setOpen((v) => !v)}
-            className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 text-muted-foreground"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Drawer */}
-      {open && (
-        <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-xl animate-fade-in-up">
-          <div className="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-2 max-h-[75vh] overflow-y-auto">
-            {user && (
-              <Link
-                to="/profile"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-xs"
-              >
-                {avatar ? (
-                  <img src={avatar} alt={displayName || "Profile"} className="h-10 w-10 rounded-full object-cover" />
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
-                    <User className="h-5 w-5" />
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-bold">{displayName || "Your profile"}</div>
-                  <div className="truncate text-xs text-muted-foreground">{user.email}</div>
-                </div>
-              </Link>
-            )}
-
-            {GROUPS.map((g) =>
-              g.to ? (
-                <Link
-                  key={g.label}
-                  to={g.to}
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-secondary"
-                >
-                  {g.label}
-                </Link>
               ) : (
-                <div key={g.label} className="rounded-xl border border-border/70 bg-card/60 p-2.5">
-                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {g.label}
-                  </div>
-                  <div className="mt-1 grid grid-cols-2 gap-1">
-                    {g.items!.map((i) => (
-                      <Link
-                        key={i.label}
-                        to={i.to}
-                        onClick={() => setOpen(false)}
-                        className="rounded-lg px-2.5 py-1.5 text-xs font-medium hover:bg-secondary truncate"
-                      >
-                        {i.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ),
-            )}
-
-            <div className="mt-2 flex gap-2">
-              {user ? (
-                <>
-                  {isAdmin && (
-                    <Button asChild variant="outline" className="flex-1 rounded-xl text-xs">
-                      <Link to="/admin" onClick={() => setOpen(false)}>Admin</Link>
-                    </Button>
-                  )}
-                  <Button asChild variant="outline" className="flex-1 rounded-xl text-xs">
-                    <Link to="/profile" onClick={() => setOpen(false)}>Profile</Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="flex-1 rounded-xl text-xs gap-1"
-                    onClick={() => { setOpen(false); signOut(); }}
-                  >
-                    <LogOut className="h-3.5 w-3.5" /> Log out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button asChild variant="outline" className="flex-1 rounded-xl text-xs">
-                    <Link to="/login" onClick={() => setOpen(false)}>Log in</Link>
-                  </Button>
-                  <Button asChild className="flex-1 rounded-xl bg-primary text-xs font-bold text-primary-foreground">
-                    <Link to="/login" onClick={() => setOpen(false)}>Get started</Link>
-                  </Button>
-                </>
+                <Button asChild size="sm" className="mt-3 h-9 w-full rounded-xl bg-primary text-xs font-bold text-primary-foreground">
+                  <Link to="/login" onClick={() => setOpen(false)}>Log in / Get started</Link>
+                </Button>
               )}
             </div>
           </div>
-        </div>
-      )}
-    </header>
+        )}
+      </header>
+    </>
   );
 }

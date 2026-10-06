@@ -1158,6 +1158,43 @@ function QuizPlayer() {
             </div>
           </div>
           <div className="flex items-center gap-1">
+            {/* Bookmark button in Top Bar */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleBookmark}
+              className={cn(
+                "h-8 px-2.5 text-xs font-semibold gap-1 rounded-lg transition-colors",
+                bookmarks.has(q.id) && "border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400"
+              )}
+              aria-label="Bookmark question"
+              title="Bookmark question"
+            >
+              <Bookmark className={cn("h-3.5 w-3.5", bookmarks.has(q.id) && "fill-current")} />
+              <span className="hidden sm:inline">Bookmark</span>
+            </Button>
+
+            {/* Submit button in Top Bar */}
+            <Button
+              size="sm"
+              className={cn(
+                "h-8 px-3 text-xs font-bold shadow-xs",
+                isQuiz
+                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-emerald-600 hover:bg-emerald-700 text-white"
+              )}
+              onClick={() => {
+                if (isChapterPractice || isQuiz) {
+                  submit();
+                } else {
+                  setConfirmSubmit(true);
+                }
+              }}
+              disabled={submitting}
+            >
+              {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Submit"}
+            </Button>
+
             {isMock && (
               <Sheet>
                 <SheetTrigger asChild>
@@ -1478,68 +1515,39 @@ function QuizPlayer() {
         )}
       </main>
 
-      {/* Bottom action */}
-      <footer className={cn("sticky bottom-0 border-t", isQuiz ? "bg-white border-blue-100/80 shadow-md" : "border-border bg-card")}>
-        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-2.5">
+      {/* Bottom action — Previous and Next navigation buttons */}
+      <footer className={cn("sticky bottom-0 z-20 border-t backdrop-blur-md", isQuiz ? "bg-white/95 border-blue-100/80 shadow-lg" : "border-border bg-card/95")}>
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2.5">
+          {/* Previous Button */}
           <Button
             variant="outline"
-            size="icon"
-            onClick={toggleBookmark}
-            className={cn(
-              "h-11 w-11 shrink-0",
-              bookmarks.has(q.id) && "border-blue-500 bg-blue-500/10 text-blue-600",
-            )}
-            aria-label="Bookmark for review"
-          >
-            <Bookmark className={cn("h-5 w-5", bookmarks.has(q.id) && "fill-current")} />
-          </Button>
-          {/* < (Previous) */}
-          <Button
-            variant="outline"
-            size="icon"
             disabled={idx === 0}
             onClick={() => setIdx((i) => Math.max(0, i - 1))}
-            className="h-11 w-12 shrink-0 font-bold text-base"
+            className="h-11 px-5 font-bold gap-2 rounded-xl text-sm transition-all hover:bg-secondary"
             aria-label="Previous question"
-            title="Previous question"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4" />
+            <span>Previous</span>
           </Button>
 
-          {/* > (Next) */}
+          <div className="text-xs font-semibold text-muted-foreground tabular-nums">
+            Question <span className="text-foreground font-bold">{idx + 1}</span> of <span className="text-foreground font-bold">{total}</span>
+          </div>
+
+          {/* Next Button */}
           <Button
-            variant={idx < total - 1 ? "outline" : "ghost"}
-            size="icon"
-            disabled={idx === total - 1}
+            disabled={idx >= total - 1}
             onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
             className={cn(
-              "h-11 w-12 shrink-0 font-bold text-base",
-              isQuiz && idx < total - 1 && "border-blue-200 text-blue-700 hover:bg-blue-50"
-            )}
-            aria-label="Next question"
-            title="Next question"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
-
-          {/* Submit */}
-          <Button
-            className={cn(
-              "h-11 flex-1 font-bold tracking-wide shadow-xs",
+              "h-11 px-5 font-bold gap-2 rounded-xl text-sm shadow-sm transition-all",
               isQuiz
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-emerald-600 hover:bg-emerald-700 text-white"
             )}
-            onClick={() => {
-              if (isChapterPractice || isQuiz) {
-                submit();
-              } else {
-                setConfirmSubmit(true);
-              }
-            }}
-            disabled={submitting}
+            aria-label="Next question"
           >
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
+            <span>Next</span>
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </footer>
