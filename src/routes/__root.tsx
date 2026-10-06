@@ -101,6 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: "https://neettrack.com/" },
       { rel: "manifest", href: "/manifest.webmanifest?v=2" },
       { rel: "icon", href: "/favicon.ico?v=2", sizes: "any" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png?v=2" },
@@ -123,6 +124,32 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": "https://neettrack.com/#website",
+                  "url": "https://neettrack.com/",
+                  "name": "NEET Track",
+                  "alternateName": ["NeetTrack", "NEETTrack"],
+                  "description": "NEET preparation platform for CBT practice, mock tests, PYQs, NCERT study tools, flashcards, short notes, and progress tracking."
+                },
+                {
+                  "@type": "Organization",
+                  "@id": "https://neettrack.com/#organization",
+                  "name": "NEET Track",
+                  "alternateName": ["NeetTrack", "NEETTrack"],
+                  "url": "https://neettrack.com/",
+                  "logo": "https://neettrack.com/logo.jpg"
+                }
+              ]
+            })
+          }}
+        />
         <HeadContent />
       </head>
       <body>
