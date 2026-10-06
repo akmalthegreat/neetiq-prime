@@ -11,7 +11,8 @@ function createSupabaseAdminClient() {
     process.env.APP_SUPABASE_SERVICE_ROLE_KEY ||
     process.env.MY_SUPABASE_SERVICE_ROLE_KEY ||
     process.env.EXTERNAL_SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
   const key = SERVICE_ROLE_KEY || SUPABASE_PUBLISHABLE_KEY;
   if (!SERVICE_ROLE_KEY) {
