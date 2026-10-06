@@ -52,6 +52,7 @@ import { Route as BattlegroundsHistoryRouteImport } from './routes/battlegrounds
 import { Route as BattlegroundsViewAllRouteImport } from './routes/battlegrounds.view-all'
 import { Route as ContestContestIdRouteImport } from './routes/contest.$contestId'
 import { Route as PreviewHumanReproductionRouteImport } from './routes/preview.human-reproduction'
+import { Route as QuizIndexRouteImport } from './routes/quiz.index'
 import { Route as QuizTestIdRouteImport } from './routes/quiz.$testId'
 import { Route as SubjectsSubjectRouteImport } from './routes/subjects.$subject'
 import { Route as ApiPublicAppVersionRouteImport } from './routes/api/public/app-version'
@@ -287,6 +288,11 @@ const PreviewHumanReproductionRoute =
     path: '/preview/human-reproduction',
     getParentRoute: () => rootRouteImport,
   } as any)
+const QuizIndexRoute = QuizIndexRouteImport.update({
+  id: '/quiz/',
+  path: '/quiz/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuizTestIdRoute = QuizTestIdRouteImport.update({
   id: '/quiz/$testId',
   path: '/quiz/$testId',
@@ -432,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/preview/human-reproduction': typeof PreviewHumanReproductionRoute
   '/quiz/$testId': typeof QuizTestIdRoute
   '/subjects/$subject': typeof SubjectsSubjectRoute
+  '/quiz/': typeof QuizIndexRoute
   '/api/public/app-version': typeof ApiPublicAppVersionRoute
   '/battle/$matchId/play': typeof BattleMatchIdPlayRoute
   '/battle/$matchId/result': typeof BattleMatchIdResultRoute
@@ -495,6 +502,7 @@ export interface FileRoutesByTo {
   '/preview/human-reproduction': typeof PreviewHumanReproductionRoute
   '/quiz/$testId': typeof QuizTestIdRoute
   '/subjects/$subject': typeof SubjectsSubjectRoute
+  '/quiz': typeof QuizIndexRoute
   '/api/public/app-version': typeof ApiPublicAppVersionRoute
   '/battle/$matchId/play': typeof BattleMatchIdPlayRoute
   '/battle/$matchId/result': typeof BattleMatchIdResultRoute
@@ -559,6 +567,7 @@ export interface FileRoutesById {
   '/preview/human-reproduction': typeof PreviewHumanReproductionRoute
   '/quiz/$testId': typeof QuizTestIdRoute
   '/subjects/$subject': typeof SubjectsSubjectRoute
+  '/quiz/': typeof QuizIndexRoute
   '/api/public/app-version': typeof ApiPublicAppVersionRoute
   '/battle/$matchId/play': typeof BattleMatchIdPlayRoute
   '/battle/$matchId/result': typeof BattleMatchIdResultRoute
@@ -624,6 +633,7 @@ export interface FileRouteTypes {
     | '/preview/human-reproduction'
     | '/quiz/$testId'
     | '/subjects/$subject'
+    | '/quiz/'
     | '/api/public/app-version'
     | '/battle/$matchId/play'
     | '/battle/$matchId/result'
@@ -687,6 +697,7 @@ export interface FileRouteTypes {
     | '/preview/human-reproduction'
     | '/quiz/$testId'
     | '/subjects/$subject'
+    | '/quiz'
     | '/api/public/app-version'
     | '/battle/$matchId/play'
     | '/battle/$matchId/result'
@@ -750,6 +761,7 @@ export interface FileRouteTypes {
     | '/preview/human-reproduction'
     | '/quiz/$testId'
     | '/subjects/$subject'
+    | '/quiz/'
     | '/api/public/app-version'
     | '/battle/$matchId/play'
     | '/battle/$matchId/result'
@@ -809,6 +821,7 @@ export interface RootRouteChildren {
   PreviewHumanReproductionRoute: typeof PreviewHumanReproductionRoute
   QuizTestIdRoute: typeof QuizTestIdRoute
   SubjectsSubjectRoute: typeof SubjectsSubjectRoute
+  QuizIndexRoute: typeof QuizIndexRoute
   ApiPublicAppVersionRoute: typeof ApiPublicAppVersionRoute
   BattleMatchIdPlayRoute: typeof BattleMatchIdPlayRoute
   BattleMatchIdResultRoute: typeof BattleMatchIdResultRoute
@@ -1128,6 +1141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PreviewHumanReproductionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quiz/': {
+      id: '/quiz/'
+      path: '/quiz'
+      fullPath: '/quiz/'
+      preLoaderRoute: typeof QuizIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quiz/$testId': {
       id: '/quiz/$testId'
       path: '/quiz/$testId'
@@ -1339,6 +1359,7 @@ const rootRouteChildren: RootRouteChildren = {
   PreviewHumanReproductionRoute: PreviewHumanReproductionRoute,
   QuizTestIdRoute: QuizTestIdRoute,
   SubjectsSubjectRoute: SubjectsSubjectRoute,
+  QuizIndexRoute: QuizIndexRoute,
   ApiPublicAppVersionRoute: ApiPublicAppVersionRoute,
   BattleMatchIdPlayRoute: BattleMatchIdPlayRoute,
   BattleMatchIdResultRoute: BattleMatchIdResultRoute,
