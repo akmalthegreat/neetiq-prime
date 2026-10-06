@@ -493,6 +493,89 @@ export function TodoListPage() {
           </div>
         </div>
       </div>
+
+      {/* Weekly Recap Modal */}
+      <Dialog open={showRecap} onOpenChange={setShowRecap}>
+        <DialogContent className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-slate-950">
+          <DialogHeader>
+            <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400">
+              <CalendarDays className="h-5 w-5" />
+              <DialogTitle className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
+                Weekly Study Recap
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+              Your 7-day NEET preparation momentum & focus breakdown
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 space-y-4">
+            {/* Top Stat Grid */}
+            <div className="grid grid-cols-3 gap-2.5">
+              <div className="rounded-xl border border-teal-500/20 bg-teal-500/10 p-3 text-center">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">Total Planned</span>
+                <span className="mt-1 block text-lg font-black text-slate-900 dark:text-white">
+                  {(totalMinutes / 60).toFixed(1)} <span className="text-xs font-semibold">hrs</span>
+                </span>
+              </div>
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-center">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Completed</span>
+                <span className="mt-1 block text-lg font-black text-slate-900 dark:text-white">
+                  {(completedMinutes / 60).toFixed(1)} <span className="text-xs font-semibold">hrs</span>
+                </span>
+              </div>
+              <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-center">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Completion</span>
+                <span className="mt-1 block text-lg font-black text-slate-900 dark:text-white">
+                  {totalMinutes > 0 ? Math.round((completedMinutes / totalMinutes) * 100) : 0}%
+                </span>
+              </div>
+            </div>
+
+            {/* Subject Distribution */}
+            <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-3.5 dark:border-white/10 dark:bg-white/5">
+              <span className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-2.5">
+                Targeted Subject Focus
+              </span>
+              <div className="space-y-2">
+                {[
+                  { name: "Biology", color: "bg-emerald-500", count: todos.filter(t => t.subject === "Biology").length },
+                  { name: "Chemistry", color: "bg-teal-500", count: todos.filter(t => t.subject === "Chemistry").length },
+                  { name: "Physics", color: "bg-sky-500", count: todos.filter(t => t.subject === "Physics").length },
+                  { name: "Mocks & Revision", color: "bg-purple-500", count: todos.filter(t => t.subject === "Mock" || t.subject === "Revision").length },
+                ].map((s) => (
+                  <div key={s.name} className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className={`h-2.5 w-2.5 rounded-full ${s.color}`} />
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">{s.name}</span>
+                    </div>
+                    <span className="font-bold text-slate-900 dark:text-white">
+                      {s.count} {s.count === 1 ? "ticket" : "tickets"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Motivation Badge */}
+            <div className="flex items-center gap-3 rounded-xl border border-amber-400/30 bg-amber-500/10 p-3">
+              <Flame className="h-6 w-6 shrink-0 text-amber-500" />
+              <div className="text-xs">
+                <span className="font-bold text-amber-800 dark:text-amber-300">Aiming for NEET 2027 Top Rank!</span>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400">Consistency in completing 3–4 hr focus sessions guarantees 700+ score.</p>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setShowRecap(false)}
+              className="w-full rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 font-bold text-white shadow-md shadow-teal-500/20"
+            >
+              Keep Crushing Goals
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PageShell>
+
   );
 }
