@@ -49,19 +49,24 @@ function ReferralsPage() {
     reload();
     // Live updates: when a new referral row mentioning me as the referrer is
     // inserted, refresh the dashboard immediately.
-    const ch = supabase
-      .channel(`referrals-${user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "referrals", filter: `referrer_id=eq.${user.id}` },
-        () => reload(),
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` },
-        () => reload(),
-      )
-      .subscribe();
+    let ch: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      ch = supabase
+        .channel(`referrals-${user.id}-${Date.now()}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "referrals", filter: `referrer_id=eq.${user.id}` },
+          () => reload(),
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` },
+          () => reload(),
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn("[referrals] realtime subscription failed:", e);
+    }
     const onFocus = () => reload();
     const onVis = () => { if (!document.hidden) reload(); };
     window.addEventListener("focus", onFocus);
@@ -69,7 +74,7 @@ function ReferralsPage() {
     const poll = setInterval(reload, 30_000);
     return () => {
       alive = false;
-      supabase.removeChannel(ch);
+      if (ch) supabase.removeChannel(ch);
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVis);
       clearInterval(poll);

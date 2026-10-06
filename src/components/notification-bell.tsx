@@ -45,18 +45,24 @@ export function NotificationBell() {
   useEffect(() => {
     if (!user) return;
     load();
-    const ch = supabase
-      .channel(`notif-${user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
-        () => load(),
-      )
-      .subscribe();
+    let ch: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      const channelName = `notif-${user.id}-${Date.now()}`;
+      ch = supabase
+        .channel(channelName)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+          () => load(),
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn("[notifications] Failed to subscribe to realtime changes:", e);
+    }
     return () => {
-      supabase.removeChannel(ch);
+      if (ch) supabase.removeChannel(ch);
     };
-  }, [user, load]);
+  }, [user?.id]);
 
   if (!user) return null;
   const unread = (items ?? []).filter((n) => !n.read_at).length;
