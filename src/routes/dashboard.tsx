@@ -332,31 +332,21 @@ function Dashboard() {
 
             {/* Content atop summit hero */}
             <div className="relative z-10 flex flex-col gap-4">
-              {/* Top Row: Doctor identity & Quick badges */}
+              {/* Top Row: Doctor identity (Clean, no avatar) & Quick badges */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3.5">
-                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 shadow-lg shadow-emerald-500/30">
-                    <Atom className="h-6 w-6 text-slate-950" />
-                    <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-slate-900 bg-emerald-500" />
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <h1 className="text-xl font-black tracking-tight text-white sm:text-3xl">
+                      Hi, Dr. {firstName}
+                    </h1>
+                    <span className="shrink-0 rounded-full border border-emerald-400/40 bg-emerald-500/25 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300 backdrop-blur-md">
+                      NEET 2026 Target
                     </span>
                   </div>
-
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h1 className="truncate text-lg font-black tracking-tight text-white sm:text-2xl">
-                        Hi, Dr. {firstName}
-                      </h1>
-                      <span className="shrink-0 rounded-full border border-emerald-400/30 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300 backdrop-blur-md">
-                        NEET 2026 Target
-                      </span>
-                    </div>
-                    <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 sm:text-sm">
-                      <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                      <span>Aiming for 700+ | AIIMS New Delhi</span>
-                    </p>
-                  </div>
+                  <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-200 sm:text-sm">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                    <span>Target: 700+ Score | AIIMS New Delhi</span>
+                  </p>
                 </div>
 
                 {/* Badges on Hero */}
@@ -481,7 +471,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Physics" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-sky-200/70 bg-gradient-to-b from-white to-sky-50/30 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/15 active:scale-[0.98] dark:border-sky-900/40 dark:from-slate-900 dark:to-sky-950/20"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-sky-200/70 bg-white/95 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/15 active:scale-[0.98] dark:border-sky-900/40 dark:from-slate-900 dark:to-sky-950/20"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/15 text-sky-600 sm:h-8 sm:w-8 dark:bg-sky-500/20 dark:text-sky-400">
@@ -495,8 +485,8 @@ function Dashboard() {
                   <div className="truncate text-xs font-bold text-slate-900 group-hover:text-sky-600 sm:text-sm dark:text-white dark:group-hover:text-sky-400">
                     Physics
                   </div>
-                  <div className="truncate text-[10px] font-medium text-slate-400">
-                    {subjectCounts.physics.toLocaleString()} Qs
+                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-sky-400/30 bg-sky-500/15 px-2 py-0.5 text-[11px] font-bold text-sky-900 shadow-2xs dark:border-sky-400/40 dark:bg-sky-400/20 dark:text-sky-100">
+                    <span>{subjectCounts.physics.toLocaleString()} MCQs</span>
                   </div>
                   <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <div
@@ -511,7 +501,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Chemistry" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-teal-200/70 bg-gradient-to-b from-white to-teal-50/30 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md hover:shadow-teal-500/15 active:scale-[0.98] dark:border-teal-900/40 dark:from-slate-900 dark:to-teal-950/20"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-teal-200/70 bg-white/95 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md hover:shadow-teal-500/15 active:scale-[0.98] dark:border-teal-900/40 dark:from-slate-900 dark:to-teal-950/20"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 sm:h-8 sm:w-8 dark:bg-teal-500/20 dark:text-teal-400">
@@ -525,8 +515,8 @@ function Dashboard() {
                   <div className="truncate text-xs font-bold text-slate-900 group-hover:text-teal-600 sm:text-sm dark:text-white dark:group-hover:text-teal-400">
                     Chemistry
                   </div>
-                  <div className="truncate text-[10px] font-medium text-slate-400">
-                    {subjectCounts.chemistry.toLocaleString()} Qs
+                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-teal-400/30 bg-teal-500/15 px-2 py-0.5 text-[11px] font-bold text-teal-900 shadow-2xs dark:border-teal-400/40 dark:bg-teal-400/20 dark:text-teal-100">
+                    <span>{subjectCounts.chemistry.toLocaleString()} MCQs</span>
                   </div>
                   <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <div
@@ -541,7 +531,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Biology" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-purple-200/70 bg-gradient-to-b from-white to-purple-50/30 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-400 hover:shadow-md hover:shadow-purple-500/15 active:scale-[0.98] dark:border-purple-900/40 dark:from-slate-900 dark:to-purple-950/20"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-purple-200/70 bg-white/95 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-400 hover:shadow-md hover:shadow-purple-500/15 active:scale-[0.98] dark:border-purple-900/40 dark:from-slate-900 dark:to-purple-950/20"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 sm:h-8 sm:w-8 dark:bg-purple-500/20 dark:text-purple-400">
@@ -555,8 +545,8 @@ function Dashboard() {
                   <div className="truncate text-xs font-bold text-slate-900 group-hover:text-purple-600 sm:text-sm dark:text-white dark:group-hover:text-purple-400">
                     Biology
                   </div>
-                  <div className="truncate text-[10px] font-medium text-slate-400">
-                    {subjectCounts.biology.toLocaleString()} Qs
+                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-purple-400/30 bg-purple-500/15 px-2 py-0.5 text-[11px] font-bold text-purple-900 shadow-2xs dark:border-purple-400/40 dark:bg-purple-400/20 dark:text-purple-100">
+                    <span>{subjectCounts.biology.toLocaleString()} MCQs</span>
                   </div>
                   <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <div
