@@ -5,7 +5,7 @@ import type { Database } from './types';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config';
 
 function createSupabaseAdminClient() {
-  // Accept the currently configured project service-role secret, with legacy fallbacks.
+  // Accept the configured server-side Supabase service-role secret.
   const SERVICE_ROLE_KEY =
     process.env.PROJECT_SERVICE_ROLE_KEY ||
     process.env.APP_SUPABASE_SERVICE_ROLE_KEY ||
