@@ -1,10 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, LogOut, Sun, Moon, ChevronDown, User, Search } from "lucide-react";
+import { Menu, LogOut, Sun, Moon, ChevronDown, User, Crown, Sparkles, PanelLeftClose, PanelLeftOpen, Home, BookOpen, Target, Brain, Trophy, Users, Settings, ClipboardCheck, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
+import { useAccess } from "@/hooks/use-access";
 import { NotificationBell } from "@/components/notification-bell";
 import { avatarUrl } from "@/lib/avatar";
 import {
@@ -15,17 +16,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 function ThemeToggle() {
   const { theme, toggle } = useTheme();
   return (
-    <button
+    <Button variant="ghost" size="icon"
+      title="Toggle dark mode"
       aria-label="Toggle dark mode"
       onClick={toggle}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
     >
-      {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
+      {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+    </Button>
   );
 }
 
@@ -34,76 +37,121 @@ type Group = { label: string; to?: string; items?: Item[] };
 
 const GROUPS: Group[] = [
   { label: "Dashboard", to: "/dashboard" },
+  { label: "Checklist", to: "/daily-checklist" },
   {
-    label: "Quick Practice",
+    label: "Practice",
     items: [
-      { to: "/daily", label: "DPP HUB" },
-      { to: "/dpp", label: "ALL DPP" },
-      { to: "/subjects/Physics", label: "Physics DPP" },
-      { to: "/subjects/Chemistry", label: "Chemistry DPP" },
-      { to: "/subjects/Zoology", label: "Zoology DPP" },
-      { to: "/subjects/Botany", label: "Botany DPP" },
+      { to: "/daily", label: "Daily DPP" },
+      { to: "/dpp", label: "Sub-wise Quiz" },
+      { to: "/mocks", label: "Mock Tests" },
+      { to: "/pyqs", label: "NEET PYQs" },
+      { to: "/generate", label: "Generate Test" },
     ],
   },
   {
-    label: "Study Tools",
+    label: "Study",
     items: [
+      { to: "/study-essentials", label: "Study Essentials" },
+      { to: "/pyqs", label: "NEET PYQs" },
       { to: "/flashcards", label: "Flashcards" },
-      { to: "/ncert-highlights", label: "NCERT Highlights" },
+      { to: "/ncert-highlights", label: "NCERT Key Points" },
       { to: "/highlighted-ncert", label: "Highlighted NCERT" },
-      { to: "/neetlab", label: "NEETLab 3D" },
-      { to: "/mocks", label: "Mock Tests" },
+      { to: "/neetlab", label: "NEETLab" },
       { to: "/bookmarks", label: "Bookmarks" },
-      { to: "/mistakes", label: "My Mistakes" },
     ],
   },
   {
     label: "AI Tools",
     items: [
-      { to: "/generate", label: "Custom Test" },
-      { to: "/ai-path", label: "AI Path" },
+      { to: "/ai-path", label: "AI Study Path" },
       { to: "/score-predictor", label: "Score Predictor" },
+      { to: "/progress", label: "Progress Report" },
+      { to: "/analytics", label: "Analytics" },
     ],
   },
   {
-    label: "Earn & Compete",
+    label: "Compete",
     items: [
-      { to: "/contests", label: "Cash Contests" },
-      { to: "/battlegrounds", label: "Battlegrounds (1v1)" },
+      { to: "/contests", label: "Contests" },
+      { to: "/battlegrounds", label: "Battlegrounds" },
+      { to: "/leaderboard", label: "Leaderboard" },
     ],
   },
-  { label: "Refer & Earn", to: "/referrals" },
-  { label: "Leaderboard", to: "/leaderboard" },
+  {
+    label: "Plans",
+    items: [
+      { to: "/premium", label: "Batches" },
+      { to: "/subscription", label: "Subscription" },
+      { to: "/referrals", label: "Refer a Friend" },
+    ],
+  },
+  {
+    label: "More",
+    items: [
+      { to: "/community", label: "Community" },
+      { to: "/feedback", label: "Feedback" },
+      { to: "/dedicated-program", label: "Collaborator Program" },
+      { to: "/privacy", label: "Privacy Policy" },
+      { to: "/terms", label: "Terms of Service" },
+      { to: "/refund", label: "Refund Policy" },
+      { to: "/delete-account", label: "Delete Account" },
+    ],
+  },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ sideNavigation = false, collapsed = false, onToggleSidebar }: { sideNavigation?: boolean; collapsed?: boolean; onToggleSidebar?: () => void }) {
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
   const { user, profile, isAdmin, signOut } = useAuth();
+  const { access } = useAccess();
+  const isMentor = access.isMentor;
+  const navGroups: Group[] = isAdmin || isMentor
+    ? [
+        GROUPS[0],
+        GROUPS[1],
+        { label: "Mentor", to: "/mentor" },
+        ...GROUPS.slice(2),
+      ]
+    : GROUPS;
   const displayName = (profile?.full_name?.trim() || (user?.email ? user.email.split("@")[0] : "")) ?? "";
   const avatar = user ? avatarUrl(displayName || user.id, profile?.avatar_url ?? null) : null;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3.5 sm:px-6 lg:px-8">
-        {/* Brand Logo & Name matching screenshot */}
-        <Link to="/dashboard" className="flex items-center gap-2.5">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-sky-400/40 bg-[#060b18] p-0.5 shadow-md shadow-sky-500/10">
-            <img src="/logo.jpg" alt="NEET Track" className="h-full w-full rounded-full object-cover" />
-          </div>
-          <div className="leading-tight">
-            <div className="text-[17px] font-black tracking-tight text-foreground">
-              NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-black">Track</span>
-            </div>
-            <div className="text-[10px] font-medium tracking-wider text-muted-foreground">
-              Learn <span className="opacity-40">•</span> Practice <span className="opacity-40">•</span> Achieve
-            </div>
+    <>
+      {sideNavigation && <aside className={cn("fixed inset-y-0 left-0 z-50 hidden flex-col border-r border-border bg-sidebar lg:flex", collapsed ? "w-[72px]" : "w-64")}>
+        <Link to="/dashboard" className="flex h-16 shrink-0 items-center gap-3 border-b border-border px-5">
+          <img src="/icons/icon-192.png" alt="" className="h-8 w-8 shrink-0 rounded-lg" />
+          {!collapsed && <span className="font-display text-lg font-semibold">Neet <span className="text-primary">Buddy</span></span>}
+        </Link>
+        <nav aria-label="Main navigation" className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
+          {navGroups.map((g) => {
+            const Icon = ({ Dashboard: Home, Checklist: ClipboardCheck, Practice: Target, Study: BookOpen, "AI Tools": Brain, Compete: Trophy, Plans: Crown, More: Users, Mentor: GraduationCap } as Record<string, typeof Home>)[g.label] ?? BookOpen;
+            const active = g.to ? path === g.to || path.startsWith(g.to + "/") : (g.items ?? []).some((i) => path === i.to || path.startsWith(i.to + "/"));
+            if (g.to) return <Button key={g.label} variant="ghost" asChild className={cn("h-10 w-full justify-start px-3", active && "bg-sidebar-accent text-sidebar-primary")}><Link to={g.to} title={g.label} aria-current={active ? "page" : undefined}><Icon className="shrink-0" />{!collapsed && <span>{g.label === "Dashboard" ? "Home" : g.label}</span>}</Link></Button>;
+            if (collapsed) return <DropdownMenu key={g.label}><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" title={g.label} aria-label={g.label} className={cn("w-full", active && "bg-sidebar-accent text-sidebar-primary")}><Icon /></Button></DropdownMenuTrigger><DropdownMenuContent side="right">{(g.items ?? []).map((i) => <DropdownMenuItem key={i.label} asChild><Link to={i.to}>{i.label}</Link></DropdownMenuItem>)}</DropdownMenuContent></DropdownMenu>;
+            return <details key={g.label} open={active || undefined} className="group/nav"><summary className={cn("flex h-10 cursor-pointer list-none items-center gap-3 rounded-md px-3 text-sm font-medium hover:bg-sidebar-accent", active ? "text-sidebar-primary" : "text-muted-foreground")}><Icon className="h-4 w-4 shrink-0" /><span className="flex-1">{g.label}</span><ChevronDown className="h-3.5 w-3.5 group-open/nav:rotate-180" /></summary><div className="ml-5 border-l border-border py-1 pl-2">{(g.items ?? []).map((i) => <Button key={i.label} asChild variant="ghost" className={cn("h-9 w-full justify-start whitespace-normal text-xs", path === i.to && "bg-sidebar-accent text-sidebar-primary")}><Link to={i.to} aria-current={path === i.to ? "page" : undefined}>{i.label}</Link></Button>)}</div></details>;
+          })}
+        </nav>
+        <div className="shrink-0 border-t border-border p-3">
+          <Button asChild variant="ghost" className="w-full justify-start px-3"><Link to="/profile" title="Settings"><Settings />{!collapsed && "Settings"}</Link></Button>
+          {user && <Button variant="ghost" title="Log out" onClick={() => signOut()} className="w-full justify-start px-3"><LogOut />{!collapsed && "Log out"}</Button>}
+        </div>
+      </aside>}
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-3">
+        {sideNavigation && <Button variant="ghost" size="icon" className="hidden shrink-0 lg:inline-flex" onClick={onToggleSidebar} aria-label={collapsed ? "Expand navigation" : "Collapse navigation"} title={collapsed ? "Expand navigation" : "Collapse navigation"}>{collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}</Button>}
+        <Link to="/dashboard" className={cn("flex min-w-0 items-center gap-2", sideNavigation && "lg:hidden")}>
+          <img src="/icons/icon-192.png" alt="Neet Buddy" className="h-9 w-9 rounded-xl shadow-glow" />
+          <div className="leading-none">
+            <div className="text-base font-bold tracking-tight">Neet <span className="text-gradient-primary">Buddy</span></div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Crack NEET, Smarter</div>
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1 lg:flex">
-          {GROUPS.map((g) => {
+        </div>
+        <nav className={cn("hidden items-center gap-1", !sideNavigation && "lg:flex")}>
+          {navGroups.map((g) => {
             if (g.to) {
               const active = path.startsWith(g.to);
               return (
@@ -111,61 +159,63 @@ export function SiteHeader() {
                   key={g.label}
                   to={g.to}
                   className={cn(
-                    "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
-                    active
-                      ? "bg-secondary text-foreground"
-                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+                    "rounded-full px-3 py-2 text-sm font-medium transition-colors",
+                    active ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
                   )}
                 >
                   {g.label}
                 </Link>
               );
             }
+            const groupActive = (g.items ?? []).some((i) => path === i.to || path.startsWith(i.to + "/"));
             return (
               <DropdownMenu key={g.label}>
-                <DropdownMenuTrigger className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground focus:outline-none">
+                <DropdownMenuTrigger className={cn(
+                  "inline-flex items-center gap-0.5 rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-none",
+                  groupActive
+                    ? "bg-secondary text-foreground"
+                    : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+                )}>
                   {g.label} <ChevronDown className="h-3.5 w-3.5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="min-w-44">
-                  <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {g.label}
-                  </DropdownMenuLabel>
+                  <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">{g.label}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  {g.items!.map((i) => (
-                    <DropdownMenuItem key={i.label} asChild>
-                      <Link to={i.to}>{i.label}</Link>
-                    </DropdownMenuItem>
-                  ))}
+                  {(g.items ?? []).map((i) => {
+                    const active = path === i.to || path.startsWith(i.to + "/");
+                    return (
+                      <DropdownMenuItem key={i.label} asChild>
+                        <Link to={i.to} className={cn(active && "bg-secondary font-semibold text-foreground")}>{i.label}</Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
                 </DropdownMenuContent>
               </DropdownMenu>
             );
           })}
         </nav>
 
-        {/* Right Action Icons matching screenshot */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Quick Search Button */}
-          <Link
-            to="/dpp"
-            aria-label="Search questions"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            <Search className="h-4 w-4" />
-          </Link>
 
+        <div className="flex items-center gap-1 md:gap-2">
           <ThemeToggle />
-
           {user && <NotificationBell />}
-
-          {/* Desktop User Profile / Auth */}
           <div className="hidden items-center gap-2 lg:flex">
             {user ? (
               <>
-                {isAdmin && (
-                  <Button asChild size="sm" variant="outline" className="h-8 rounded-xl text-xs">
-                    <Link to="/admin">Admin</Link>
-                  </Button>
-                )}
+                <Button
+                  asChild
+                  size="sm"
+                  className="relative gap-1 overflow-hidden bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 font-semibold text-white shadow-elegant ring-1 ring-amber-300/40 transition hover:shadow-lg hover:brightness-110"
+                >
+                  <Link to="/premium">
+                    <Crown className="h-4 w-4" />
+                    <span>Premium</span>
+                    <Sparkles className="h-3.5 w-3.5 opacity-80" />
+                  </Link>
+                </Button>
+                {isAdmin && <Button asChild size="sm" variant="outline"><Link to="/admin">Admin</Link></Button>}
+                {isAdmin && <Button asChild size="sm" variant="outline"><Link to="/admin-inbox">Inbox</Link></Button>}
+
                 <Link
                   to="/profile"
                   className="flex items-center gap-2 rounded-full border border-border bg-secondary/60 py-1 pl-1 pr-3 transition-colors hover:bg-secondary"
@@ -174,130 +224,141 @@ export function SiteHeader() {
                   {avatar ? (
                     <img src={avatar} alt={displayName || "Profile"} className="h-7 w-7 rounded-full object-cover" />
                   ) : (
-                    <User className="h-4 w-4" />
+                    <User className="h-5 w-5" />
                   )}
-                  <span className="max-w-[7rem] truncate text-xs font-semibold">{displayName || "Profile"}</span>
+                  <span className="max-w-[8rem] truncate text-sm font-semibold">{displayName || "Profile"}</span>
                 </Link>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => signOut()}
-                  className="h-8 rounded-xl px-2 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
+                <Button size="sm" variant="outline" onClick={() => signOut()} className="gap-1"><LogOut className="h-4 w-4" /> Log out</Button>
               </>
             ) : (
               <>
-                <Button asChild variant="ghost" size="sm" className="h-8 text-xs">
-                  <Link to="/login">Log in</Link>
-                </Button>
-                <Button asChild size="sm" className="h-8 rounded-xl bg-primary text-xs font-bold text-primary-foreground">
-                  <Link to="/login">Get started</Link>
-                </Button>
+                <Button asChild variant="ghost" size="sm"><Link to="/login">Log in</Link></Button>
+                <Button asChild size="sm" className="bg-gradient-primary shadow-elegant hover:opacity-95"><Link to="/login">Get started</Link></Button>
               </>
             )}
           </div>
-
-          {/* Mobile Menu Hamburger */}
-          <button
-            aria-label="Toggle menu"
-            onClick={() => setOpen((v) => !v)}
-            className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border/80 text-muted-foreground"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <button
+                aria-label="Open menu"
+                className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border transition-colors hover:bg-secondary"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side={sideNavigation ? "left" : "right"} className="w-[88vw] max-w-sm overflow-y-auto p-0">
+              <SheetHeader className="border-b border-border/60 bg-gradient-to-br from-primary/5 to-amber-500/5 px-5 py-4">
+                <SheetTitle className="flex items-center gap-2 text-base">
+                  <img src="/icons/icon-192.png" alt="" className="h-8 w-8 rounded-lg" />
+                  Neet <span className="text-gradient-primary">Buddy</span>
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-3 p-4">
+                {user && (
+                  <Link
+                    to="/profile"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-secondary"
+                  >
+                    {avatar ? (
+                      <img src={avatar} alt={displayName || "Profile"} className="h-10 w-10 rounded-full object-cover" />
+                    ) : (
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary"><User className="h-5 w-5" /></div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-bold">{displayName || "Your profile"}</div>
+                      <div className="truncate text-xs text-muted-foreground">{user.email}</div>
+                    </div>
+                  </Link>
+                )}
+                {user && (
+                  <Button asChild className="w-full gap-1 bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 font-semibold text-white shadow-elegant ring-1 ring-amber-300/40 hover:brightness-110">
+                    <Link to="/premium" onClick={() => setOpen(false)}>
+                      <Crown className="h-4 w-4" /> Go Premium
+                      <Sparkles className="ml-1 h-3.5 w-3.5 opacity-80" />
+                    </Link>
+                  </Button>
+                )}
+                {navGroups.map((g) => {
+                  if (g.to) {
+                    const active = path === g.to || path.startsWith(g.to + "/");
+                    return (
+                      <Link
+                        key={g.label}
+                        to={g.to}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors",
+                          active ? "bg-primary/10 text-primary ring-1 ring-primary/20" : "hover:bg-secondary",
+                        )}
+                      >
+                        {g.label}
+                      </Link>
+                    );
+                  }
+                  const groupActive = (g.items ?? []).some((i) => path === i.to || path.startsWith(i.to + "/"));
+                  return (
+                    <div key={g.label} className={cn("rounded-lg border p-2 transition-colors", groupActive ? "border-primary/40 bg-primary/5" : "border-border bg-card/50")}>
+                      <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{g.label}</div>
+                      <div className="mt-1 grid gap-0.5">
+                        {(g.items ?? []).map((i) => {
+                          const active = path === i.to || path.startsWith(i.to + "/");
+                          return (
+                            <Link
+                              key={i.label}
+                              to={i.to}
+                              onClick={() => setOpen(false)}
+                              className={cn(
+                                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                                active ? "bg-primary/15 font-semibold text-primary" : "hover:bg-secondary",
+                              )}
+                            >
+                              {i.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {user ? (
+                    <>
+                      {isAdmin && (
+                        <Button asChild variant="outline" className="flex-1 min-w-[45%]">
+                          <Link to="/admin" onClick={() => setOpen(false)}>Admin</Link>
+                        </Button>
+                      )}
+                      {isAdmin && (
+                        <Button asChild variant="outline" className="flex-1 min-w-[45%]">
+                          <Link to="/admin-inbox" onClick={() => setOpen(false)}>Inbox</Link>
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        className="flex-1 gap-1"
+                        onClick={() => { setOpen(false); signOut(); }}
+                      >
+                        <LogOut className="h-4 w-4" /> Log out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button asChild variant="outline" className="flex-1">
+                        <Link to="/login" onClick={() => setOpen(false)}>Log in</Link>
+                      </Button>
+                      <Button asChild className="flex-1 bg-gradient-primary">
+                        <Link to="/login" onClick={() => setOpen(false)}>Get started</Link>
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
-      {open && (
-        <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-xl animate-fade-in-up">
-          <div className="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-2 max-h-[75vh] overflow-y-auto">
-            {user && (
-              <Link
-                to="/profile"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-xs"
-              >
-                {avatar ? (
-                  <img src={avatar} alt={displayName || "Profile"} className="h-10 w-10 rounded-full object-cover" />
-                ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
-                    <User className="h-5 w-5" />
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-bold">{displayName || "Your profile"}</div>
-                  <div className="truncate text-xs text-muted-foreground">{user.email}</div>
-                </div>
-              </Link>
-            )}
-
-            {GROUPS.map((g) =>
-              g.to ? (
-                <Link
-                  key={g.label}
-                  to={g.to}
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-secondary"
-                >
-                  {g.label}
-                </Link>
-              ) : (
-                <div key={g.label} className="rounded-xl border border-border/70 bg-card/60 p-2.5">
-                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {g.label}
-                  </div>
-                  <div className="mt-1 grid grid-cols-2 gap-1">
-                    {g.items!.map((i) => (
-                      <Link
-                        key={i.label}
-                        to={i.to}
-                        onClick={() => setOpen(false)}
-                        className="rounded-lg px-2.5 py-1.5 text-xs font-medium hover:bg-secondary truncate"
-                      >
-                        {i.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ),
-            )}
-
-            <div className="mt-2 flex gap-2">
-              {user ? (
-                <>
-                  {isAdmin && (
-                    <Button asChild variant="outline" className="flex-1 rounded-xl text-xs">
-                      <Link to="/admin" onClick={() => setOpen(false)}>Admin</Link>
-                    </Button>
-                  )}
-                  <Button asChild variant="outline" className="flex-1 rounded-xl text-xs">
-                    <Link to="/profile" onClick={() => setOpen(false)}>Profile</Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="flex-1 rounded-xl text-xs gap-1"
-                    onClick={() => { setOpen(false); signOut(); }}
-                  >
-                    <LogOut className="h-3.5 w-3.5" /> Log out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button asChild variant="outline" className="flex-1 rounded-xl text-xs">
-                    <Link to="/login" onClick={() => setOpen(false)}>Log in</Link>
-                  </Button>
-                  <Button asChild className="flex-1 rounded-xl bg-primary text-xs font-bold text-primary-foreground">
-                    <Link to="/login" onClick={() => setOpen(false)}>Get started</Link>
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </header>
+    </>
   );
 }

@@ -1,6 +1,5 @@
-import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -8,17 +7,19 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ChevronLeft, ChevronRight, CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, Clock, User, Check, AlertCircle, FileText, Maximize2, Laptop } from "lucide-react";
+import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { RichText, resolveAnyImageUrl, handleImageFallback } from "@/components/rich-text";
+import { RichText } from "@/components/rich-text";
 import { ReportQuestionButton } from "@/components/report-question-button";
 import { AntiCheatGate, hasAckedAntiCheat } from "@/components/anti-cheat-gate";
+import { ReasonBreakdown } from "@/components/reason-breakdown";
+
 
 export const Route = createFileRoute("/quiz/$testId")({
-  head: () => ({ meta: [{ title: "Quiz — NEET Track" }] }),
-  validateSearch: (s: Record<string, unknown>): { mode?: "quiz" | "cbt" } => ({
-    mode: (s.mode === "quiz" ? "quiz" : "cbt") as "quiz" | "cbt",
+  head: () => ({ meta: [{ title: "Quiz — Neet Buddy" }, { name: "description", content: "Practice NEET questions in quiz or CBT mode." }, { property: "og:title", content: "Quiz — Neet Buddy" }, { property: "og:description", content: "Practice NEET questions in quiz or CBT mode." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
+  validateSearch: (s: Record<string, unknown>): { mode?: "quiz" | "exam" | "cbt" } => ({
+    mode: (s.mode === "quiz" ? "quiz" : s.mode === "cbt" ? "cbt" : "exam") as "quiz" | "exam" | "cbt",
   }),
   component: QuizPlayer,
 });
@@ -33,50 +34,9 @@ type Question = {
   marks_correct: number;
   marks_wrong: number;
   explanation?: string | null;
-  explanation_image_url?: string | null;
-  question_image_url?: string | null;
-  image_url?: string | null;
-  diagram_url?: string | null;
-  qtype?: string | null;
   subject_id?: string | null;
   chapter_id?: string | null;
 };
-
-function resolveImageUrl(url?: string | null) {
-  return resolveAnyImageUrl(url);
-}
-
-function resolveOptionImageUrl(
-  q?: Question | null,
-  index?: number,
-  optText?: string | null
-): string | null {
-  if (!q || index === undefined) return null;
-  if (optText && typeof optText === "string") {
-    const trimmed = optText.trim();
-    if (trimmed && (/\.(png|jpg|jpeg|webp|svg)$/i.test(trimmed) || /optimg|img\/data/i.test(trimmed))) {
-      const resolved = resolveAnyImageUrl(trimmed);
-      if (resolved) return resolved;
-    }
-  }
-
-  const isTextEmpty = !optText || typeof optText !== "string" || optText.trim() === "";
-  if (isTextEmpty) {
-    const qImg = q.question_image_url || q.image_url || q.diagram_url || "";
-    const m = qImg.match(/^(?:([^/]+)\/)?(\d+)_(\d+)_(?:question|qtext)_[^/]+(\.[a-zA-Z0-9]+)$/i);
-    if (m) {
-      const [, subj, chap, qid, ext] = m;
-      const finalSubj = subj || q.subject_id || "physics";
-      return resolveAnyImageUrl(`${finalSubj}/${chap}_${qid}_optimg_${index + 1}_1${ext}`);
-    }
-    if (q.chapter_id && q.id) {
-      const subj = q.subject_id || "physics";
-      return resolveAnyImageUrl(`${subj}/${q.chapter_id}_${q.id}_optimg_${index + 1}_1.png`);
-    }
-  }
-  return null;
-}
-
 type Test = {
   id: string;
   title: string;
@@ -115,9 +75,14 @@ function QuizPlayer() {
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [wrongMarks, setWrongMarks] = useState<Set<string>>(new Set());
   const isCbt = mode === "cbt";
+  // In CBT mode the experience mirrors NTA: timer, no in-quiz review, palette-driven.
+  const isExam = mode === "exam" || isCbt;
   const isQuiz = mode === "quiz";
   // Chapter-wise practice = no submit, persist answers, lock-on-pick reveal.
-  const isChapterPractice = test?.type === "practice" && isQuiz;
+  const isChapterPractice = test?.type === "practice";
+  // Per-question CBT status: 'not_visited' | 'not_answered' | 'answered' | 'marked' | 'marked_answered'
+  const [visited, setVisited] = useState<Set<string>>(new Set());
+  const [marked, setMarked] = useState<Set<string>>(new Set());
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState<{
@@ -132,10 +97,6 @@ function QuizPlayer() {
   const [contestDone, setContestDone] = useState<null | { score: number; correct: number; wrong: number; attempted: number }>(null);
   const [alreadyAttempted, setAlreadyAttempted] = useState<null | { contestId: string | null; score: number | null }>(null);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
-  // NTA CBT state: visited questions + marked-for-review set
-  const [visitedIds, setVisitedIds] = useState<Set<number>>(new Set());
-  const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
-  const [cbtPick, setCbtPick] = useState<Record<string, number>>({});
   const startedAt = useRef<number>(Date.now());
   const paletteRef = useRef<HTMLDivElement>(null);
   const isContest = test?.type === "contest";
@@ -145,20 +106,6 @@ function QuizPlayer() {
   useEffect(() => {
     if (!authLoading && !user) nav({ to: "/login" });
   }, [user, authLoading, nav]);
-
-  // Quiz page is light-mode only: temporarily disable the app's dark theme here.
-  useEffect(() => {
-    const root = document.documentElement;
-    const wasDark = root.classList.contains("dark");
-    root.classList.remove("dark");
-    root.style.colorScheme = "light";
-    return () => {
-      if (wasDark) {
-        root.classList.add("dark");
-        root.style.colorScheme = "dark";
-      }
-    };
-  }, []);
 
   useEffect(() => {
     (async () => {
@@ -229,14 +176,7 @@ function QuizPlayer() {
         setLoading(false);
         return;
       }
-      const chunks: string[][] = [];
-      for (let i = 0; i < ids.length; i += 60) {
-        chunks.push(ids.slice(i, i + 60));
-      }
-      const qsResults = await Promise.all(
-        chunks.map((chunk) => supabase.from("questions").select("*").in("id", chunk))
-      );
-      const qs = qsResults.flatMap((r) => r.data ?? []);
+      const { data: qs } = await supabase.from("questions").select("*").in("id", ids);
       let ordered = ids.map((id) => qs?.find((q) => q.id === id)).filter(Boolean) as Question[];
 
       const subjIds = Array.from(
@@ -274,7 +214,60 @@ function QuizPlayer() {
           return ids.indexOf(a.id) - ids.indexOf(b.id);
         });
       }
+      // Fetch inline diagrams + option images and embed them as markdown URLs so
+      // RichText renders them alongside the question / option text.
+      try {
+        const admin: any = supabase;
+        const [{ data: diags }, { data: optImgs }] = await Promise.all([
+          admin.from("question_diagrams").select("id,question_id").in("question_id", ids),
+          admin.from("question_option_images").select("question_id,option_index").in("question_id", ids),
+        ]);
+        const diagsByQ = new Map<string, string[]>();
+        for (const d of (diags ?? []) as Array<{ id: string; question_id: string }>) {
+          const arr = diagsByQ.get(d.question_id) ?? [];
+          arr.push(`/api/public/diagram/${d.id}`);
+          diagsByQ.set(d.question_id, arr);
+        }
+        const optsByQ = new Map<string, Set<number>>();
+        for (const oi of (optImgs ?? []) as Array<{ question_id: string; option_index: number }>) {
+          const set = optsByQ.get(oi.question_id) ?? new Set<number>();
+          set.add(oi.option_index);
+          optsByQ.set(oi.question_id, set);
+        }
+        ordered = ordered.map((q) => {
+          const dList = diagsByQ.get(q.id);
+          const oSet = optsByQ.get(q.id);
+          let text = q.text ?? "";
+          if (dList?.length) {
+            // Replace [diagram N] tokens or append if none present.
+            // IMPORTANT: skip tokens already inside an ![...](...) markdown
+            // image (the `!` prefix means the alt text is already embedded).
+            let n = 0;
+            const replaced = text.replace(/(!?)\[diagram\s*(\d+)?\]/gi, (whole, bang: string) => {
+              if (bang === "!") return whole; // already an embedded image, leave it
+              const url = dList[n] ?? dList[dList.length - 1];
+              n++;
+              return `\n\n![diagram](${url})`;
+            });
+            // Only append fallback images if the text has neither [diagram] tokens
+            // nor an already-embedded diagram image.
+            const hasEmbedded = /!\[[^\]]*\]\(\/api\/public\/diagram\//i.test(text);
+            text = n > 0 || hasEmbedded ? replaced : `${text}\n\n${dList.map((u) => `![diagram](${u})`).join("\n\n")}`;
+          }
+          const options = (q.options ?? []).map((o, i) => {
+            if (!oSet?.has(i)) return o;
+            const url = `/api/public/option-image/${q.id}/${i}`;
+            const plain = (o ?? "").trim();
+            const label = plain && plain !== "[image]" ? plain : "";
+            return `${label ? label + "\n\n" : ""}![option](${url})`;
+          });
+          return { ...q, text, options };
+        });
+      } catch (e) {
+        console.warn("[quiz] failed to load question assets", e);
+      }
       setQuestions(ordered);
+
 
       // Preload existing bookmarks + persistent wrong marks for these questions.
       // IMPORTANT: Only chapter-wise practice quizzes resume the previous attempt
@@ -441,14 +434,14 @@ function QuizPlayer() {
   }, [answers, bookmarks, nav, questions, submitted, submitting, testId, user, test, battleMatchId]);
 
   useEffect(() => {
-    if (loading || submitted || !isCbt) return;
+    if (loading || submitted || !isExam) return;
     if (secondsLeft <= 0) {
       submit();
       return;
     }
     const t = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
-  }, [secondsLeft, loading, submitted, isCbt, submit]);
+  }, [secondsLeft, loading, submitted, isExam, submit]);
 
   // ===== Contest anti-cheat =====
   // Disable text copy / selection / context menu on the whole document while
@@ -509,7 +502,7 @@ function QuizPlayer() {
 
   // Leaving the app/tab for more than 10 seconds during a contest auto-submits.
   useEffect(() => {
-    if (!isContest || !isCbt || submitted || contestDone || alreadyAttempted || loading) return;
+    if (!isContest || !isExam || submitted || contestDone || alreadyAttempted || loading) return;
     let timer: ReturnType<typeof setTimeout> | null = null;
     let warned = false;
     const start = () => {
@@ -542,23 +535,13 @@ function QuizPlayer() {
       window.removeEventListener("focus", stop);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [isContest, isCbt, submitted, contestDone, alreadyAttempted, loading, submit]);
+  }, [isContest, isExam, submitted, contestDone, alreadyAttempted, loading, submit]);
 
 
   useEffect(() => {
     paletteRef.current
       ?.querySelector<HTMLButtonElement>(`[data-question-index="${idx}"]`)
       ?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }, [idx]);
-
-  // Track which questions the candidate has visited (NTA CBT "Not Visited" state)
-  useEffect(() => {
-    setVisitedIds((v) => {
-      if (v.has(idx)) return v;
-      const n = new Set(v);
-      n.add(idx);
-      return n;
-    });
   }, [idx]);
 
   const q = questions[idx];
@@ -568,57 +551,46 @@ function QuizPlayer() {
   const mm = String(Math.floor((secondsLeft % 3600) / 60)).padStart(2, "0");
   const ss = String(secondsLeft % 60).padStart(2, "0");
 
-  // ===== NTA CBT helpers =====
-  type CbtStatus = "answered_marked" | "marked" | "answered" | "not_answered" | "not_visited";
-  const cbtStatus = (i: number): CbtStatus => {
-    const qq = questions[i];
-    if (!qq) return "not_visited";
-    const answered = answers[qq.id] !== undefined;
-    const marked = markedForReview.has(qq.id);
-    if (answered && marked) return "answered_marked";
-    if (marked) return "marked";
-    if (answered) return "answered";
-    if (visitedIds.has(i)) return "not_answered";
+  // Track "visited" question IDs (NTA CBT palette needs this).
+  useEffect(() => {
+    if (!q) return;
+    setVisited((prev) => (prev.has(q.id) ? prev : new Set(prev).add(q.id)));
+  }, [q?.id]);
+
+  // NTA-style status resolver for a question id.
+  const cbtStatus = (qid: string): "not_visited" | "not_answered" | "answered" | "marked" | "marked_answered" => {
+    const ans = answers[qid] !== undefined;
+    const mk = marked.has(qid);
+    const vis = visited.has(qid);
+    if (mk && ans) return "marked_answered";
+    if (mk) return "marked";
+    if (ans) return "answered";
+    if (vis) return "not_answered";
     return "not_visited";
   };
-
-  // Contiguous subject groups (questions arrive subject-ordered) for CBT section tabs
-  const subjectGroups = useMemo(() => {
-    const groups: { name: string; indices: number[] }[] = [];
-    questions.forEach((qq, i) => {
-      const name = (qq.subject_id ? subjects[qq.subject_id] : "Other") || "Other";
-      const last = groups[groups.length - 1];
-      if (last && last.name === name) last.indices.push(i);
-      else groups.push({ name, indices: [i] });
-    });
-    return groups;
-  }, [questions, subjects]);
-
-  const activeGroupIndex = subjectGroups.findIndex((g) => g.indices.includes(idx));
-
-  const cbtSaveAndNext = () => setIdx((i) => Math.min(total - 1, i + 1));
-  const cbtClearResponse = () => {
-    if (!q) return;
-    setAnswers((prev) => {
-      const next = { ...prev };
-      delete next[q.id];
-      return next;
-    });
-    setMarkedForReview((m) => {
-      const n = new Set(m);
-      n.delete(q.id);
-      return n;
-    });
+  const cbtSwatch = (st: ReturnType<typeof cbtStatus>) => {
+    switch (st) {
+      case "answered": return "bg-emerald-500 text-white border-emerald-600";
+      case "not_answered": return "bg-rose-500 text-white border-rose-600";
+      case "marked": return "bg-violet-500 text-white border-violet-600";
+      case "marked_answered": return "bg-violet-500 text-white border-violet-600 ring-2 ring-emerald-400";
+      default: return "bg-card text-foreground border-border";
+    }
   };
-  const cbtSaveAndMark = (advance: boolean) => {
+
+  const gotoNext = () => setIdx((i) => Math.min(total - 1, i + 1));
+  const saveAndNext = () => { gotoNext(); };
+  const markForReviewAndNext = () => {
     if (!q) return;
-    setMarkedForReview((m) => {
-      const n = new Set(m);
-      n.add(q.id);
-      return n;
-    });
-    if (advance) setIdx((i) => Math.min(total - 1, i + 1));
+    setMarked((m) => { const n = new Set(m); n.add(q.id); return n; });
+    gotoNext();
   };
+  const clearResponse = () => {
+    if (!q) return;
+    setAnswers((a) => { const n = { ...a }; delete n[q.id]; return n; });
+    setWrongMarks((w) => { const n = new Set(w); n.delete(q.id); return n; });
+  };
+
 
   const setAnswer = (i: number) => {
     if (!q) return;
@@ -680,11 +652,9 @@ function QuizPlayer() {
 
   if (loading || authLoading)
     return (
-      <DrAkzaLoader
-        fullScreen
-        message="Dr. Akza is preparing your quiz..."
-        subMessage="Setting up your questions, timer, and CBT exam environment"
-      />
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
     );
 
   if (!test)
@@ -772,7 +742,9 @@ function QuizPlayer() {
         bookmarks={bookmarks}
         subjects={subjects}
         chapters={chapters}
+        attemptId={attemptId}
       />
+
     );
 
   if (questions.length === 0)
@@ -787,16 +759,6 @@ function QuizPlayer() {
       </div>
     );
 
-  if (!q) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <DrAkzaLoader message="Preparing next question..." />
-      </div>
-    );
-  }
-
-  const safeOptions = Array.isArray(q.options) && q.options.length > 0 ? q.options : ["", "", "", ""];
-
   const sourceLabel = (q.source || test.source || "").toUpperCase().includes("PYQ")
     ? "NEET PYQ"
     : q.source?.toUpperCase() === "NCERT"
@@ -805,308 +767,11 @@ function QuizPlayer() {
   const subjName = q.subject_id ? subjects[q.subject_id] : undefined;
   const chapName = q.chapter_id ? chapters[q.chapter_id] : undefined;
 
-  const cbtSubmitDialog = (
-      <Dialog open={confirmSubmit} onOpenChange={setConfirmSubmit}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-        <div className="bg-primary/10 px-5 py-4 border-b border-primary/20 flex items-center gap-3">
-          <Laptop className="h-5 w-5 text-primary" />
-          <DialogTitle className="text-lg font-bold">NEET CBT — Exam Summary</DialogTitle>
-        </div>
-        <div className="p-5 space-y-4">
-          <div className="overflow-x-auto rounded-xl border border-border">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-muted text-muted-foreground uppercase text-[10px]">
-                <tr>
-                  <th className="p-2 font-bold">Subject</th>
-                  <th className="p-2 text-center font-bold">Total</th>
-                  <th className="p-2 text-center font-bold text-emerald-600">Answered</th>
-                  <th className="p-2 text-center font-bold text-rose-600">Not Ans.</th>
-                  <th className="p-2 text-center font-bold text-purple-600">Marked</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {subjectGroups.map((g) => {
-                  const totalG = g.indices.length;
-                  const ansG = g.indices.filter((i) => answers[questions[i]?.id] !== undefined).length;
-                  const markedG = g.indices.filter((i) => markedForReview.has(questions[i]?.id)).length;
-                  const notAnsG = totalG - ansG;
-                  return (
-                    <tr key={g.name} className="hover:bg-muted/50">
-                      <td className="p-2 font-bold">{g.name}</td>
-                      <td className="p-2 text-center font-semibold">{totalG}</td>
-                      <td className="p-2 text-center font-semibold text-emerald-600">{ansG}</td>
-                      <td className="p-2 text-center font-semibold text-rose-600">{notAnsG}</td>
-                      <td className="p-2 text-center font-semibold text-purple-600">{markedG}</td>
-                    </tr>
-                  );
-                })}
-                <tr className="bg-muted/30 font-bold border-t border-border">
-                  <td className="p-2">Total</td>
-                  <td className="p-2 text-center">{questions.length}</td>
-                  <td className="p-2 text-center text-emerald-600">{Object.keys(answers).length}</td>
-                  <td className="p-2 text-center text-rose-600">{questions.length - Object.keys(answers).length}</td>
-                  <td className="p-2 text-center text-purple-600">{markedForReview.size}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-            {(() => {
-              const total = questions.length;
-              const answered = Object.keys(answers).length;
-              const marked = markedForReview.size;
-              const unanswered = total - answered;
-              return (
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Total Questions:</span><span className="font-bold">{total}</span></div>
-                  <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Answered:</span><span className="font-bold text-emerald-600">{answered}</span></div>
-                  <div className="flex items-center justify-between border-b border-border/60 pb-2"><span className="text-muted-foreground">Unanswered:</span><span className="font-bold text-rose-600">{unanswered}</span></div>
-                  <div className="flex items-center justify-between"><span className="text-muted-foreground">Marked for Review:</span><span className="font-bold text-amber-600">{marked}</span></div>
-                </div>
-              );
-            })()}
-          {(() => {
-            const unanswered = questions.length - Object.keys(answers).length;
-            if (unanswered > 0) return (
-              <div className="rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 px-3 py-2 text-sm text-amber-700 dark:text-amber-300 flex items-center gap-2">
-                <Flag className="h-4 w-4 shrink-0" /> You have {unanswered} unanswered question{unanswered === 1 ? "" : "s"}
-              </div>
-            );
-            return null;
-          })()}
-          <p className="text-center text-sm text-muted-foreground">Are you sure you want to submit your {isContest ? "contest" : "test"}?</p>
-          <div className="space-y-2">
-            <Button variant="secondary" className="w-full h-11" onClick={() => setConfirmSubmit(false)}>Review Answers</Button>
-            <Button className="w-full h-11 bg-gradient-primary" onClick={() => { setConfirmSubmit(false); submit(); }} disabled={submitting}>
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : `Submit ${isContest ? "Contest" : "Test"}`}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-
-  const cbtCandidate =
-    (user?.user_metadata as { full_name?: string; name?: string } | undefined)?.full_name ||
-    (user?.user_metadata as { name?: string } | undefined)?.name ||
-    user?.email?.split("@")[0] ||
-    "Candidate";
-  const cbtSelected = cbtPick[q.id] !== undefined ? cbtPick[q.id] : answers[q.id];
-  const cbtCommit = () => {
-    const v = cbtPick[q.id];
-    if (v === undefined) return answers[q.id] !== undefined;
-    setAnswers((prev) => ({ ...prev, [q.id]: v }));
-    setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; });
-    return true;
-  };
-  const cbtGo = (i: number) => {
-    setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; });
-    setIdx(Math.max(0, Math.min(total - 1, i)));
-  };
-  const cbtCounts = questions.reduce(
-    (acc, _qq, i) => { acc[cbtStatus(i)]++; return acc; },
-    { not_visited: 0, not_answered: 0, answered: 0, marked: 0, answered_marked: 0 } as Record<CbtStatus, number>,
-  );
-  const cbtTile: Record<CbtStatus, string> = {
-    not_visited: "bg-slate-100 text-slate-700 border-slate-300 rounded-md",
-    not_answered: "bg-gradient-to-b from-amber-500 to-orange-600 text-white border-orange-600 rounded-b-xl rounded-t-sm shadow-sm",
-    answered: "bg-gradient-to-br from-emerald-500 to-green-600 text-white border-emerald-600 rounded-lg shadow-sm",
-    marked: "bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-700 rounded-full shadow-sm",
-    answered_marked: "bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-700 rounded-full shadow-sm",
-  };
-  const cbtBtn = "h-10 rounded-[3px] border px-4 text-sm font-bold uppercase tracking-wide shadow-sm transition active:translate-y-px disabled:opacity-50";
-
-  if (isCbt)
-    return (
-      <div className="light min-h-screen bg-white text-slate-800" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
-        {isContest && !hasAckedAntiCheat("contest", testId) && (
-          <AntiCheatGate mode="contest" scopeId={testId} onAccept={() => {}} onCancel={() => nav({ to: "/contests" })} />
-        )}
-        {/* Candidate info */}
-        <div className="flex items-start gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-8">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-500 sm:h-16 sm:w-16">
-            <User className="h-9 w-9" />
-          </div>
-          <table className="text-sm sm:text-[15px]">
-            <tbody>
-              <tr><td className="pr-4 text-slate-600">Candidate Name</td><td className="font-semibold text-[#e8590c]">: {cbtCandidate}</td></tr>
-              <tr><td className="pr-4 text-slate-600">Exam Name</td><td className="font-semibold text-[#e8590c]">: {test.title} ({total} Qs · {test.duration_min}m)</td></tr>
-              <tr><td className="pr-4 text-slate-600">Subject</td><td className="font-semibold text-[#e8590c]">: {subjectGroups.length > 1 ? "Mixed" : subjName || "Mixed"}</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:p-5 lg:flex-row">
-          {/* Left: question area */}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between bg-[#e8590c] px-4 py-2.5 text-white">
-              <span className="text-lg font-bold">Question {idx + 1}:</span>
-              <span className="flex items-center gap-2 text-sm font-semibold">
-                Time:
-                <span className="rounded-[3px] bg-white px-2.5 py-1 font-mono text-sm font-bold tabular-nums text-[#c2410c]">{hh}:{mm}:{ss}</span>
-              </span>
-            </div>
-            <div className="border border-t-0 border-slate-300 bg-white">
-              <div className="px-5 py-4">
-                <div className="text-[15px] leading-relaxed sm:text-base"><RichText>{q.text}</RichText></div>
-                {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
-                  <img
-                    src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
-                    alt="Question diagram"
-                    className="my-3 max-h-80 w-auto object-contain"
-                    loading="lazy"
-                    onError={(e) => handleImageFallback(e.currentTarget)}
-                  />
-                )}
-                <div className="mt-4 space-y-3">
-                  {safeOptions.map((opt, i) => {
-                    const optImg = resolveOptionImageUrl(q, i, opt);
-                    return (
-                      <div key={i} className="flex gap-3 text-[15px] items-center">
-                        <span className="shrink-0 font-bold">({i + 1})</span>
-                        <div className="min-w-0 flex-1">
-                          {optImg ? (
-                            <img
-                              src={optImg}
-                              alt={`Option ${i + 1}`}
-                              className="max-h-36 max-w-full rounded border border-slate-200 bg-white p-1 object-contain"
-                              loading="lazy"
-                              onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
-                            />
-                          ) : (
-                            <RichText>{opt || `Option ${i + 1}`}</RichText>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="grid grid-cols-4 border-t border-slate-200 px-5 py-3">
-                {safeOptions.map((_, i) => (
-                  <label key={i} className="flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="radio"
-                      name={`cbt-${q.id}`}
-                      className="h-4 w-4 accent-[#1c7ed6]"
-                      checked={cbtSelected === i}
-                      onChange={() => setCbtPick((p) => ({ ...p, [q.id]: i }))}
-                    />
-                    {i + 1} )
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button className={cn(cbtBtn, "border-[#237a35] bg-[#2f9e44] text-white hover:bg-[#2b8a3e]")}
-                onClick={() => { cbtCommit(); setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; }); cbtGo(idx + 1); }}>
-                Save &amp; Next
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; }); cbtClearResponse(); }}>
-                Clear
-              </button>
-              <button className={cn(cbtBtn, "inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { if (cbtCommit()) toast.success("Response saved"); else toast("Select an option first"); }}>
-                <Bookmark className="h-4 w-4" /> Save
-              </button>
-              <button className={cn(cbtBtn, "border-[#e0a800] bg-[#fab005] text-white hover:bg-[#f59f00]")}
-                onClick={() => { if (!cbtCommit()) { toast("Select an option to Save & Mark"); return; } cbtSaveAndMark(false); }}>
-                Save &amp; Mark
-              </button>
-              <button className={cn(cbtBtn, "border-[#1864ab] bg-[#1c7ed6] text-white hover:bg-[#1971c2]")}
-                onClick={() => { cbtSaveAndMark(false); cbtGo(idx + 1); }}>
-                Mark &amp; Next
-              </button>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === 0} onClick={() => cbtGo(idx - 1)}>
-                &lt;&lt; Back
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === total - 1} onClick={() => cbtGo(idx + 1)}>
-                Next &gt;&gt;
-              </button>
-              <button className={cn(cbtBtn, "ml-auto border-[#237a35] bg-[#2f9e44] px-7 text-white hover:bg-[#2b8a3e]")} disabled={submitting} onClick={() => setConfirmSubmit(true)}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
-              </button>
-            </div>
-          </div>
-
-          {/* Right: status + palette */}
-          <aside className="w-full shrink-0 space-y-3 lg:w-[360px]">
-            <div className="space-y-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-sm">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Question Status Legend</div>
-              {([
-                ["answered", "Answered (Done)", "✓"],
-                ["marked", "Marked for Review", "★"],
-                ["answered_marked", "Answered & Marked", "✓"],
-                ["not_answered", "Not Answered", "—"],
-                ["not_visited", "Not Visited", ""],
-              ] as [CbtStatus, string, string][]).map(([k, label, symbol]) => (
-                <div key={k} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className={cn("relative flex h-6 w-6 items-center justify-center border text-[11px] font-black", cbtTile[k])}>
-                      {symbol ? symbol : ""}
-                      {k === "answered" && <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full border border-white bg-emerald-500 shadow-sm" />}
-                      {k === "marked" && <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full border border-white bg-purple-500 shadow-sm" />}
-                      {k === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5 items-center justify-center rounded-full border border-white bg-emerald-500 text-[8px] text-white">✓</span>}
-                    </span>
-                    <span className="text-slate-700 font-medium text-xs">{label}</span>
-                  </div>
-                  <span className="font-mono text-xs font-bold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">{cbtCounts[k]}</span>
-                </div>
-              ))}
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Question Palette</span>
-                <span className="text-[11px] font-semibold text-slate-500">{total} Questions</span>
-              </div>
-              <div className="grid max-h-[420px] grid-cols-6 gap-2 overflow-y-auto pr-1">
-                {questions.map((qq, i) => {
-                  const s = cbtStatus(i);
-                  return (
-                    <button
-                      key={qq.id}
-                      onClick={() => cbtGo(i)}
-                      aria-label={`Question ${i + 1}`}
-                      className={cn(
-                        "relative flex h-10 w-full items-center justify-center border text-xs font-bold transition-transform active:scale-95",
-                        cbtTile[s],
-                        i === idx && "ring-2 ring-primary ring-offset-2 ring-offset-white shadow-md z-10",
-                      )}
-                    >
-                      {i + 1}
-                      {s === "answered" && (
-                        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white bg-emerald-600 text-[8px] font-black text-white shadow-sm">
-                          ✓
-                        </span>
-                      )}
-                      {s === "marked" && (
-                        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white bg-purple-600 text-[8px] font-black text-white shadow-sm">
-                          ★
-                        </span>
-                      )}
-                      {s === "answered_marked" && (
-                        <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white bg-emerald-500 text-[8px] font-black text-white shadow-sm">
-                          ✓
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <Link to="/dashboard" className="block text-right text-xs font-medium text-slate-500 hover:text-slate-800 hover:underline">Exit test</Link>
-          </aside>
-        </div>
-        {cbtSubmitDialog}
-      </div>
-    );
-
   return (
-    <div className={cn("flex min-h-screen flex-col", isQuiz ? "bg-slate-50 text-slate-900 light" : "bg-background")}>
+    <div className={cn("relative flex min-h-screen flex-col bg-background", isCbt && "lg:pr-[340px]")}>
+
+
+
       {isContest && !submitted && !contestDone && !alreadyAttempted && !hasAckedAntiCheat("contest", testId) && (
         <AntiCheatGate
           mode="contest"
@@ -1117,8 +782,8 @@ function QuizPlayer() {
       )}
 
       {/* Top bar */}
-      <header className={cn("sticky top-0 z-40 border-b", isQuiz ? "bg-white border-blue-100/80 shadow-xs" : "border-border bg-card")}>
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2.5">
+      <header className="sticky top-0 z-40 border-b border-border bg-card">
+        <div className="mx-auto grid max-w-3xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-2.5 sm:flex sm:justify-between">
           <div className="min-w-0 flex-1">
             {(() => {
               const sname = (subjName || "").toLowerCase();
@@ -1134,8 +799,10 @@ function QuizPlayer() {
                   <span className={cn("min-w-0 truncate rounded-md border px-2 py-0.5 text-xs font-bold", boxColor)}>
                     {test.title}
                   </span>
-
-                  {isCbt && (
+                  <span className="shrink-0 rounded-md border border-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 dark:border-emerald-500/40">
+                    +{test.marks_correct}/{test.marks_wrong}
+                  </span>
+                  {isExam && (
                     <span className="shrink-0 rounded-md border border-rose-300 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-rose-700 dark:text-rose-300 dark:border-rose-500/40">
                       {hh}:{mm}:{ss}
                     </span>
@@ -1143,23 +810,28 @@ function QuizPlayer() {
                 </div>
               );
             })()}
-            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-              <div className="flex items-center gap-1 font-semibold text-foreground/90">
-                <User className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                <span className="truncate max-w-[140px] sm:max-w-[200px]">
-                  {(user?.user_metadata as { full_name?: string; name?: string } | undefined)?.full_name ||
-                    (user?.user_metadata as { name?: string } | undefined)?.name ||
-                    user?.email?.split("@")[0] ||
-                    "Student"}
-                </span>
-              </div>
-              <span className="text-muted-foreground/50">•</span>
-              <span>Q {idx + 1} / {total}</span>
+            <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <Flag className="h-3 w-3 text-emerald-600" />
+              <span className="font-semibold">NEET</span>
+              <span className="ml-2">
+                Q {idx + 1} / {total}
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-1">
-            {isMock && (
-              <Sheet>
+            {!isCbt && (
+              <>
+                <Button variant="outline" size="icon" onClick={toggleBookmark}
+                  aria-label="Bookmark for review" title="Bookmark for review" aria-pressed={bookmarks.has(q.id)}
+                  className={cn("shrink-0", bookmarks.has(q.id) && "border-primary bg-primary/10 text-primary")}>
+                  <Bookmark className={cn("h-5 w-5", bookmarks.has(q.id) && "fill-current")} />
+                </Button>
+                <Button size="sm" disabled={submitting} onClick={() => setConfirmSubmit(true)}>
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
+                </Button>
+              </>
+            )}
+            <Sheet>
                 <SheetTrigger asChild>
                   <button
                     aria-label="Grid view"
@@ -1168,14 +840,26 @@ function QuizPlayer() {
                     <LayoutGrid className="h-5 w-5" />
                   </button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+                <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-[50vw] sm:w-[50vw]">
                   <SheetHeader>
                     <SheetTitle>Question Grid</SheetTitle>
                   </SheetHeader>
                   <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                    <Legend swatch="bg-emerald-500/30" label="Attempted" />
-                    <Legend swatch="bg-blue-500/30" label="Marked" />
-                    <Legend swatch="bg-card border" label="Not Attempted" />
+                    {isCbt ? (
+                      <>
+                        <Legend swatch="bg-emerald-500" label="Answered" />
+                        <Legend swatch="bg-rose-500" label="Not Answered" />
+                        <Legend swatch="bg-violet-500" label="Marked" />
+                        <Legend swatch="bg-violet-500 ring-2 ring-emerald-400" label="Marked & Answered" />
+                        <Legend swatch="bg-card border" label="Not Visited" />
+                      </>
+                    ) : (
+                      <>
+                        <Legend swatch="bg-emerald-500/30" label="Attempted" />
+                        <Legend swatch="bg-blue-500/30" label="Marked" />
+                        <Legend swatch="bg-card border" label="Not Attempted" />
+                      </>
+                    )}
                   </div>
                   <div className="mt-4 space-y-5">
                     {(() => {
@@ -1203,17 +887,20 @@ function QuizPlayer() {
                               {items.map(({ idx: i, q: qq }) => {
                                 const isAns = answers[qq.id] !== undefined;
                                 const isBm = bookmarks.has(qq.id);
+                                const cbt = isCbt ? cbtStatus(qq.id) : null;
                                 return (
                                   <button
                                     key={qq.id}
                                     onClick={() => setIdx(i)}
                                     className={cn(
                                       "flex h-9 w-9 items-center justify-center rounded-md border text-xs font-semibold",
-                                      isAns
-                                        ? "bg-emerald-500/20 border-emerald-300"
-                                        : isBm
-                                          ? "bg-blue-500/15 border-blue-300"
-                                          : "bg-card border-border",
+                                      cbt
+                                        ? cbtSwatch(cbt)
+                                        : isAns
+                                          ? "bg-emerald-500/20 border-emerald-300"
+                                          : isBm
+                                            ? "bg-blue-500/15 border-blue-300"
+                                            : "bg-card border-border",
                                     )}
                                   >
                                     {i + 1}
@@ -1228,7 +915,6 @@ function QuizPlayer() {
                   </div>
                 </SheetContent>
               </Sheet>
-            )}
             <Link
               to="/dashboard"
               aria-label="Exit"
@@ -1240,13 +926,13 @@ function QuizPlayer() {
         </div>
         {/* progress bar */}
         <div className="h-1 w-full bg-secondary">
-          <div className={cn("h-full transition-all", isQuiz ? "bg-blue-600" : "bg-emerald-500")} style={{ width: `${progress}%` }} />
+          <div className="h-full bg-emerald-500 transition-all" style={{ width: `${progress}%` }} />
         </div>
         {/* Question palette */}
         <div className="mx-auto max-w-3xl">
           <div
             ref={paletteRef}
-            className="flex snap-x flex-nowrap gap-1.5 overflow-x-auto overflow-y-hidden px-4 py-1.5 [scrollbar-width:thin]"
+            className="flex snap-x flex-nowrap gap-1.5 overflow-x-auto overflow-y-hidden px-4 py-2 [scrollbar-width:thin]"
           >
             {questions.map((qq, i) => {
               const isAns = answers[qq.id] !== undefined;
@@ -1257,6 +943,7 @@ function QuizPlayer() {
                 (wrongMarks.has(qq.id) ||
                   (isAns && answers[qq.id] !== qq.correct_index));
               const active = i === idx;
+              const cbt = isCbt ? cbtStatus(qq.id) : null;
               return (
                 <button
                   key={qq.id}
@@ -1264,14 +951,16 @@ function QuizPlayer() {
                   onClick={() => setIdx(i)}
                   className={cn(
                     "relative flex h-8 w-8 shrink-0 snap-start items-center justify-center rounded-md border text-xs font-semibold transition",
-                    active ? "border-primary ring-2 ring-primary/30" : "border-border",
-                    isWrong
-                      ? "bg-rose-500/10 border-rose-300/60"
-                      : isCorrect
-                        ? "bg-emerald-500/10 border-emerald-300/60"
-                        : isBm
-                          ? "bg-blue-500/10 border-blue-300"
-                          : "bg-card",
+                    active ? "ring-2 ring-primary/40" : "",
+                    cbt
+                      ? cbtSwatch(cbt)
+                      : isWrong
+                        ? "bg-rose-500/10 border-rose-300/60"
+                        : isCorrect
+                          ? "bg-emerald-500/10 border-emerald-300/60"
+                          : isBm
+                            ? "bg-blue-500/10 border-blue-300"
+                            : "bg-card border-border",
                   )}
                   aria-label={`Question ${i + 1}`}
                 >
@@ -1284,13 +973,13 @@ function QuizPlayer() {
       </header>
 
       {/* Question */}
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-4">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-5">
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold", isQuiz ? "bg-blue-600 text-white" : "bg-foreground text-background")}>
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground text-xs font-bold text-background">
             {idx + 1}
           </span>
           <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
-            Type: {q.qtype || "MCQ"}
+            Type: single
           </span>
           <div className="ml-auto">
             <ReportQuestionButton questionId={q.id} />
@@ -1301,54 +990,24 @@ function QuizPlayer() {
           <RichText>{q.text}</RichText>
         </div>
 
-        {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
-          <div className="my-3 flex flex-col items-center justify-center overflow-hidden rounded-xl border border-border bg-card p-2 text-center shadow-xs">
-            <img
-              src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
-              alt="Question diagram"
-              className="max-h-80 w-auto rounded-lg object-contain"
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.classList.add("hidden");
-                const fallback = e.currentTarget.parentElement?.querySelector("[data-image-fallback]");
-                fallback?.classList.remove("hidden");
-              }}
-            />
-            <span data-image-fallback className="hidden p-3 text-xs text-muted-foreground">Question image could not be loaded.</span>
-          </div>
-        )}
-
         <div className="mt-4 space-y-2">
-          {safeOptions.map((opt, i) => {
+          {q.options.map((opt, i) => {
             const selected = answers[q.id] === i;
             const locked = (isChapterPractice || isQuiz) && answers[q.id] !== undefined;
             const isCorrectOpt = locked && i === q.correct_index;
             const isWrongPick = locked && selected && i !== q.correct_index;
-            const optImg = resolveOptionImageUrl(q, i, opt);
             return (
               <button
                 key={i}
                 onClick={() => !locked && setAnswer(i)}
                 disabled={locked}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-[15px] transition",
-                  isQuiz
-                    ? cn(
-                        "bg-white border-blue-100/90 text-slate-800 shadow-xs",
-                        !locked && "hover:border-blue-400 hover:bg-blue-50/40",
-                        selected && !locked && "border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/30",
-                        isCorrectOpt && "border-emerald-500 bg-emerald-50 text-emerald-950 font-medium",
-                        isWrongPick && "border-rose-400 bg-rose-50 text-rose-950",
-                        locked && !isCorrectOpt && !isWrongPick && "border-slate-200 opacity-80"
-                      )
-                    : cn(
-                        "bg-card",
-                        !locked && "hover:border-primary/50",
-                        selected && !locked && "border-primary ring-1 ring-primary/30",
-                        isCorrectOpt && "border-emerald-400/60 bg-emerald-500/5",
-                        isWrongPick && "border-rose-400/60 bg-rose-500/5",
-                        locked && !isCorrectOpt && !isWrongPick && "border-border opacity-90"
-                      )
+                  "flex w-full items-center gap-3 rounded-lg border bg-card p-3.5 text-left text-base transition",
+                  !locked && "hover:border-primary/50",
+                  selected && !locked && "border-primary ring-1 ring-primary/30",
+                  isCorrectOpt && "border-emerald-400/60 bg-emerald-500/5",
+                  isWrongPick && "border-rose-400/60 bg-rose-500/5",
+                  locked && !isCorrectOpt && !isWrongPick && "border-border opacity-90",
                 )}
               >
                 <span
@@ -1358,40 +1017,25 @@ function QuizPlayer() {
                       ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
                       : isWrongPick
                         ? "bg-rose-500/20 text-rose-700 dark:text-rose-300"
-                        : isQuiz
-                          ? "bg-blue-50 text-blue-700 border border-blue-200/60"
-                          : "bg-secondary text-foreground",
+                        : "bg-secondary text-foreground",
                   )}
                 >
                   {i + 1}
                 </span>
                 <span className="h-6 w-px bg-border" />
                 <span className="flex-1">
-                  {optImg ? (
-                    <div className="my-1 flex items-center">
-                      <img
-                        src={optImg}
-                        alt={`Option ${i + 1}`}
-                        className="max-h-40 max-w-full rounded-md object-contain bg-white p-1"
-                        loading="lazy"
-                        onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
-                      />
-                      {opt && opt.trim() && <span className="ml-2"><RichText>{opt}</RichText></span>}
-                    </div>
-                  ) : (
-                    <RichText>{opt || `Option ${i + 1}`}</RichText>
-                  )}
+                  <RichText>{opt}</RichText>
                 </span>
                 <span
                   className={cn(
                     "h-5 w-5 shrink-0 rounded-full border-2",
                     isCorrectOpt
-                      ? "border-emerald-500 bg-emerald-500"
+                      ? "border-emerald-400/70 bg-emerald-400/40"
                       : isWrongPick
-                        ? "border-rose-400 bg-rose-400"
+                        ? "border-rose-400/70 bg-rose-400/40"
                         : selected
-                          ? (isQuiz ? "border-blue-600 bg-blue-600" : "border-primary bg-primary")
-                          : (isQuiz ? "border-blue-200" : "border-border"),
+                          ? "border-primary bg-primary"
+                          : "border-border",
                   )}
                 />
               </button>
@@ -1451,25 +1095,6 @@ function QuizPlayer() {
             {q.explanation ? (
               <div className="mt-3 text-sm leading-relaxed">
                 <RichText>{q.explanation}</RichText>
-                {resolveImageUrl(q.explanation_image_url) && (
-                  <div
-                    className="my-3 flex justify-center overflow-hidden rounded-xl border border-border bg-card p-2 shadow-xs"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLElement).style.display = "none";
-                    }}
-                  >
-                    <img
-                      src={resolveImageUrl(q.explanation_image_url)!}
-                      alt="Solution Diagram"
-                      className="max-h-80 w-auto rounded-lg object-contain"
-                      loading="lazy"
-                      onError={(e) => {
-                        const frame = (e.currentTarget as HTMLElement).parentElement;
-                        if (frame) frame.style.display = "none";
-                      }}
-                    />
-                  </div>
-                )}
               </div>
             ) : (
               <div className="mt-3 text-xs text-muted-foreground">No explanation provided.</div>
@@ -1479,407 +1104,80 @@ function QuizPlayer() {
       </main>
 
       {/* Bottom action */}
-      <footer className={cn("sticky bottom-0 border-t", isQuiz ? "bg-white border-blue-100/80 shadow-md" : "border-border bg-card")}>
-        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-2.5">
+      <footer className="sticky bottom-0 border-t border-border bg-card">
+        {isCbt ? (
+          <div className="mx-auto max-w-3xl px-3 py-2.5">
+            {/* NTA-style palette legend + counts */}
+            <div className="mb-2 grid grid-cols-5 gap-1 text-[10px]">
+              {([
+                ["answered","Answered","bg-emerald-500"],
+                ["not_answered","Not Answered","bg-rose-500"],
+                ["not_visited","Not Visited","bg-card border"],
+                ["marked","Marked","bg-violet-500"],
+                ["marked_answered","Marked & Answered","bg-violet-500 ring-2 ring-emerald-400"],
+              ] as const).map(([k,label,cls]) => {
+                const n = questions.filter((qq) => cbtStatus(qq.id) === k).length;
+                return (
+                  <div key={k} className="flex items-center gap-1 rounded border border-border bg-secondary/40 px-1 py-1">
+                    <span className={cn("inline-block h-3 w-3 shrink-0 rounded-sm", cls)} />
+                    <span className="truncate">{label}</span>
+                    <span className="ml-auto font-bold tabular-nums">{n}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMarked((m) => { const n = new Set(m); if (n.has(q.id)) n.delete(q.id); else n.add(q.id); return n; })}
+                className={cn("h-10", marked.has(q.id) && "border-violet-500 bg-violet-500/10 text-violet-700")}
+              >
+                {marked.has(q.id) ? "Unmark" : "Mark for Review & Next"}
+              </Button>
+              <Button variant="outline" size="sm" className="h-10" onClick={clearResponse}>
+                Clear Response
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-10"
+                disabled={idx === 0}
+                onClick={() => setIdx((i) => Math.max(0, i - 1))}
+              >
+                Previous
+              </Button>
+              <div className="ml-auto flex gap-2">
+                {idx < total - 1 ? (
+                  <Button className="h-10 bg-emerald-600 hover:bg-emerald-700" onClick={saveAndNext}>
+                    Save &amp; Next
+                  </Button>
+                ) : (
+                  <Button
+                    className="h-10 bg-emerald-600 hover:bg-emerald-700"
+                    onClick={() => setConfirmSubmit(true)}
+                    disabled={submitting}
+                  >
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Test"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-3">
           <Button
             variant="outline"
             size="icon"
-            onClick={toggleBookmark}
-            className={cn(
-              "h-11 w-11 shrink-0",
-              bookmarks.has(q.id) && "border-blue-500 bg-blue-500/10 text-blue-600",
-            )}
-            aria-label="Bookmark for review"
-          >
-            <Bookmark className={cn("h-5 w-5", bookmarks.has(q.id) && "fill-current")} />
-          </Button>
-          {/* < (Previous) */}
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={idx === 0}
-            onClick={() => setIdx((i) => Math.max(0, i - 1))}
-            className="h-11 w-12 shrink-0 font-bold text-base"
+            className="h-11 w-11"
             aria-label="Previous question"
             title="Previous question"
+            disabled={idx === 0}
+            onClick={() => setIdx((i) => Math.max(0, i - 1))}
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
+          <Button size="icon" className="h-11 w-11" aria-label="Next question" title="Next question"
+            disabled={idx === total - 1} onClick={() => setIdx((i) => Math.min(tot
 
-          {/* > (Next) */}
-          <Button
-            variant={idx < total - 1 ? "outline" : "ghost"}
-            size="icon"
-            disabled={idx === total - 1}
-            onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
-            className={cn(
-              "h-11 w-12 shrink-0 font-bold text-base",
-              isQuiz && idx < total - 1 && "border-blue-200 text-blue-700 hover:bg-blue-50"
-            )}
-            aria-label="Next question"
-            title="Next question"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
-
-          {/* Submit */}
-          <Button
-            className={cn(
-              "h-11 flex-1 font-bold tracking-wide shadow-xs",
-              isQuiz
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                : "bg-emerald-600 hover:bg-emerald-700 text-white"
-            )}
-            onClick={() => {
-              if (isChapterPractice || isQuiz) {
-                submit();
-              } else {
-                setConfirmSubmit(true);
-              }
-            }}
-            disabled={submitting}
-          >
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
-          </Button>
-        </div>
-      </footer>
-
-      {cbtSubmitDialog}
-    </div>
-  );
-}
-
-
-function PalettePanelContent({
-  user,
-  questions,
-  answers,
-  markedForReview,
-  visitedIds,
-  cbtStatus,
-  idx,
-  setIdx,
-  setConfirmSubmit,
-  submitting,
-}: {
-  user: any;
-  questions: Question[];
-  answers: Record<string, number>;
-  markedForReview: Set<string>;
-  visitedIds: Set<number>;
-  cbtStatus: (i: number) => "answered_marked" | "marked" | "answered" | "not_answered" | "not_visited";
-  idx: number;
-  setIdx: (fn: (i: number) => number | number) => void;
-  setConfirmSubmit: (b: boolean) => void;
-  submitting: boolean;
-}) {
-  let countAnswered = 0;
-  let countNotAnswered = 0;
-  let countNotVisited = 0;
-  let countMarked = 0;
-  let countAnsweredMarked = 0;
-
-  for (let i = 0; i < questions.length; i++) {
-    const s = cbtStatus(i);
-    if (s === "answered") countAnswered++;
-    else if (s === "not_answered") countNotAnswered++;
-    else if (s === "marked") countMarked++;
-    else if (s === "answered_marked") countAnsweredMarked++;
-    else countNotVisited++;
-  }
-
-  return (
-    <div className="flex flex-col h-full justify-between space-y-4">
-      <div className="space-y-4">
-        {/* Candidate Profile Box */}
-        <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-secondary/30 p-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
-            <User className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-bold truncate">{user?.email?.split("@")[0] ?? "Candidate"}</div>
-            <div className="text-[10px] text-muted-foreground uppercase font-mono">NEET Candidate</div>
-          </div>
-        </div>
-
-        {/* Official NTA 5-Color Status Legend */}
-        <div className="rounded-xl border border-border/70 bg-card p-3 space-y-2">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Legend</div>
-          <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-600 text-[10px] font-bold text-white shrink-0">
-                {countAnswered}
-              </span>
-              <span className="text-muted-foreground truncate">Answered</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded bg-rose-500 text-[10px] font-bold text-white shrink-0">
-                {countNotAnswered}
-              </span>
-              <span className="text-muted-foreground truncate">Not Answered</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded bg-slate-200 dark:bg-slate-700 text-[10px] font-bold text-foreground shrink-0 border border-border">
-                {countNotVisited}
-              </span>
-              <span className="text-muted-foreground truncate">Not Visited</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0">
-                {countMarked}
-              </span>
-              <span className="text-muted-foreground truncate">Marked for Review</span>
-            </div>
-            <div className="flex items-center gap-1.5 col-span-2">
-              <span className="relative flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white shrink-0 after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white">
-                {countAnsweredMarked}
-              </span>
-              <span className="text-muted-foreground truncate text-[10px]">Answered & Marked (Evaluated)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Numbered Palette Grid */}
-        <div>
-          <div className="mb-2 text-xs font-bold text-foreground">Questions ({questions.length})</div>
-          <div className="grid grid-cols-5 gap-1.5 max-h-[300px] overflow-y-auto pr-1">
-            {questions.map((qq, i) => {
-              const status = cbtStatus(i);
-              const isActive = i === idx;
-              let bg = "bg-slate-200 dark:bg-slate-700 text-foreground border-border";
-              let shape = "rounded";
-
-              if (status === "answered") {
-                bg = "bg-emerald-600 text-white border-emerald-700";
-              } else if (status === "not_answered") {
-                bg = "bg-rose-500 text-white border-rose-600";
-              } else if (status === "marked") {
-                bg = "bg-purple-600 text-white border-purple-700";
-                shape = "rounded-full";
-              } else if (status === "answered_marked") {
-                bg = "bg-purple-600 text-white border-purple-700";
-                shape = "rounded-full relative after:absolute after:bottom-0 after:right-0 after:h-2 after:w-2 after:bg-emerald-400 after:rounded-full after:border after:border-white";
-              }
-
-              return (
-                <button
-                  key={qq.id}
-                  type="button"
-                  onClick={() => setIdx(() => i)}
-                  className={cn(
-                    "flex h-9 w-9 items-center justify-center text-xs font-bold transition border cursor-pointer",
-                    shape,
-                    bg,
-                    isActive && "ring-2 ring-primary ring-offset-1"
-                  )}
-                >
-                  <span>{i + 1}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Prominent Submit Test Button */}
-      <div className="pt-3 border-t border-border">
-        <Button
-          type="button"
-          onClick={() => setConfirmSubmit(true)}
-          disabled={submitting}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11"
-        >
-          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Test"}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-
-function ResultsView({
-  test,
-  result,
-  questions,
-  answers,
-  bookmarks,
-  subjects,
-  chapters,
-}: {
-  test: Test;
-  result: { score: number; correct: number; wrong: number; unattempted: number };
-  questions: Question[];
-  answers: Record<string, number>;
-  bookmarks: Set<string>;
-  subjects: Lookup;
-  chapters: Lookup;
-}) {
-  const max = questions.reduce((s, q) => s + q.marks_correct, 0);
-  const pct = Math.max(0, Math.round((result.score / Math.max(1, max)) * 100));
-  return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-4">
-          <GraduationCap className="h-5 w-5 text-primary" />
-          <span className="font-bold">Result · {test.title}</span>
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-8">
-        <Card className="overflow-hidden shadow-elegant">
-          <div className="bg-gradient-primary p-8 text-center text-primary-foreground">
-            <CheckCircle2 className="mx-auto h-10 w-10" />
-            <div className="mt-2 text-sm uppercase tracking-widest opacity-90">Your score</div>
-            <div className="mt-1 text-5xl font-extrabold">
-              {result.score}
-              <span className="text-2xl opacity-80"> / {max}</span>
-            </div>
-            <div className="mt-1 text-sm opacity-90">{pct}%</div>
-          </div>
-          <CardContent className="grid grid-cols-3 gap-3 p-6">
-            <Stat label="Correct" value={result.correct} color="text-emerald-600" />
-            <Stat label="Wrong" value={result.wrong} color="text-rose-600" />
-            <Stat label="Skipped" value={result.unattempted} color="text-muted-foreground" />
-          </CardContent>
-        </Card>
-
-        {/* Palette legend */}
-        <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <Legend swatch="bg-emerald-500/30" label="Correct" />
-          <Legend swatch="bg-rose-500/30" label="Wrong" />
-          <Legend swatch="bg-blue-500/30" label="Marked for review" />
-          <span className="inline-flex items-center gap-1.5">
-            <span className="relative inline-block h-3 w-6 overflow-hidden rounded">
-              <span className="absolute inset-y-0 left-0 w-1/2 bg-blue-500/40" />
-              <span className="absolute inset-y-0 right-0 w-1/2 bg-emerald-500/40" />
-            </span>{" "}
-            Correct + review
-          </span>
-        </div>
-
-        {/* Result palette */}
-        <div className="mt-3 flex flex-wrap gap-2">
-          {questions.map((q, i) => {
-            const u = answers[q.id];
-            const ok = u === q.correct_index;
-            const wrong = u !== undefined && !ok;
-            const bm = bookmarks.has(q.id);
-            return (
-              <span
-                key={q.id}
-                className={cn(
-                  "relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-md border text-xs font-semibold",
-                  "border-border bg-card",
-                )}
-              >
-                {ok && bm && (
-                  <>
-                    <span className="absolute inset-y-0 left-0 w-1/2 bg-blue-500/30" />
-                    <span className="absolute inset-y-0 right-0 w-1/2 bg-emerald-500/40" />
-                  </>
-                )}
-                {ok && !bm && <span className="absolute inset-0 bg-emerald-500/30" />}
-                {wrong && <span className="absolute inset-0 bg-rose-500/30" />}
-                {u === undefined && bm && <span className="absolute inset-0 bg-blue-500/25" />}
-                <span className="relative">{i + 1}</span>
-              </span>
-            );
-          })}
-        </div>
-
-        <h2 className="mt-8 mb-3 text-lg font-bold">Solutions</h2>
-        <div className="space-y-3">
-          {questions.map((q, i) => {
-            const u = answers[q.id];
-            const ok = u === q.correct_index;
-            const subjName = q.subject_id ? subjects[q.subject_id] : undefined;
-            const chapName = q.chapter_id ? chapters[q.chapter_id] : undefined;
-            return (
-              <Card key={q.id}>
-                <CardContent className="p-5">
-                  <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <Badge variant="secondary">Q{i + 1}</Badge>
-                    <Badge
-                      className={cn(
-                        ok
-                          ? "bg-emerald-600"
-                          : u === undefined
-                            ? "bg-muted text-muted-foreground"
-                            : "bg-rose-600",
-                      )}
-                    >
-                      {ok ? "Correct" : u === undefined ? "Skipped" : "Wrong"}
-                    </Badge>
-                    <span
-                      className={cn(
-                        "rounded-full border px-2.5 py-0.5 font-semibold capitalize",
-                        diffClass(q.difficulty),
-                      )}
-                    >
-                      {q.difficulty}
-                    </span>
-                    {subjName && (
-                      <span className="rounded-full bg-secondary px-2.5 py-0.5 text-muted-foreground">
-                        {subjName}
-                      </span>
-                    )}
-                    {chapName && (
-                      <span className="rounded-full bg-secondary px-2.5 py-0.5 text-muted-foreground">
-                        {chapName}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2 text-sm">
-                    <RichText>{q.text}</RichText>
-                  </div>
-                  <div className="mt-2 grid gap-1.5 text-sm">
-                    {q.options.map((o, j) => (
-                      <div
-                        key={j}
-                        className={cn(
-                          "rounded-lg border px-3 py-2",
-                          j === q.correct_index && "border-emerald-500 bg-emerald-500/10",
-                          j === u && j !== q.correct_index && "border-rose-500 bg-rose-500/10",
-                        )}
-                      >
-                        <span className="font-semibold">{String.fromCharCode(65 + j)}.</span>{" "}
-                        <RichText>{o}</RichText>
-                      </div>
-                    ))}
-                  </div>
-                  {q.explanation && (
-                    <div className="mt-3 rounded-lg bg-secondary p-3 text-xs">
-                      <b>Solution:</b> <RichText>{q.explanation}</RichText>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <Button asChild className="bg-gradient-primary">
-            <Link to="/dashboard">Back to dashboard</Link>
-          </Button>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function Legend({ swatch, label }: { swatch: string; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <span className={cn("h-3 w-6 rounded", swatch)} /> {label}
-    </span>
-  );
-}
-
-function Stat({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <div className="rounded-xl border bg-card p-4 text-center">
-      <div className={cn("text-2xl font-extrabold", color)}>{value}</div>
-      <div className="mt-1 text-xs text-muted-foreground">{label}</div>
-    </div>
-  );
-}
+... [truncated — file is 67197 bytes, showing first 51200]
