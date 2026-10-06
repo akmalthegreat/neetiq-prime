@@ -453,75 +453,6 @@ function Dashboard() {
           </div>
 
           {/* =========================================================
-              DR. AZKA AI TUTOR PRESCRIPTION BANNER
-              ========================================================= */}
-          <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/50 via-slate-900/90 to-teal-950/50 p-3 sm:p-4 shadow-sm backdrop-blur-md">
-            <div className="flex items-center gap-3">
-              <div className="relative shrink-0">
-                <img
-                  src="/dr-azka.png"
-                  alt="Dr. Azka"
-                  className="h-12 w-12 sm:h-14 sm:w-14 object-contain drop-shadow-[0_4px_12px_rgba(16,185,129,0.35)]"
-                />
-                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white shadow-xs">
-                  AI
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="h-3 w-3 text-amber-400 fill-amber-400" />
-                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-400">
-                    Dr. Azka • AI NEET Mentor
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs sm:text-sm font-semibold text-slate-100 truncate">
-                  Focus on High-Yield Genetics & Reaction Mechanisms for 680+ NEET target!
-                </p>
-              </div>
-              <Link
-                to="/ai-path"
-                className="shrink-0 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 px-3 py-1.5 text-xs font-bold text-emerald-300 transition-colors shadow-2xs"
-              >
-                Consult →
-              </Link>
-            </div>
-          </div>
-
-          {/* =========================================================
-              1.1 1-ON-1 MENTORSHIP SECTION (Compact)
-              ========================================================= */}
-          <div className="relative overflow-hidden rounded-xl border border-violet-500/30 bg-gradient-to-r from-violet-950/60 via-purple-900/40 to-slate-900/80 px-3 py-2 sm:px-3.5 sm:py-2.5 shadow-md shadow-violet-950/30 backdrop-blur-md">
-            <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 shadow-sm text-white">
-                  <GraduationCap className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-violet-300">
-                      1-on-1 Mentorship
-                    </span>
-                    <span className="rounded-full bg-amber-400/20 border border-amber-400/30 px-1.5 py-0.2 text-[8px] font-bold text-amber-300">
-                      Personal Guidance
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-200/90 truncate max-w-sm sm:max-w-md">
-                    Direct WhatsApp doubt clearance &amp; custom strategy with Mohd Akmal
-                  </p>
-                </div>
-              </div>
-              <Link
-                to="/mentorship"
-                className="inline-flex items-center justify-center gap-1 shrink-0 self-start sm:self-auto rounded-lg bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 px-2.5 py-1 text-[11px] font-bold text-white transition-all shadow-sm active:scale-95"
-              >
-                <span>Join Mentorship</span>
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
-
-
-          {/* =========================================================
               2. SLEEK SUBJECT PILLARS (Physics, Chemistry, Biology)
               ========================================================= */}
           <div>
@@ -1074,6 +1005,74 @@ function Dashboard() {
                   <ChevronRight className="h-3.5 w-3.5 text-purple-300" />
                 </Link>
               </div>
+            </div>
+          </div>
+
+          {/* =========================================================
+              DR. AZKA AI TUTOR PRESCRIPTION BANNER
+              ========================================================= */}
+          <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/50 via-slate-900/90 to-teal-950/50 p-3 sm:p-4 shadow-sm backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="relative shrink-0">
+                <img
+                  src="/dr-azka.png"
+                  alt="Dr. Azka"
+                  className="h-12 w-12 sm:h-14 sm:w-14 object-contain drop-shadow-[0_4px_12px_rgba(16,185,129,0.35)]"
+                />
+                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white shadow-xs">
+                  AI
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3 text-amber-400 fill-amber-400" />
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-400">
+                    Dr. Azka • AI NEET Mentor
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs sm:text-sm font-semibold text-slate-100 truncate">
+                  Focus on High-Yield Genetics & Reaction Mechanisms for 680+ NEET target!
+                </p>
+              </div>
+              <Link
+                to="/ai-path"
+                className="shrink-0 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 px-3 py-1.5 text-xs font-bold text-emerald-300 transition-colors shadow-2xs"
+              >
+                Consult →
+              </Link>
+            </div>
+          </div>
+
+          {/* =========================================================
+              1.1 1-ON-1 MENTORSHIP SECTION (Compact)
+              ========================================================= */}
+          <div className="relative overflow-hidden rounded-xl border border-violet-500/30 bg-gradient-to-r from-violet-950/60 via-purple-900/40 to-slate-900/80 px-3 py-2 sm:px-3.5 sm:py-2.5 shadow-md shadow-violet-950/30 backdrop-blur-md">
+            <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 shadow-sm text-white">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-violet-300">
+                      1-on-1 Mentorship
+                    </span>
+                    <span className="rounded-full bg-amber-400/20 border border-amber-400/30 px-1.5 py-0.2 text-[8px] font-bold text-amber-300">
+                      Personal Guidance
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-200/90 truncate max-w-sm sm:max-w-md">
+                    Direct WhatsApp doubt clearance &amp; custom strategy with Mohd Akmal
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/mentorship"
+                className="inline-flex items-center justify-center gap-1 shrink-0 self-start sm:self-auto rounded-lg bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 px-2.5 py-1 text-[11px] font-bold text-white transition-all shadow-sm active:scale-95"
+              >
+                <span>Join Mentorship</span>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
 

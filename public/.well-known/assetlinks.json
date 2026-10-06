@@ -1,9 +1,11 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.neettrack.app",
+      "package_name": "com.neetiq.prime",
       "sha256_cert_fingerprints": [
         "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00"
       ]
