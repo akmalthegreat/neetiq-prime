@@ -104,15 +104,9 @@ export function SiteHeader({ sideNavigation = false, collapsed = false, onToggle
   const path = useRouterState({ select: (s) => s.location.pathname });
   const { user, profile, isAdmin, signOut } = useAuth();
   const { access } = useAccess();
-  const isMentor = access.isMentor;
-  const navGroups: Group[] = isAdmin || isMentor
-    ? [
-        GROUPS[0],
-        GROUPS[1],
-        { label: "Mentor", to: "/mentor" },
-        ...GROUPS.slice(2),
-      ]
-    : GROUPS;
+  // Access data loads asynchronously and does not currently expose a mentor flag.
+  // Keep navigation render-safe while it loads; only show routes the app defines.
+  const navGroups: Group[] = GROUPS;
   const displayName = (profile?.full_name?.trim() || (user?.email ? user.email.split("@")[0] : "")) ?? "";
   const avatar = user ? avatarUrl(displayName || user.id, profile?.avatar_url ?? null) : null;
 
