@@ -7,6 +7,7 @@ import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config';
 function createSupabaseAdminClient() {
   // Accept the configured server-side Supabase service-role secret.
   const SERVICE_ROLE_KEY =
+    process.env.SUPABASE_SECRET_KEY ||
     process.env.PROJECT_SERVICE_ROLE_KEY ||
     process.env.APP_SUPABASE_SERVICE_ROLE_KEY ||
     process.env.MY_SUPABASE_SERVICE_ROLE_KEY ||
@@ -17,7 +18,7 @@ function createSupabaseAdminClient() {
   const key = SERVICE_ROLE_KEY || SUPABASE_PUBLISHABLE_KEY;
   if (!SERVICE_ROLE_KEY) {
     console.warn(
-      '[Supabase] Missing PROJECT_SERVICE_ROLE_KEY env var. Falling back to publishable key to prevent server crash.'
+      '[Supabase] Missing server-side Supabase secret key. Admin/server operations may fail.'
     );
   }
 
