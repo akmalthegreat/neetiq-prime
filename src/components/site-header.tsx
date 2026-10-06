@@ -77,7 +77,7 @@ function NavLinks({ path, onNavigate }: { path: string; onNavigate?: () => void 
     <nav className="flex flex-col gap-0.5">
       {GROUPS.map((g) => {
         if (g.to) {
-          const active = path.startsWith(g.to);
+          const active = (path || "").startsWith(g.to);
           const Icon = g.icon;
           return (
             <Link

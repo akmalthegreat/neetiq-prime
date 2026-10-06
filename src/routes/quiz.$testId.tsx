@@ -1162,15 +1162,16 @@ function QuizPlayer() {
             <Button
               variant="outline"
               size="sm"
-              onClick={toggleBookmark}
+              onClick={() => { if (q) toggleBookmark(); }}
+              disabled={!q}
               className={cn(
                 "h-8 px-2.5 text-xs font-semibold gap-1 rounded-lg transition-colors",
-                bookmarks.has(q.id) && "border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                Boolean(q && bookmarks.has(q.id)) && "border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400"
               )}
               aria-label="Bookmark question"
               title="Bookmark question"
             >
-              <Bookmark className={cn("h-3.5 w-3.5", bookmarks.has(q.id) && "fill-current")} />
+              <Bookmark className={cn("h-3.5 w-3.5", Boolean(q && bookmarks.has(q.id)) && "fill-current")} />
               <span className="hidden sm:inline">Bookmark</span>
             </Button>
 

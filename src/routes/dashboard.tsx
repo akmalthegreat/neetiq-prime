@@ -379,7 +379,7 @@ function Dashboard() {
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
-                    style={{ width: `${progressPercent}%` }}
+                    style={{ width: `${Math.max(0, Math.min(100, Number.isFinite(progressPercent) ? progressPercent : 0))}%` }}
                   />
                 </div>
               </div>
@@ -474,7 +474,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div className="h-full rounded-full bg-sky-500" style={{ width: `${subjectProgress.physics}%` }} />
+                  <div className="h-full rounded-full bg-sky-500" style={{ width: `${Math.max(0, Math.min(100, Number.isFinite(subjectProgress?.physics) ? subjectProgress.physics : 0))}%` }} />
                 </div>
               </Link>
 
@@ -499,7 +499,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div className="h-full rounded-full bg-teal-500" style={{ width: `${subjectProgress.chemistry}%` }} />
+                  <div className="h-full rounded-full bg-teal-500" style={{ width: `${Math.max(0, Math.min(100, Number.isFinite(subjectProgress?.chemistry) ? subjectProgress.chemistry : 0))}%` }} />
                 </div>
               </Link>
 
@@ -524,7 +524,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div className="h-full rounded-full bg-purple-500" style={{ width: `${subjectProgress.biology}%` }} />
+                  <div className="h-full rounded-full bg-purple-500" style={{ width: `${Math.max(0, Math.min(100, Number.isFinite(subjectProgress?.biology) ? subjectProgress.biology : 0))}%` }} />
                 </div>
               </Link>
             </div>
