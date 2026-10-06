@@ -241,6 +241,108 @@ export function TodoListPage() {
             </div>
           </div>
 
+
+          {/* =========================================================
+              WEEKLY TRACK REPORT SECTION
+              ========================================================= */}
+          <div className="overflow-hidden rounded-3xl border border-teal-200/80 bg-white/95 p-5 shadow-md shadow-teal-900/5 dark:border-teal-500/20 dark:bg-slate-900/70 backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-md shadow-teal-500/20">
+                  <BarChart2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                      Weekly Track Report
+                    </h2>
+                    <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                      7-Day Momentum
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Live overview of planned study hours, ticket completion, and subject distribution
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowRecap(true)}
+                className="self-start sm:self-auto rounded-xl border-teal-200 text-teal-700 hover:bg-teal-50 dark:border-teal-500/30 dark:text-teal-300 dark:hover:bg-teal-950/40 text-xs font-bold"
+              >
+                <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+                <span>Full Recap Details</span>
+              </Button>
+            </div>
+
+            {/* Metrics cards */}
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-center dark:border-white/5 dark:bg-white/5">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Planned Time
+                </span>
+                <span className="mt-1 block text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                  {(totalMinutes / 60).toFixed(1)} <span className="text-xs font-semibold text-slate-500">hrs</span>
+                </span>
+              </div>
+              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-center dark:border-emerald-500/20 dark:bg-emerald-950/20">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                  Completed Time
+                </span>
+                <span className="mt-1 block text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400">
+                  {(completedMinutes / 60).toFixed(1)} <span className="text-xs font-semibold">hrs</span>
+                </span>
+              </div>
+              <div className="rounded-2xl border border-teal-500/20 bg-teal-500/5 p-3 text-center dark:border-teal-500/20 dark:bg-teal-950/20">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
+                  Tickets Done
+                </span>
+                <span className="mt-1 block text-base sm:text-lg font-black text-teal-600 dark:text-teal-400">
+                  {completedTasks} <span className="text-xs font-semibold text-slate-500">/ {totalTasks}</span>
+                </span>
+              </div>
+              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3 text-center dark:border-amber-500/20 dark:bg-amber-950/20">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  Completion
+                </span>
+                <span className="mt-1 block text-base sm:text-lg font-black text-amber-600 dark:text-amber-400">
+                  {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}%
+                </span>
+              </div>
+            </div>
+
+            {/* Subject Distribution Bar */}
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
+              <div className="flex items-center justify-between text-xs mb-2">
+                <span className="font-bold text-slate-700 dark:text-slate-300">Subject Distribution</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {todos.length} active tickets
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { name: "Biology", color: "bg-purple-500", text: "text-purple-600 dark:text-purple-400", count: todos.filter((t) => t.subject === "Biology").length },
+                  { name: "Chemistry", color: "bg-teal-500", text: "text-teal-600 dark:text-teal-400", count: todos.filter((t) => t.subject === "Chemistry").length },
+                  { name: "Physics", color: "bg-sky-500", text: "text-sky-600 dark:text-sky-400", count: todos.filter((t) => t.subject === "Physics").length },
+                  { name: "Mocks/Rev", color: "bg-amber-500", text: "text-amber-600 dark:text-amber-400", count: todos.filter((t) => t.subject === "Mock" || t.subject === "Revision").length },
+                ].map((s) => (
+                  <div key={s.name} className="flex items-center justify-between rounded-xl bg-slate-50 px-2.5 py-1.5 dark:bg-white/5">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className={`h-2 w-2 rounded-full ${s.color}`} />
+                      <span className={`text-[11px] font-semibold truncate ${s.text}`}>{s.name}</span>
+                    </div>
+                    <span className="text-xs font-bold text-slate-800 dark:text-white ml-1">
+                      {s.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Add Task Form Card */}
           <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 sm:p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/60 dark:text-white backdrop-blur-xs">
             <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2 mb-3">

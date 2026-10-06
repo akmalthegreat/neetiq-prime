@@ -43,6 +43,7 @@ import {
   ListTodo,
   Play,
   Check,
+  GraduationCap,
   BookOpen,
   Highlighter,
   Boxes,
@@ -485,6 +486,44 @@ function Dashboard() {
               </Link>
             </div>
           </div>
+
+          {/* =========================================================
+              1.1 1-ON-1 MENTORSHIP SECTION
+              ========================================================= */}
+          <div className="relative overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/60 via-purple-900/40 to-slate-900/80 p-3.5 sm:p-4 shadow-lg shadow-violet-950/40 backdrop-blur-md">
+            <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-violet-500/20 blur-xl" />
+            <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-md shadow-violet-500/20">
+                  <GraduationCap className="h-6 w-6 text-white" />
+                  <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[8px] font-black text-slate-950">
+                    ★
+                  </span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-violet-300">
+                      1-on-1 Mentorship Program
+                    </span>
+                    <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-2 py-0.5 text-[9px] font-bold text-amber-300">
+                      Personal Guidance
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-xs sm:text-sm font-semibold text-slate-100">
+                    Daily WhatsApp doubt clearance, custom schedule & strategy reviews with Mohd Akmal.
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/mentorship"
+                className="inline-flex items-center justify-center gap-1.5 shrink-0 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 px-4 py-2 text-xs font-bold text-white transition-all shadow-md shadow-violet-500/25 active:scale-95"
+              >
+                <span>Join Mentorship</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+
 
           {/* =========================================================
               2. SLEEK SUBJECT PILLARS (Physics, Chemistry, Biology)
