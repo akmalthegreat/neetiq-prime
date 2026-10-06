@@ -98,7 +98,6 @@ function FeatureRow({
   return (
     <Link
       to={to as never}
-      params={{ subject }}
       className={`${card} group flex min-h-[92px] items-center gap-4 bg-gradient-to-r ${tones} p-4 transition duration-200 hover:-translate-y-0.5 hover:border-white/20`}
     >
       {image && (
@@ -166,7 +165,7 @@ function SubjectCard({
       className={`group relative min-w-0 overflow-hidden rounded-[20px] border bg-gradient-to-br p-4 shadow-lg transition duration-200 hover:-translate-y-0.5 ${styles.box}`}
     >
       <div className="flex items-start justify-between">
-        <Icon className={`h-8 w-8 ${styles.icon}`} strokeWidth={1.8} />
+        <Icon className={`h-8 w-8 ${styles.icon}`} />
         <span
           className={`flex h-8 w-8 items-center justify-center rounded-full ${light ? "bg-black/10 text-[#253c38]" : "bg-white/10 text-white"}`}
         >
