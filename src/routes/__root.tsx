@@ -84,20 +84,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "NEET Track" },
-      { name: "description", content: "NEET Track brings together NEET practice questions, CBT exams, NCERT study tools, and progress tracking." },
+      { title: "NEET Track — Complete NEET Preparation Platform" },
+      { name: "description", content: "Prepare for NEET with mock tests, PYQs, practice questions, flashcards, short notes, NCERT study tools and progress tracking—all in one place." },
       { name: "author", content: "SΛNSKΛƦ" },
       { name: "theme-color", content: "#1d4ed8" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "NEET Track" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { property: "og:title", content: "NEET Track" },
-      { property: "og:description", content: "NEET practice questions, CBT exams, NCERT study tools, and progress tracking." },
+      { property: "og:title", content: "NEET Track — Complete NEET Preparation Platform" },
+      { property: "og:description", content: "Prepare for NEET with mock tests, PYQs, practice questions, flashcards, short notes, NCERT study tools and progress tracking—all in one place." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "NEET Track" },
-      { name: "twitter:description", content: "NEET practice questions, CBT exams, NCERT study tools, and progress tracking." },
+      { name: "twitter:title", content: "NEET Track — Complete NEET Preparation Platform" },
+      { name: "twitter:description", content: "Prepare for NEET with mock tests, PYQs, practice questions, flashcards, short notes, NCERT study tools and progress tracking—all in one place." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -136,7 +136,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
                   "url": "https://neettrack.com/",
                   "name": "NEET Track",
                   "alternateName": ["NeetTrack", "NEETTrack"],
-                  "description": "NEET preparation platform for CBT practice, mock tests, PYQs, NCERT study tools, flashcards, short notes, and progress tracking."
+                  "description": "Complete NEET preparation platform with mock tests, PYQs, practice questions, flashcards, short notes, NCERT study tools, and progress tracking."
                 },
                 {
                   "@type": "Organization",
