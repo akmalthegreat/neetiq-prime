@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/support")({
-  head: () => ({ meta: [{ title: "Admin · Support — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Admin · Support — NEET Track" }] }),
   component: AdminSupport,
 });
 

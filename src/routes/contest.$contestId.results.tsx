@@ -20,7 +20,7 @@ import { getContestDetail } from "@/lib/contests.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/contest/$contestId/results")({
-  head: () => ({ meta: [{ title: "Contest results — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Contest results — NEET Track" }] }),
   component: ResultsPage,
 });
 

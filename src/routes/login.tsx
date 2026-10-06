@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Log in — NEETIQ Prime" }, { name: "description", content: "Sign up or log in to NEETIQ Prime." }] }),
+  head: () => ({ meta: [{ title: "Log in — NEET Track" }, { name: "description", content: "Sign up or log in to NEET Track." }] }),
   component: LoginPage,
 });
 

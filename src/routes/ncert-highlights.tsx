@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/ncert-highlights")({
-  head: () => ({ meta: [{ title: "NCERT Highlights — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "NCERT Highlights — NEET Track" }] }),
   component: () => (<FeatureLock feature="ncert_highlights"><NcertPage/></FeatureLock>),
 });
 

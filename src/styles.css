@@ -11,7 +11,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* NEETIQ Prime — white surfaces, ocean blue actions, fresh green accents. */
+/* NEET Track — white surfaces, ocean blue actions, fresh green accents. */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

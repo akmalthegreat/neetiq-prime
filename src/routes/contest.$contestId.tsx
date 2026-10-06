@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/contest/$contestId")({
-  head: () => ({ meta: [{ title: "Contest — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Contest — NEET Track" }] }),
   component: ContestPage,
 });
 

@@ -895,59 +895,7 @@ function Dashboard() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {/* Live Contests */}
-            <Link
-              to="/contests"
-              className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-amber-500/15 p-3.5 shadow-sm transition-all hover:scale-[1.02] hover:border-amber-400 dark:border-amber-500/30 dark:bg-gradient-to-br dark:from-amber-950/40 dark:via-orange-950/20 dark:to-amber-950/50"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-sm shadow-amber-500/30">
-                  <Trophy className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="truncate text-xs font-black text-foreground group-hover:text-amber-500">
-                      Live Contests
-                    </span>
-                    <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-600 dark:text-amber-300">
-                      Rank
-                    </span>
-                  </div>
-                  <div className="truncate text-[10px] text-muted-foreground font-medium">
-                    Compete live with peers
-                  </div>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-amber-500 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-
-            {/* 1v1 Battles */}
-            <Link
-              to="/battlegrounds"
-              className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-rose-200/80 bg-gradient-to-br from-rose-500/10 via-red-500/5 to-pink-500/15 p-3.5 shadow-sm transition-all hover:scale-[1.02] hover:border-rose-400 dark:border-rose-500/30 dark:bg-gradient-to-br dark:from-rose-950/40 dark:via-red-950/20 dark:to-pink-950/50"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm shadow-rose-500/30">
-                  <Swords className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="truncate text-xs font-black text-foreground group-hover:text-rose-500">
-                      1v1 Battleground
-                    </span>
-                    <span className="rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[9px] font-bold text-rose-600 dark:text-rose-300">
-                      Duels
-                    </span>
-                  </div>
-                  <div className="truncate text-[10px] text-muted-foreground font-medium">
-                    Fast-paced quiz matches
-                  </div>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-rose-500 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-
+          <div className="grid grid-cols-1 gap-3">
             {/* Community & Doubts */}
             <Link
               to="/community"

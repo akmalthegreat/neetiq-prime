@@ -28,7 +28,7 @@ const supabase = supabaseTyped as unknown as {
 };
 
 export const Route = createFileRoute("/battle/$matchId/result")({
-  head: () => ({ meta: [{ title: "Battle Result — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Battle Result — NEET Track" }] }),
   component: BattleResultPage,
 });
 

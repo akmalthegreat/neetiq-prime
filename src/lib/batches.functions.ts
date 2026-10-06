@@ -116,7 +116,7 @@ export const adminGenerateBatchDescription = createServerFn({ method: "POST" })
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Lovable AI not configured");
     const enabled = Object.entries(data.features).filter(([_, v]) => v).map(([k]) => FEATURE_LABELS[k] ?? k);
-    const prompt = `You write concise marketing copy for a NEET (medical entrance) prep app called NEETIQ Prime.
+    const prompt = `You write concise marketing copy for a NEET (medical entrance) prep app called NEET Track.
 Generate a short, exciting batch description for users.
 
 Batch title: ${data.title}

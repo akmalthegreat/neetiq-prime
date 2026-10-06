@@ -7,7 +7,7 @@ import { RichText } from "@/components/rich-text";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/preview/human-reproduction")({
-  head: () => ({ meta: [{ title: "Human Reproduction Preview — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Human Reproduction Preview — NEET Track" }] }),
   component: HumanReproductionPreview,
 });
 

@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/infinite-run")({
-  head: () => ({ meta: [{ title: "Infinite Run — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Infinite Run — NEET Track" }] }),
   component: () => (<FeatureLock feature="battlegrounds"><InfiniteRunPage/></FeatureLock>),
 });
 

@@ -18,7 +18,7 @@ import {
 } from "@/lib/collaborators.functions";
 
 export const Route = createFileRoute("/admin-collaborators")({
-  head: () => ({ meta: [{ title: "Admin · Collaborators — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Admin · Collaborators — NEET Track" }] }),
   component: AdminCollaborators,
 });
 

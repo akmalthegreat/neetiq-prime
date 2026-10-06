@@ -20,9 +20,9 @@ const ncertQuery = queryOptions({
 
 export const Route = createFileRoute("/highlighted-ncert")({
   head: () => ({ meta: [
-    { title: "Highlighted NCERT — NEETIQ Prime" },
+    { title: "Highlighted NCERT — NEET Track" },
     { name: "description", content: "NCERT Biology chapters with PYQ-highlighted lines and diagrams." },
-    { property: "og:title", content: "Highlighted NCERT \u2014 NEETIQ Prime" },
+    { property: "og:title", content: "Highlighted NCERT \u2014 NEET Track" },
     { property: "og:description", content: "NCERT Biology chapters with PYQ-highlighted lines and diagrams." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },

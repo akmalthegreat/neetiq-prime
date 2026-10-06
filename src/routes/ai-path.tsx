@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/ai-path")({
-  head: () => ({ meta: [{ title: "AI Path — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "AI Path — NEET Track" }] }),
   component: () => (<FeatureLock feature="ai_path"><AiPathPage/></FeatureLock>),
 });
 

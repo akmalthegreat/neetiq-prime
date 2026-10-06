@@ -22,7 +22,7 @@ import {
 } from "@/lib/admin-feedback.functions";
 
 export const Route = createFileRoute("/admin/inbox")({
-  head: () => ({ meta: [{ title: "Admin · Inbox — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Admin · Inbox — NEET Track" }] }),
   component: AdminInbox,
 });
 

@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { applyForCollaboratorProgram, getMyCollaboratorProgram } from "@/lib/collaborators.functions";
 
 export const Route = createFileRoute("/dedicated-program")({
-  head: () => ({ meta: [{ title: "Dedicated Program — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Dedicated Program — NEET Track" }] }),
   component: DedicatedProgramPage,
 });
 
@@ -64,7 +64,7 @@ function DedicatedProgramPage() {
   return (
     <PageShell
       eyebrow="Dedicated Program"
-      title="Join NEETIQ Prime Collaborators"
+      title="Join NEET Track Collaborators"
       description="Apply to become a dedicated collaborator and earn up to 80% revenue share."
     >
       <Card>
@@ -112,7 +112,7 @@ function DedicatedProgramPage() {
 
           <div className="rounded-xl border bg-secondary/40 p-4">
             <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
-              <ShieldCheck className="h-4 w-4 text-primary" /> NEETIQ Prime Terms &amp; Conditions
+              <ShieldCheck className="h-4 w-4 text-primary" /> NEET Track Terms &amp; Conditions
             </div>
             <div className="prose prose-sm max-h-72 max-w-none overflow-y-auto rounded-md bg-background p-3 text-xs leading-relaxed">
               <p className="font-semibold">1. Participation Rules</p>
@@ -129,37 +129,37 @@ function DedicatedProgramPage() {
               <ul>
                 <li>The minimum withdrawal limit is ₹100 (or as per your selected plan).</li>
                 <li>Earnings from users joining through your referral links will be updated in your dashboard automatically.</li>
-                <li>NEETIQ Prime reserves the right to withhold funds in case of suspicious or fraudulent activity.</li>
+                <li>NEET Track reserves the right to withhold funds in case of suspicious or fraudulent activity.</li>
               </ul>
               <p className="font-semibold">4. Content &amp; Usage</p>
               <ul>
-                <li>All content provided on NEETIQ Prime is for educational and personal use only.</li>
+                <li>All content provided on NEET Track is for educational and personal use only.</li>
                 <li>Users are prohibited from redistributing, copying, or selling any content without prior permission.</li>
               </ul>
               <p className="font-semibold">5. Security &amp; Privacy</p>
               <ul>
                 <li>Your account is personal. Sharing login credentials is prohibited.</li>
-                <li>NEETIQ Prime protects user data according to applicable privacy policies. Any misuse may lead to account termination.</li>
+                <li>NEET Track protects user data according to applicable privacy policies. Any misuse may lead to account termination.</li>
               </ul>
               <p className="font-semibold">6. Program Changes</p>
               <ul>
-                <li>NEETIQ Prime reserves the right to modify, suspend, or terminate any feature, reward, or program without prior notice.</li>
+                <li>NEET Track reserves the right to modify, suspend, or terminate any feature, reward, or program without prior notice.</li>
                 <li>Users will be notified of significant changes through official communication channels.</li>
               </ul>
               <p className="font-semibold">7. Liability</p>
               <ul>
-                <li>NEETIQ Prime is not responsible for any losses, technical issues, or disputes arising from participation in the program.</li>
+                <li>NEET Track is not responsible for any losses, technical issues, or disputes arising from participation in the program.</li>
                 <li>Users must comply with all applicable laws and regulations while using the platform.</li>
               </ul>
               <p className="font-semibold">8. General</p>
               <ul>
                 <li>By participating, you agree to abide by all terms and conditions mentioned herein.</li>
-                <li>All rights are reserved by NEETIQ Prime 2026.</li>
+                <li>All rights are reserved by NEET Track 2026.</li>
               </ul>
             </div>
             <label className="mt-3 flex cursor-pointer items-start gap-2 text-sm">
               <Checkbox checked={agreed} onCheckedChange={(v) => setAgreed(v === true)} />
-              <span>I have read and carefully understood the NEETIQ Prime Terms &amp; Conditions, and I agree to all of them.</span>
+              <span>I have read and carefully understood the NEET Track Terms &amp; Conditions, and I agree to all of them.</span>
             </label>
           </div>
 

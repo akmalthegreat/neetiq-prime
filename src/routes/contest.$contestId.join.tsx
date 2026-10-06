@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/contest/$contestId/join")({
-  head: () => ({ meta: [{ title: "Confirm join — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Confirm join — NEET Track" }] }),
   component: JoinPage,
 });
 

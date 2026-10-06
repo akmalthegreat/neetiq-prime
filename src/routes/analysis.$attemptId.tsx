@@ -12,7 +12,7 @@ import { RichText } from "@/components/rich-text";
 import { ReportQuestionButton } from "@/components/report-question-button";
 
 export const Route = createFileRoute("/analysis/$attemptId")({
-  head: () => ({ meta: [{ title: "Analysis — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Analysis — NEET Track" }] }),
   component: AnalysisPage,
 });
 

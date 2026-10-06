@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/feedback")({
-  head: () => ({ meta: [{ title: "Admin · Feedback — NEETIQ Prime" }] }),
+  head: () => ({ meta: [{ title: "Admin · Feedback — NEET Track" }] }),
   component: AdminFeedback,
 });
 
