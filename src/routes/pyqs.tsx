@@ -1,3 +1,4 @@
+import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/page-shell";
@@ -52,7 +53,7 @@ function PyqPage() {
 
   return (
     <PageShell eyebrow="Previous Years" title="NEET PYQs" description="Year-wise NEET previous year question banks.">
-      {rows === null ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> :
+      {rows === null ? <DrAzkaLoader size="sm" message="Dr. Azka is retrieving NEET PYQ Papers..." subMessage="Loading official question archives by year" className="py-12" /> :
         rows.length === 0 ? <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">No PYQs added yet. Admins can upload them from the admin panel.</CardContent></Card> :
         <div className="grid gap-3 sm:grid-cols-2">
           {rows.map((r) => (

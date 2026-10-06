@@ -1,3 +1,4 @@
+import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";

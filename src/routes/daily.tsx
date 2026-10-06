@@ -1,3 +1,4 @@
+import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/page-shell";
@@ -40,7 +41,7 @@ function DailyPage() {
 
   return (
     <PageShell eyebrow="Practice Arena" title="DPP HUB" description="Stay sharp with a free quiz, refreshed daily.">
-      {today === undefined ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> : !today ? (
+      {today === undefined ? <DrAzkaLoader size="sm" message="Dr. Azka is preparing Today's Challenge..." subMessage="Loading today's high-yield NEET questions" className="py-12" /> : !today ? (
         <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">No daily quiz yet. Check back soon.</CardContent></Card>
       ) : (
         <Card className="overflow-hidden border-primary/25 shadow-soft">

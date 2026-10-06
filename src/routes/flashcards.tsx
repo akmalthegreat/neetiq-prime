@@ -1,3 +1,4 @@
+import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -93,7 +94,7 @@ function FlashcardsPage() {
         </div>
 
         {cards === null ? (
-          <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          <DrAzkaLoader size="sm" message="Dr. Azka is organizing your Flashcards..." subMessage="Loading active decks & spaced repetition schedule" className="py-12" />
         ) : done ? (
           <Card className="border-0 shadow-elegant">
             <CardContent className="p-8 text-center">
@@ -154,7 +155,7 @@ function FlashcardsPage() {
   return (
     <PageShell eyebrow="Memory" title="Flashcards" description="Flip & review high-yield NEET concepts. Track your recall with Again / Good / Easy.">
       {decks === null ? (
-        <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+        <DrAzkaLoader size="sm" message="Dr. Azka is organizing your Flashcards..." subMessage="Loading active decks & spaced repetition schedule" className="py-12" />
       ) : decks.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="p-8 text-center text-sm text-muted-foreground">

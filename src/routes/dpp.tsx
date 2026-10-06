@@ -1,3 +1,4 @@
+import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -68,7 +69,7 @@ function DppPage() {
       <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
         <strong>Live DPP is free.</strong> Attempting any past (ended) DPP costs <strong>{DPP_PAST_COST_BONUS} bonus</strong>. Resuming an in-progress attempt is free.
       </div>
-      {tests === null ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> :
+      {tests === null ? <DrAzkaLoader size="sm" message="Dr. Azka is fetching your DPP Sets..." subMessage="Loading chapter-wise practice problems" className="py-12" /> :
         tests.length === 0 ? <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">No DPPs yet.</CardContent></Card> :
         <div className="space-y-3">
           {tests.map((t) => {

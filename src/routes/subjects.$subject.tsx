@@ -1,3 +1,4 @@
+import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { PageShell } from "@/components/page-shell";
@@ -425,7 +426,7 @@ function SubjectPage() {
         </div>
       ) : chapters === null ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <DrAzkaLoader size="sm" message="Dr. Azka is loading syllabus chapters..." className="py-8" />
         </div>
       ) : chapters.length === 0 ? (
         <Card>

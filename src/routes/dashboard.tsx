@@ -1,3 +1,4 @@
+import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
+import { 
   Loader2,
   Flame,
   Atom,
@@ -43,7 +44,7 @@ import {
   Play,
   Check,
   BookOpen,
-} from "lucide-react";
+, Highlighter, Boxes } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { TrialBanner } from "@/components/dashboard/trial-banner";
@@ -286,9 +287,11 @@ function Dashboard() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
+      <DrAzkaLoader
+        fullScreen
+        message="Dr. Azka is preparing your dashboard..."
+        subMessage="Syncing your NEET goals, streaks & high-yield progress"
+      />
     );
   }
 
@@ -972,6 +975,54 @@ function Dashboard() {
                         Community
                       </div>
                       <div className="truncate text-[10px] font-medium text-fuchsia-200/80">Ask & Discuss</div>
+                    </div>
+                  </Link>
+
+                  {/* Short Notes Button with Themed Background */}
+                  <Link
+                    to="/ncert-highlights"
+                    className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-emerald-400/40 bg-slate-950 p-2.5 shadow-md transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-500/20 active:scale-95"
+                  >
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-short-notes.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent" />
+                    </div>
+                    <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-emerald-400/40 bg-emerald-500/25 text-emerald-200 backdrop-blur-md">
+                      <Highlighter className="h-4 w-4" />
+                    </div>
+                    <div className="relative z-10 min-w-0">
+                      <div className="truncate text-xs font-bold text-white group-hover:text-emerald-200 drop-shadow-xs">
+                        Short Notes
+                      </div>
+                      <div className="truncate text-[10px] font-medium text-emerald-200/80">NCERT Highlights</div>
+                    </div>
+                  </Link>
+
+                  {/* 3D Models Button with Themed Background */}
+                  <Link
+                    to="/neetlab"
+                    className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-sky-400/40 bg-slate-950 p-2.5 shadow-md transition-all hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/20 active:scale-95"
+                  >
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-3d-models.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent" />
+                    </div>
+                    <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-sky-400/40 bg-sky-500/25 text-sky-200 backdrop-blur-md">
+                      <Boxes className="h-4 w-4" />
+                    </div>
+                    <div className="relative z-10 min-w-0">
+                      <div className="truncate text-xs font-bold text-white group-hover:text-sky-200 drop-shadow-xs">
+                        3D Models
+                      </div>
+                      <div className="truncate text-[10px] font-medium text-sky-200/80">NEETLab & Sims</div>
                     </div>
                   </Link>
                 </div>
