@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 
@@ -15,13 +15,12 @@ export function PageShell({
   children: ReactNode;
   showFooter?: boolean;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
   const hasHeader = !!(eyebrow || title || description);
   return (
-    <div className={`study-shell flex min-h-screen flex-col bg-background ${collapsed ? "lg:pl-[72px]" : "lg:pl-64"}`}>
-      <SiteHeader sideNavigation collapsed={collapsed} onToggleSidebar={() => setCollapsed((value) => !value)} />
+    <div className="flex min-h-screen flex-col bg-background page-enter">
+      <SiteHeader />
       <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           {hasHeader && (
             <div className="animate-fade-in-up">
               {eyebrow && (
@@ -49,7 +48,7 @@ export function ComingSoonCard({ note }: { note?: string }) {
       <div className="mx-auto h-12 w-12 rounded-2xl bg-gradient-primary opacity-90 shadow-glow" />
       <div className="mt-4 text-lg font-semibold">Wiring up next</div>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-        {note ?? "This page is part of the Neet Buddy build. Auth, database, and full features land in the next phase."}
+        {note ?? "This page is part of the NEET Track build. Auth, database, and full features land in the next phase."}
       </p>
     </div>
   );
