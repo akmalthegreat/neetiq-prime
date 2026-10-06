@@ -6,7 +6,7 @@ import { useAccess } from "@/hooks/use-access";
 export function TrialBanner() {
   const { access, loading } = useAccess();
   if (loading || !access) return null;
-  if (access.subscriptionActive) return null;
+  if (access.subscriptionActive || access.isAdmin) return null;
 
   if (access.trialActive && access.trialExpiresAt) {
     const ms = new Date(access.trialExpiresAt).getTime() - Date.now();
