@@ -2,12 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import {
   CheckCircle2,
+  CalendarDays,
+  Flame,
+  BarChart2,
+  TrendingUp,
+  Clock,
   Circle,
   Clock,
   Plus,
@@ -91,6 +97,7 @@ export function TodoListPage() {
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState<TodoItem["subject"]>("Biology");
   const [timeMinutes, setTimeMinutes] = useState(45);
+  const [showRecap, setShowRecap] = useState(false);
   const [priority, setPriority] = useState<TodoItem["priority"]>("high");
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
   const [submitted, setSubmitted] = useState(false);
@@ -286,9 +293,13 @@ export function TodoListPage() {
                     <option value={20} className="bg-slate-900 text-white">20 Mins (Sprint)</option>
                     <option value={30} className="bg-slate-900 text-white">30 Mins (Quick)</option>
                     <option value={45} className="bg-slate-900 text-white">45 Mins (Standard)</option>
-                    <option value={60} className="bg-slate-900 text-white">60 Mins (Deep Dive)</option>
-                    <option value={90} className="bg-slate-900 text-white">90 Mins (Intensive)</option>
-                    <option value={120} className="bg-slate-900 text-white">120 Mins (Full Session)</option>
+                    <option value={60} className="bg-slate-900 text-white">60 Mins (1 Hour)</option>
+                    <option value={90} className="bg-slate-900 text-white">90 Mins (1.5 Hours)</option>
+                    <option value={120} className="bg-slate-900 text-white">120 Mins (2 Hours)</option>
+                    <option value={150} className="bg-slate-900 text-white">150 Mins (2.5 Hours)</option>
+                    <option value={180} className="bg-slate-900 text-white">180 Mins (3 Hours)</option>
+                    <option value={210} className="bg-slate-900 text-white">210 Mins (3.5 Hours)</option>
+                    <option value={240} className="bg-slate-900 text-white">240 Mins (4 Hours Max Power Block)</option>
                   </select>
                 </div>
 

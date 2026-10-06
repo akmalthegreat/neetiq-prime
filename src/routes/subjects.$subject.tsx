@@ -79,7 +79,9 @@ async function getChapterQuestionIds(
       const value = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
       query = (query as any).ilike("difficulty", value);
     }
-    if (qtype !== "any") {
+    if (qtype === "graph_figure") {
+      query = (query as any).or("question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%");
+    } else if (qtype !== "any") {
       const dbType = QTYPE_MAP[qtype];
       if (dbType) query = (query as any).eq("qtype", dbType);
     }
@@ -212,7 +214,9 @@ function SubjectPage() {
             const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
             q = (q as any).ilike("difficulty", cap);
           }
-          if (qtype !== "any") {
+          if (qtype === "graph_figure") {
+            q = (q as any).or("question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%");
+          } else if (qtype !== "any") {
             const dbType = QTYPE_MAP[qtype];
             if (dbType) q = (q as any).eq("qtype", dbType);
           }

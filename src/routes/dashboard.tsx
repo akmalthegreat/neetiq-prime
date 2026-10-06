@@ -314,10 +314,10 @@ function Dashboard() {
               1. ASPIRANT SUMMIT HERO CARD (Motivational Medical Banner)
               ========================================================= */}
           <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-950/90 p-5 shadow-2xl backdrop-blur-xl transition-all sm:p-6 dark:border-white/10">
-            {/* Mountain sunrise aesthetic background layer */}
+            {/* NEET Aspirant study focus background layer */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-35">
               <img
-                src="/assets/dashboard-summit.jpg"
+                src="/assets/dashboard-aspirants.jpg"
                 alt=""
                 className="h-full w-full object-cover object-center filter saturate-125"
                 onError={(e) => {
@@ -340,7 +340,7 @@ function Dashboard() {
                       Hi, Dr. {firstName}
                     </h1>
                     <span className="shrink-0 rounded-full border border-emerald-400/40 bg-emerald-500/25 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300 backdrop-blur-md">
-                      NEET 2026 Target
+                      NEET 2027 Target
                     </span>
                   </div>
                   <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-200 sm:text-sm">
