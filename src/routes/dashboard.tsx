@@ -285,14 +285,14 @@ function Dashboard() {
 
   return (
     <PageShell>
-      <div className="relative -mx-4 -my-10 px-4 py-8 sm:-mx-6 sm:-my-14 sm:px-6 sm:py-10 lg:-mx-8 lg:px-8 bg-gradient-to-b from-sky-50/60 via-teal-50/30 to-emerald-50/50 dark:from-[#08151f] dark:via-[#0a1c29] dark:to-[#06111a] min-h-[calc(100vh-4rem)]">
+      <div className="relative -mx-4 -my-10 px-4 py-8 sm:-mx-6 sm:-my-14 sm:px-6 sm:py-10 lg:-mx-8 lg:px-8 bg-gradient-to-b from-sky-50/60 via-teal-50/30 to-emerald-50/50 dark:from-[#0b1b28] dark:via-[#0e2334] dark:to-[#091722] min-h-[calc(100vh-4rem)]">
         <TrialBanner />
 
         <div className="mx-auto max-w-4xl space-y-4 pb-8">
         {/* =========================================================
             1. HERO GREETING & DAILY TARGET CARD (Matching Screenshot)
             ========================================================= */}
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-teal-600 via-emerald-600 to-cyan-700 p-4 text-white shadow-xl shadow-teal-900/10 border border-teal-200/40 dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#0d2a2c] dark:via-[#092224] dark:to-[#06181b]">
+        <div className="relative overflow-hidden rounded-2xl border border-teal-200/80 bg-gradient-to-br from-white via-white/95 to-teal-50/70 p-4 text-slate-800 shadow-md shadow-teal-500/5 dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#0f3239] dark:via-[#133d45] dark:to-[#0c282e] dark:text-white">
           {/* Subtle medical watermark glow */}
           <div className="pointer-events-none absolute -right-12 -top-12 h-56 w-56 rounded-full bg-emerald-500/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-10 left-1/3 h-48 w-48 rounded-full bg-cyan-500/10 blur-2xl" />
@@ -302,7 +302,7 @@ function Dashboard() {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <TypewriterGreeting name={firstName} />
-                <p className="mt-0.5 text-xs text-emerald-100/80 sm:text-sm font-medium">
+                <p className="mt-0.5 text-xs text-slate-600 dark:text-teal-100/80 sm:text-sm font-medium">
                   Discipline today = Doctor tomorrow. You're on track!
                 </p>
               </div>
@@ -310,13 +310,13 @@ function Dashboard() {
               {/* Study Streak Badge matching screenshot */}
               <Link
                 to="/leaderboard"
-                className="group flex shrink-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3.5 py-1.5 backdrop-blur-md transition-all hover:border-amber-400/40 hover:bg-white/10"
+                className="group flex shrink-0 flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-white/80 px-3.5 py-1.5 backdrop-blur-md transition-all hover:border-amber-400/50 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-amber-400/40 dark:hover:bg-white/10 shadow-xs"
               >
-                <div className="flex items-center gap-1 text-xs font-black text-amber-400">
-                  <Flame className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                <div className="flex items-center gap-1 text-xs font-black text-amber-500 dark:text-amber-400">
+                  <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
                   <span>{streak}d</span>
                 </div>
-                <span className="text-[10px] font-semibold text-slate-300">Study Streak</span>
+                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-300">Study Streak</span>
               </Link>
             </div>
 
@@ -324,11 +324,11 @@ function Dashboard() {
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between text-xs sm:text-sm">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
                     <Target className="h-3.5 w-3.5" />
                   </div>
-                  <span className="font-bold text-white">Daily Target</span>
-                  <span className="font-bold text-emerald-400">
+                  <span className="font-bold text-slate-900 dark:text-white">Daily Target</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
                     {todayCorrect + todayWrong} / {dailyGoal} MCQs ({progressPercent}%)
                   </span>
                 </div>
@@ -336,7 +336,7 @@ function Dashboard() {
                 <button
                   type="button"
                   onClick={() => setGoalDialog(true)}
-                  className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-medium text-slate-200 transition-colors hover:border-white/40 hover:bg-white/10 hover:text-white"
+                  className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-white hover:text-slate-900 dark:border-white/20 dark:bg-white/10 dark:text-slate-200 dark:hover:border-white/40 dark:hover:bg-white/20 dark:hover:text-white"
                 >
                   <Pencil className="h-3 w-3" />
                   <span>Edit Target</span>
@@ -344,7 +344,7 @@ function Dashboard() {
               </div>
 
               {/* Progress Bar with Cyan-Emerald Gradient */}
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[#10b981] via-[#06b6d4] to-[#14b8a6] transition-all duration-700 shadow-sm shadow-cyan-500/50"
                   style={{ width: `${progressPercent}%` }}
@@ -353,43 +353,43 @@ function Dashboard() {
             </div>
 
             {/* 4 Stats Metrics Row matching screenshot */}
-            <div className="mt-4 grid grid-cols-4 gap-2 border-t border-white/10 pt-3 text-center">
+            <div className="mt-4 grid grid-cols-4 gap-2 border-t border-slate-200/70 dark:border-white/10 pt-3 text-center">
               <div className="flex flex-col items-center justify-center">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-300">
-                  <FileText className="h-3.5 w-3.5 text-cyan-400" />
+                <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-300">
+                  <FileText className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span>Done</span>
                 </div>
-                <div className="mt-0.5 text-base font-extrabold text-white sm:text-lg">
+                <div className="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white sm:text-lg">
                   {todayQuestions}
                 </div>
               </div>
 
               <div className="flex flex-col items-center justify-center">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Correct</span>
                 </div>
-                <div className="mt-0.5 text-base font-extrabold text-emerald-400 sm:text-lg">
+                <div className="mt-0.5 text-base font-extrabold text-emerald-600 dark:text-emerald-400 sm:text-lg">
                   {todayCorrect}
                 </div>
               </div>
 
               <div className="flex flex-col items-center justify-center">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-rose-400">
-                  <XCircle className="h-3.5 w-3.5 text-rose-400" />
+                <div className="flex items-center gap-1 text-[11px] font-medium text-rose-600 dark:text-rose-400">
+                  <XCircle className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
                   <span>Wrong</span>
                 </div>
-                <div className="mt-0.5 text-base font-extrabold text-rose-400 sm:text-lg">
+                <div className="mt-0.5 text-base font-extrabold text-rose-600 dark:text-rose-400 sm:text-lg">
                   {todayWrong}
                 </div>
               </div>
 
               <div className="flex flex-col items-center justify-center">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-cyan-400">
-                  <Clock className="h-3.5 w-3.5 text-cyan-400" />
+                <div className="flex items-center gap-1 text-[11px] font-medium text-cyan-600 dark:text-cyan-400">
+                  <Clock className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span>Accuracy</span>
                 </div>
-                <div className="mt-0.5 text-base font-extrabold text-cyan-400 sm:text-lg">
+                <div className="mt-0.5 text-base font-extrabold text-cyan-600 dark:text-cyan-400 sm:text-lg">
                   {todayAccuracy}%
                 </div>
               </div>
@@ -425,30 +425,30 @@ function Dashboard() {
             <Link
               to="/subjects/$subject"
               params={{ subject: "Physics" }}
-              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border bg-gradient-to-br from-blue-500 via-indigo-600 to-sky-600 p-2.5 sm:p-3.5 text-white shadow-md shadow-blue-500/15 border border-blue-200/50 transition-all hover:scale-[1.02] hover:shadow-xl dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0d2754] dark:via-[#091e42] dark:to-[#05132d]"
+              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-sky-200/80 bg-gradient-to-br from-white via-white/95 to-sky-50/70 p-2.5 sm:p-3.5 text-slate-800 shadow-md shadow-sky-500/5 transition-all hover:scale-[1.02] hover:border-sky-400 hover:shadow-xl dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0f2d52] dark:via-[#143a68] dark:to-[#0c2442] dark:text-white"
             >
               <div className="flex items-start justify-between">
-                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-blue-500/20 border border-blue-400/30 text-blue-300 shadow-sm">
-                  <Atom className="h-4 w-4 sm:h-6 sm:w-6 text-blue-300" />
+                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-sky-500/10 border border-sky-300/60 text-sky-600 shadow-xs dark:bg-blue-500/20 dark:border-blue-400/30 dark:text-blue-300">
+                  <Atom className="h-4 w-4 sm:h-6 sm:w-6 text-sky-600 dark:text-blue-300" />
                 </div>
               </div>
 
               <div className="mt-2 sm:mt-3">
-                <div className="text-xs sm:text-base font-bold text-white group-hover:text-blue-200 truncate">
+                <div className="text-xs sm:text-base font-bold text-slate-900 group-hover:text-sky-600 dark:text-white dark:group-hover:text-blue-200 truncate">
                   Physics
                 </div>
-                <div className="text-[10px] sm:text-xs text-blue-200/80 truncate">
+                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-blue-200/80 truncate">
                   {subjectCounts.physics.toLocaleString()} Qs
                 </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
               <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
-                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full bg-cyan-400" style={{ width: `${subjectProgress.physics}%` }} />
+                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
+                  <div className="h-full rounded-full bg-sky-500 dark:bg-cyan-400" style={{ width: `${subjectProgress.physics}%` }} />
                 </div>
-                <span className="text-[10px] sm:text-xs font-bold text-cyan-300">{subjectProgress.physics}%</span>
-                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                <span className="text-[10px] sm:text-xs font-bold text-sky-600 dark:text-cyan-300">{subjectProgress.physics}%</span>
+                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-500 group-hover:bg-sky-100 group-hover:text-sky-700 dark:bg-white/10 dark:text-white/80 dark:group-hover:bg-white/20 dark:group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
               </div>
@@ -458,30 +458,30 @@ function Dashboard() {
             <Link
               to="/subjects/$subject"
               params={{ subject: "Chemistry" }}
-              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-teal-500/30 bg-gradient-to-br from-teal-500 via-emerald-600 to-cyan-600 p-2.5 sm:p-3.5 text-white shadow-md shadow-teal-500/15 border border-teal-200/50 transition-all hover:scale-[1.02] hover:shadow-xl dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#07362d] dark:via-[#052822] dark:to-[#031916]"
+              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-teal-200/80 bg-gradient-to-br from-white via-white/95 to-teal-50/70 p-2.5 sm:p-3.5 text-slate-800 shadow-md shadow-teal-500/5 transition-all hover:scale-[1.02] hover:border-teal-400 hover:shadow-xl dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#0d3832] dark:via-[#114740] dark:to-[#0a2e29] dark:text-white"
             >
               <div className="flex items-start justify-between">
-                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-teal-500/20 border border-teal-400/30 text-teal-300 shadow-sm">
-                  <FlaskConical className="h-4 w-4 sm:h-6 sm:w-6 text-teal-300" />
+                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-teal-500/10 border border-teal-300/60 text-teal-600 shadow-xs dark:bg-teal-500/20 dark:border-teal-400/30 dark:text-teal-300">
+                  <FlaskConical className="h-4 w-4 sm:h-6 sm:w-6 text-teal-600 dark:text-teal-300" />
                 </div>
               </div>
 
               <div className="mt-2 sm:mt-3">
-                <div className="text-xs sm:text-base font-bold text-white group-hover:text-teal-200 truncate">
+                <div className="text-xs sm:text-base font-bold text-slate-900 group-hover:text-teal-600 dark:text-white dark:group-hover:text-teal-200 truncate">
                   Chemistry
                 </div>
-                <div className="text-[10px] sm:text-xs text-teal-200/80 truncate">
+                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-teal-200/80 truncate">
                   {subjectCounts.chemistry.toLocaleString()} Qs
                 </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
               <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
-                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full bg-emerald-400" style={{ width: `${subjectProgress.chemistry}%` }} />
+                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
+                  <div className="h-full rounded-full bg-teal-500 dark:bg-emerald-400" style={{ width: `${subjectProgress.chemistry}%` }} />
                 </div>
-                <span className="text-[10px] sm:text-xs font-bold text-emerald-300">{subjectProgress.chemistry}%</span>
-                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                <span className="text-[10px] sm:text-xs font-bold text-teal-600 dark:text-emerald-300">{subjectProgress.chemistry}%</span>
+                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-700 dark:bg-white/10 dark:text-white/80 dark:group-hover:bg-white/20 dark:group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
               </div>
@@ -491,30 +491,30 @@ function Dashboard() {
             <Link
               to="/subjects/$subject"
               params={{ subject: "Biology" }}
-              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-600 p-2.5 sm:p-3.5 text-white shadow-md shadow-purple-500/15 border border-purple-200/50 transition-all hover:scale-[1.02] hover:shadow-xl dark:border-purple-500/30 dark:bg-gradient-to-br dark:from-[#2e1352] dark:via-[#210c3d] dark:to-[#150629]"
+              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-purple-200/80 bg-gradient-to-br from-white via-white/95 to-purple-50/70 p-2.5 sm:p-3.5 text-slate-800 shadow-md shadow-purple-500/5 transition-all hover:scale-[1.02] hover:border-purple-400 hover:shadow-xl dark:border-purple-500/30 dark:bg-gradient-to-br dark:from-[#2a1a44] dark:via-[#362256] dark:to-[#221438] dark:text-white"
             >
               <div className="flex items-start justify-between">
-                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-purple-500/20 border border-purple-400/30 text-purple-300 shadow-sm">
-                  <Dna className="h-4 w-4 sm:h-6 sm:w-6 text-purple-300" />
+                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-purple-500/10 border border-purple-300/60 text-purple-600 shadow-xs dark:bg-purple-500/20 dark:border-purple-400/30 dark:text-purple-300">
+                  <Dna className="h-4 w-4 sm:h-6 sm:w-6 text-purple-600 dark:text-purple-300" />
                 </div>
               </div>
 
               <div className="mt-2 sm:mt-3">
-                <div className="text-xs sm:text-base font-bold text-white group-hover:text-purple-200 truncate">
+                <div className="text-xs sm:text-base font-bold text-slate-900 group-hover:text-purple-600 dark:text-white dark:group-hover:text-purple-200 truncate">
                   Biology
                 </div>
-                <div className="text-[10px] sm:text-xs text-purple-200/80 truncate">
+                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-purple-200/80 truncate">
                   {subjectCounts.biology.toLocaleString()} Qs
                 </div>
               </div>
 
               {/* Bottom Progress Bar + Chevron */}
               <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2">
-                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full bg-purple-400" style={{ width: `${subjectProgress.biology}%` }} />
+                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
+                  <div className="h-full rounded-full bg-purple-500 dark:bg-purple-400" style={{ width: `${subjectProgress.biology}%` }} />
                 </div>
-                <span className="text-[10px] sm:text-xs font-bold text-purple-300">{subjectProgress.biology}%</span>
-                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-white/80 group-hover:bg-white/20 group-hover:text-white">
+                <span className="text-[10px] sm:text-xs font-bold text-purple-600 dark:text-purple-300">{subjectProgress.biology}%</span>
+                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-500 group-hover:bg-purple-100 group-hover:text-purple-700 dark:bg-white/10 dark:text-white/80 dark:group-hover:bg-white/20 dark:group-hover:text-white">
                   <ChevronRight className="h-3 w-3" />
                 </div>
               </div>
@@ -527,12 +527,12 @@ function Dashboard() {
             ========================================================= */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {/* Card 1: IMPROVEMENT ZONE (Top-Left) */}
-          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-white via-emerald-50/50 to-teal-50/60 p-4 text-slate-800 shadow-md shadow-emerald-500/5 transition-all hover:border-emerald-400 hover:shadow-lg dark:border-emerald-500/30 dark:bg-gradient-to-br dark:from-[#0c2a22] dark:via-[#081e18] dark:to-[#051410] dark:text-white">
+          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-white via-emerald-50/50 to-teal-50/60 p-4 text-slate-800 shadow-md shadow-emerald-500/5 transition-all hover:border-emerald-400 hover:shadow-lg dark:border-emerald-500/30 dark:bg-gradient-to-br dark:from-[#0f3229] dark:via-[#133d32] dark:to-[#0b2620] dark:text-white">
             {/* Top row */}
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-400/30">
                     <BarChart3 className="h-4 w-4" />
                   </div>
                   <div>
@@ -582,7 +582,7 @@ function Dashboard() {
           </div>
 
           {/* Card 2: GENERATE TEST (Top-Right) */}
-          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-200/80 bg-gradient-to-br from-white via-sky-50/50 to-cyan-50/60 p-4 text-slate-800 shadow-md shadow-sky-500/5 transition-all hover:border-cyan-400 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0c2647] dark:via-[#081b33] dark:to-[#051224] dark:text-white">
+          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-200/80 bg-gradient-to-br from-white via-sky-50/50 to-cyan-50/60 p-4 text-slate-800 shadow-md shadow-sky-500/5 transition-all hover:border-cyan-400 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0f2e52] dark:via-[#133a66] dark:to-[#0b243f] dark:text-white">
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
@@ -700,7 +700,7 @@ function Dashboard() {
           {/* Card 3: MOCK TESTS (Bottom-Left) */}
           <Link
             to="/mocks"
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-white via-amber-50/50 to-orange-50/60 p-4 text-slate-800 shadow-md shadow-amber-500/5 transition-all hover:border-amber-400 hover:shadow-lg dark:border-amber-500/30 dark:bg-gradient-to-br dark:from-[#321c06] dark:via-[#221303] dark:to-[#160c02] dark:text-white"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-white via-amber-50/50 to-orange-50/60 p-4 text-slate-800 shadow-md shadow-amber-500/5 transition-all hover:border-amber-400 hover:shadow-lg dark:border-amber-500/30 dark:bg-gradient-to-br dark:from-[#322314] dark:via-[#422e1b] dark:to-[#24190e] dark:text-white"
           >
             <div>
               <div className="flex items-center justify-between">
@@ -746,7 +746,7 @@ function Dashboard() {
           {/* Card 4: PYQs (Bottom-Right) */}
           <Link
             to="/pyqs"
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-blue-200/80 bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/60 p-4 text-slate-800 shadow-md shadow-blue-500/5 transition-all hover:border-blue-400 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0a2345] dark:via-[#061932] dark:to-[#041021] dark:text-white"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-blue-200/80 bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/60 p-4 text-slate-800 shadow-md shadow-blue-500/5 transition-all hover:border-blue-400 hover:shadow-lg dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0f2c4e] dark:via-[#13365e] dark:to-[#0b213b] dark:text-white"
           >
             <div>
               <div className="flex items-start justify-between">
@@ -1022,10 +1022,10 @@ function TypewriterGreeting({ name }: { name: string }) {
 
   return (
     <div className="min-h-[1.75rem]">
-      <h1 className="text-lg font-black tracking-tight text-white sm:text-2xl">
+      <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white sm:text-2xl">
         <span>{displayText}</span>
         <span
-          className={`ml-1 inline-block h-5 w-0.5 bg-emerald-300 align-middle ${isDone ? "opacity-0" : "animate-pulse"}`}
+          className={`ml-1 inline-block h-5 w-0.5 bg-emerald-500 dark:bg-emerald-300 align-middle ${isDone ? "opacity-0" : "animate-pulse"}`}
         />
       </h1>
     </div>
