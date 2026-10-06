@@ -42,6 +42,9 @@ import {
   ArrowRight,
   FileCheck,
   LayoutGrid,
+  Plus,
+  CheckSquare,
+  ListTodo,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -317,6 +320,31 @@ function Dashboard() {
                   <span>{streak}d</span>
                 </div>
                 <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-300">Study Streak</span>
+              </Link>
+            </div>
+
+                        {/* To-Do List & Time Ticket Quick Launcher */}
+            <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-teal-200/90 bg-gradient-to-r from-teal-500/10 via-cyan-500/10 to-emerald-500/10 p-2.5 backdrop-blur-xs dark:border-teal-400/30 dark:bg-white/5">
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 dark:bg-teal-500/25 dark:text-teal-300">
+                  <ListTodo className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">
+                    Today's Study Plan &amp; Time Tickets
+                  </div>
+                  <div className="text-[10px] text-slate-500 dark:text-teal-200/70">
+                    Set targeted time tickets &amp; stay disciplined
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                to="/todo"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm shadow-teal-500/20 transition-all hover:scale-[1.02] hover:from-teal-700 hover:to-emerald-700 active:scale-[0.98]"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Create Today's To-Do List</span>
               </Link>
             </div>
 

@@ -21,6 +21,7 @@ import { Route as CollaboratorsRouteImport } from './routes/collaborators'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ContestsRouteImport } from './routes/contests'
 import { Route as DailyRouteImport } from './routes/daily'
+import { Route as TodoRouteImport } from './routes/todo'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DedicatedProgramRouteImport } from './routes/dedicated-program'
 import { Route as DppRouteImport } from './routes/dpp'
@@ -405,6 +406,7 @@ export interface FileRoutesByFullPath {
   '/community': typeof CommunityRoute
   '/contests': typeof ContestsRoute
   '/daily': typeof DailyRoute
+  '/todo': typeof TodoRoute
   '/dashboard': typeof DashboardRoute
   '/dedicated-program': typeof DedicatedProgramRoute
   '/dpp': typeof DppRoute
@@ -469,6 +471,7 @@ export interface FileRoutesByTo {
   '/community': typeof CommunityRoute
   '/contests': typeof ContestsRoute
   '/daily': typeof DailyRoute
+  '/todo': typeof TodoRoute
   '/dashboard': typeof DashboardRoute
   '/dedicated-program': typeof DedicatedProgramRoute
   '/dpp': typeof DppRoute
@@ -534,6 +537,7 @@ export interface FileRoutesById {
   '/community': typeof CommunityRoute
   '/contests': typeof ContestsRoute
   '/daily': typeof DailyRoute
+  '/todo': typeof TodoRoute
   '/dashboard': typeof DashboardRoute
   '/dedicated-program': typeof DedicatedProgramRoute
   '/dpp': typeof DppRoute
@@ -600,6 +604,7 @@ export interface FileRouteTypes {
     | '/community'
     | '/contests'
     | '/daily'
+    | '/todo'
     | '/dashboard'
     | '/dedicated-program'
     | '/dpp'
@@ -664,6 +669,7 @@ export interface FileRouteTypes {
     | '/community'
     | '/contests'
     | '/daily'
+    | '/todo'
     | '/dashboard'
     | '/dedicated-program'
     | '/dpp'
@@ -728,6 +734,7 @@ export interface FileRouteTypes {
     | '/community'
     | '/contests'
     | '/daily'
+    | '/todo'
     | '/dashboard'
     | '/dedicated-program'
     | '/dpp'
@@ -793,6 +800,7 @@ export interface RootRouteChildren {
   CommunityRoute: typeof CommunityRoute
   ContestsRoute: typeof ContestsRoute
   DailyRoute: typeof DailyRoute
+  TodoRoute: typeof TodoRoute
   DashboardRoute: typeof DashboardRoute
   DedicatedProgramRoute: typeof DedicatedProgramRoute
   DppRoute: typeof DppRoute
@@ -1331,6 +1339,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityRoute: CommunityRoute,
   ContestsRoute: ContestsRoute,
   DailyRoute: DailyRoute,
+  TodoRoute: TodoRoute,
   DashboardRoute: DashboardRoute,
   DedicatedProgramRoute: DedicatedProgramRoute,
   DppRoute: DppRoute,
