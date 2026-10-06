@@ -46,6 +46,37 @@ function resolveImageUrl(url?: string | null) {
   return resolveAnyImageUrl(url);
 }
 
+function resolveOptionImageUrl(
+  q?: Question | null,
+  index?: number,
+  optText?: string | null
+): string | null {
+  if (!q || index === undefined) return null;
+  if (optText && typeof optText === "string") {
+    const trimmed = optText.trim();
+    if (trimmed && (/\.(png|jpg|jpeg|webp|svg)$/i.test(trimmed) || /optimg|img\/data/i.test(trimmed))) {
+      const resolved = resolveAnyImageUrl(trimmed);
+      if (resolved) return resolved;
+    }
+  }
+
+  const isTextEmpty = !optText || typeof optText !== "string" || optText.trim() === "";
+  if (isTextEmpty) {
+    const qImg = q.question_image_url || q.image_url || q.diagram_url || "";
+    const m = qImg.match(/^(?:([^/]+)\/)?(\d+)_(\d+)_(?:question|qtext)_[^/]+(\.[a-zA-Z0-9]+)$/i);
+    if (m) {
+      const [, subj, chap, qid, ext] = m;
+      const finalSubj = subj || q.subject_id || "physics";
+      return resolveAnyImageUrl(`${finalSubj}/${chap}_${qid}_optimg_${index + 1}_1${ext}`);
+    }
+    if (q.chapter_id && q.id) {
+      const subj = q.subject_id || "physics";
+      return resolveAnyImageUrl(`${subj}/${q.chapter_id}_${q.id}_optimg_${index + 1}_1.png`);
+    }
+  }
+  return null;
+}
+
 type Test = {
   id: string;
   title: string;
@@ -756,6 +787,16 @@ function QuizPlayer() {
       </div>
     );
 
+  if (!q) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <DrAkzaLoader text="Preparing next question..." />
+      </div>
+    );
+  }
+
+  const safeOptions = Array.isArray(q.options) && q.options.length > 0 ? q.options : ["", "", "", ""];
+
   const sourceLabel = (q.source || test.source || "").toUpperCase().includes("PYQ")
     ? "NEET PYQ"
     : q.source?.toUpperCase() === "NCERT"
@@ -917,16 +958,31 @@ function QuizPlayer() {
                   />
                 )}
                 <div className="mt-4 space-y-3">
-                  {q.options.map((opt, i) => (
-                    <div key={i} className="flex gap-3 text-[15px]">
-                      <span className="shrink-0">({i + 1})</span>
-                      <div className="min-w-0"><RichText>{opt}</RichText></div>
-                    </div>
-                  ))}
+                  {safeOptions.map((opt, i) => {
+                    const optImg = resolveOptionImageUrl(q, i, opt);
+                    return (
+                      <div key={i} className="flex gap-3 text-[15px] items-center">
+                        <span className="shrink-0 font-bold">({i + 1})</span>
+                        <div className="min-w-0 flex-1">
+                          {optImg ? (
+                            <img
+                              src={optImg}
+                              alt={`Option ${i + 1}`}
+                              className="max-h-36 max-w-full rounded border border-slate-200 bg-white p-1 object-contain"
+                              loading="lazy"
+                              onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
+                            />
+                          ) : (
+                            <RichText>{opt || `Option ${i + 1}`}</RichText>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               <div className="grid grid-cols-4 border-t border-slate-200 px-5 py-3">
-                {q.options.map((_, i) => (
+                {safeOptions.map((_, i) => (
                   <label key={i} className="flex cursor-pointer items-center gap-2 text-sm">
                     <input
                       type="radio"
@@ -1240,11 +1296,12 @@ function QuizPlayer() {
         )}
 
         <div className="mt-4 space-y-2">
-          {q.options.map((opt, i) => {
+          {safeOptions.map((opt, i) => {
             const selected = answers[q.id] === i;
             const locked = (isChapterPractice || isQuiz) && answers[q.id] !== undefined;
             const isCorrectOpt = locked && i === q.correct_index;
             const isWrongPick = locked && selected && i !== q.correct_index;
+            const optImg = resolveOptionImageUrl(q, i, opt);
             return (
               <button
                 key={i}
@@ -1287,7 +1344,20 @@ function QuizPlayer() {
                 </span>
                 <span className="h-6 w-px bg-border" />
                 <span className="flex-1">
-                  <RichText>{opt}</RichText>
+                  {optImg ? (
+                    <div className="my-1 flex items-center">
+                      <img
+                        src={optImg}
+                        alt={`Option ${i + 1}`}
+                        className="max-h-40 max-w-full rounded-md object-contain bg-white p-1"
+                        loading="lazy"
+                        onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
+                      />
+                      {opt && opt.trim() && <span className="ml-2"><RichText>{opt}</RichText></span>}
+                    </div>
+                  ) : (
+                    <RichText>{opt || `Option ${i + 1}`}</RichText>
+                  )}
                 </span>
                 <span
                   className={cn(

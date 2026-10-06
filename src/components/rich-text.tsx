@@ -114,11 +114,11 @@ export function handleImageFallback(image: HTMLImageElement) {
 }
 
 function showImageFallback(image: HTMLImageElement) {
+  // Hide the broken image only. Never insert or remove DOM nodes here:
+  // React owns this subtree, and manual mutations crash reconciliation
+  // ("This page didn't load" error boundary) when the question changes.
   image.style.display = "none";
-  const fallback = document.createElement("span");
-  fallback.className = "my-2 block rounded-lg border border-dashed border-border p-3 text-center text-xs text-muted-foreground";
-  fallback.textContent = "Question image could not be loaded.";
-  image.insertAdjacentElement("afterend", fallback);
+  image.dataset.failed = "true";
 }
 
 function normalizeRichText(src: string): string {
@@ -308,31 +308,16 @@ function renderInline(src: string): ReactNode[] {
           />,
         );
       }
-    } else if (m[5] !== undefined) {
-      // Standalone bare image path or filename (e.g. 66_25638_optimg_1_1.png, physics/xxx.png)
-      const resolved = resolveAnyImageUrl(m[5]);
-      if (resolved) {
-        out.push(
-          <img
-            key={k++}
-            src={resolved}
-            alt="option diagram"
-            loading="lazy"
-            className="my-2 block max-h-60 max-w-full rounded-lg border border-border/80 bg-white p-1 object-contain shadow-xs"
-            onError={(e) => handleImageFallback(e.currentTarget)}
-          />,
-        );
-      }
-    } else if (m[6] !== undefined || m[7] !== undefined) {
-      // Inline LaTeX
-      const tex = (m[6] ?? m[7]) as string;
+    } else if (m[5] !== undefined || m[6] !== undefined) {
+      // Inline LaTeX: $...$ or \(...\)
+      const tex = (m[5] ?? m[6]) as string;
       out.push(<SafeInlineMath key={k++} tex={tex} />);
+    } else if (m[7] !== undefined) {
+      out.push(<strong key={k++}>{m[7]}</strong>);
     } else if (m[8] !== undefined) {
-      out.push(<strong key={k++}>{m[8]}</strong>);
+      out.push(<em key={k++}>{m[8]}</em>);
     } else if (m[9] !== undefined) {
-      out.push(<em key={k++}>{m[9]}</em>);
-    } else if (m[10] !== undefined) {
-      out.push(<code key={k++} className="rounded bg-secondary px-1 py-0.5 text-[0.9em]">{m[10]}</code>);
+      out.push(<code key={k++} className="rounded bg-secondary px-1 py-0.5 text-[0.9em]">{m[9]}</code>);
     }
 
     last = m.index + m[0].length;
