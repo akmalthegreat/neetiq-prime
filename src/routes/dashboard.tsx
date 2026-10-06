@@ -297,131 +297,160 @@ function Dashboard() {
 
   return (
     <PageShell>
-      <div className="relative -mx-4 -my-8 min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-50/60 px-4 py-5 sm:-mx-6 sm:-my-10 sm:px-6 sm:py-6 lg:-mx-8 lg:px-8 dark:bg-[#070d18]">
-        {/* Subtle, refined background ambient glow */}
-        <div className="pointer-events-none absolute -top-32 -left-20 h-80 w-80 rounded-full bg-teal-500/10 blur-3xl dark:bg-teal-500/10" />
-        <div className="pointer-events-none absolute top-1/4 -right-20 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/10" />
+      <div className="relative -mx-4 -my-8 min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-900 px-4 py-5 sm:-mx-6 sm:-my-10 sm:px-6 sm:py-6 lg:-mx-8 lg:px-8">
+        {/* Living Ambient Gradient Background: Deep Sapphire + Emerald + Violet Mesh */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -left-40 h-[32rem] w-[32rem] rounded-full bg-gradient-to-br from-teal-500/25 via-emerald-500/20 to-transparent blur-3xl" />
+          <div className="absolute top-1/4 -right-40 h-[36rem] w-[36rem] rounded-full bg-gradient-to-bl from-sky-500/25 via-blue-600/20 to-transparent blur-3xl" />
+          <div className="absolute -bottom-40 left-1/3 h-[30rem] w-[30rem] rounded-full bg-gradient-to-tr from-violet-600/20 via-purple-500/15 to-transparent blur-3xl" />
+          {/* Subtle grid texture overlay for depth */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        </div>
 
         <TrialBanner />
 
         <div className="relative z-10 mx-auto max-w-5xl space-y-4 pb-10">
           {/* =========================================================
-              1. COMPACT COMMAND COCKPIT (Greeting, Target & 4 KPIs)
+              1. ASPIRANT SUMMIT HERO CARD (Motivational Medical Banner)
               ========================================================= */}
-          <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-xs backdrop-blur-md transition-all sm:p-5 dark:border-slate-800/80 dark:bg-slate-900/90 dark:shadow-md">
-            {/* Top Row: User Greeting, Quick Actions & Target Progress */}
-            <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
-              {/* Left: User Identity */}
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 via-emerald-500 to-teal-400 text-white shadow-md shadow-teal-500/20">
-                  <Atom className="h-5 w-5 animate-spin-slow" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h1 className="truncate text-base font-black tracking-tight text-slate-900 sm:text-lg dark:text-white">
-                      Hi, Dr. {firstName}
-                    </h1>
-                    <span className="shrink-0 rounded-full bg-teal-500/10 px-2 py-0.5 text-[10px] font-black text-teal-700 dark:bg-teal-500/20 dark:text-teal-300">
-                      NEET UG
+          <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-950/90 p-5 shadow-2xl backdrop-blur-xl transition-all sm:p-6 dark:border-white/10">
+            {/* Mountain sunrise aesthetic background layer */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-35">
+              <img
+                src="/assets/dashboard-summit.jpg"
+                alt=""
+                className="h-full w-full object-cover object-center filter saturate-125"
+                onError={(e) => {
+                  // Fallback to high-res Unsplash summit if local asset isn't resolved yet
+                  (e.currentTarget as HTMLImageElement).src =
+                    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent" />
+            </div>
+
+            {/* Content atop summit hero */}
+            <div className="relative z-10 flex flex-col gap-4">
+              {/* Top Row: Doctor identity & Quick badges */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3.5">
+                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 shadow-lg shadow-emerald-500/30">
+                    <Atom className="h-6 w-6 text-slate-950" />
+                    <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-slate-900 bg-emerald-500" />
                     </span>
                   </div>
-                  <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                    Aiming for 700+ | AIIMS New Delhi
-                  </p>
+
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h1 className="truncate text-lg font-black tracking-tight text-white sm:text-2xl">
+                        Hi, Dr. {firstName}
+                      </h1>
+                      <span className="shrink-0 rounded-full border border-emerald-400/30 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-300 backdrop-blur-md">
+                        NEET 2026 Target
+                      </span>
+                    </div>
+                    <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 sm:text-sm">
+                      <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                      <span>Aiming for 700+ | AIIMS New Delhi</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Badges on Hero */}
+                <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                  <Link
+                    to="/todo"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-teal-400/30 bg-teal-500/15 px-3 py-1.5 text-xs font-bold text-teal-200 backdrop-blur-md transition-all hover:bg-teal-500/25 active:scale-95"
+                  >
+                    <ListTodo className="h-3.5 w-3.5 text-teal-300" />
+                    <span>Study Planner</span>
+                  </Link>
+
+                  <Link
+                    to="/leaderboard"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-amber-400/30 bg-amber-500/15 px-3 py-1.5 text-xs font-bold text-amber-200 backdrop-blur-md transition-all hover:bg-amber-500/25 active:scale-95"
+                  >
+                    <Flame className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    <span>{streak}d Streak</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => setGoalDialog(true)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 active:scale-95"
+                  >
+                    <Pencil className="h-3 w-3 text-slate-300" />
+                    <span>Daily Target</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Right: Quick Action Badges */}
-              <div className="flex items-center gap-2 self-start sm:self-auto">
-                <Link
-                  to="/todo"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-teal-200/80 bg-teal-50/70 px-2.5 py-1.5 text-xs font-bold text-teal-800 transition-all hover:bg-teal-100 hover:shadow-xs active:scale-95 dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-300"
-                >
-                  <ListTodo className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
-                  <span>Planner</span>
-                </Link>
-
-                <Link
-                  to="/leaderboard"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200/80 bg-amber-50/70 px-2.5 py-1.5 text-xs font-bold text-amber-800 transition-all hover:bg-amber-100 hover:shadow-xs active:scale-95 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
-                >
-                  <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                  <span>{streak}d Streak</span>
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => setGoalDialog(true)}
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-slate-700 transition-all hover:border-slate-300 hover:bg-white active:scale-95 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
-                >
-                  <Pencil className="h-3 w-3 text-slate-500" />
-                  <span>Target</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Target Progress Bar Ribbon */}
-            <div className="mt-3.5 rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 sm:p-3 dark:border-slate-800/60 dark:bg-slate-800/40">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
-                  <Target className="h-3.5 w-3.5 text-emerald-500" />
-                  <span>Daily Goal</span>
-                  <span className="text-slate-400">·</span>
-                  <span className="font-semibold text-slate-500 dark:text-slate-400">
-                    {todayCorrect + todayWrong} / {dailyGoal} MCQs
+              {/* Daily Target Progress Strip */}
+              <div className="rounded-2xl border border-white/15 bg-slate-900/70 p-3.5 backdrop-blur-md">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 font-bold text-white">
+                    <Target className="h-4 w-4 text-emerald-400" />
+                    <span>Today's MCQ Target</span>
+                    <span className="text-slate-500">·</span>
+                    <span className="font-semibold text-slate-300">
+                      {todayCorrect + todayWrong} / {dailyGoal} Solved
+                    </span>
+                  </div>
+                  <span className="font-black text-emerald-400">
+                    {progressPercent}% Completed
                   </span>
                 </div>
-                <span className="font-black text-emerald-600 dark:text-emerald-400">
-                  {progressPercent}%
-                </span>
-              </div>
-              <div className="relative mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-700 ease-out"
-                  style={{ width: `${Math.max(0, Math.min(100, progressPercent))}%` }}
-                />
-              </div>
-            </div>
-
-            {/* 4 Compact KPIs Row */}
-            <div className="mt-3 grid grid-cols-4 gap-2 pt-1 text-center">
-              <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2 dark:border-slate-800/60 dark:bg-slate-800/40">
-                <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-500 sm:text-[11px] dark:text-slate-400">
-                  <FileText className="h-3 w-3 text-blue-500" />
-                  <span>Solved</span>
-                </div>
-                <div className="mt-0.5 text-sm font-black text-slate-900 sm:text-base dark:text-white">
-                  {todayQuestions}
+                <div className="relative mt-2.5 h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-teal-400 via-emerald-400 to-cyan-400 shadow-sm shadow-emerald-400/50 transition-all duration-700 ease-out"
+                    style={{ width: `${Math.max(0, Math.min(100, progressPercent))}%` }}
+                  />
                 </div>
               </div>
 
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-2 dark:border-emerald-950/40 dark:bg-emerald-950/20">
-                <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-emerald-700 sm:text-[11px] dark:text-emerald-400">
-                  <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                  <span>Correct</span>
+              {/* 4 Compact Vitals */}
+              <div className="grid grid-cols-4 gap-2 pt-0.5 text-center">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 backdrop-blur-md">
+                  <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-400 sm:text-[11px]">
+                    <FileText className="h-3 w-3 text-sky-400" />
+                    <span>Solved</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-black text-white sm:text-lg">
+                    {todayQuestions}
+                  </div>
                 </div>
-                <div className="mt-0.5 text-sm font-black text-emerald-600 sm:text-base dark:text-emerald-400">
-                  {todayCorrect}
-                </div>
-              </div>
 
-              <div className="rounded-xl border border-rose-100 bg-rose-50/40 p-2 dark:border-rose-950/40 dark:bg-rose-950/20">
-                <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-rose-700 sm:text-[11px] dark:text-rose-400">
-                  <XCircle className="h-3 w-3 text-rose-500" />
-                  <span>Wrong</span>
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 backdrop-blur-md">
+                  <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-emerald-300 sm:text-[11px]">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                    <span>Correct</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-black text-emerald-400 sm:text-lg">
+                    {todayCorrect}
+                  </div>
                 </div>
-                <div className="mt-0.5 text-sm font-black text-rose-600 sm:text-base dark:text-rose-400">
-                  {todayWrong}
-                </div>
-              </div>
 
-              <div className="rounded-xl border border-teal-100 bg-teal-50/40 p-2 dark:border-teal-950/40 dark:bg-teal-950/20">
-                <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-teal-700 sm:text-[11px] dark:text-teal-400">
-                  <Clock className="h-3 w-3 text-teal-500" />
-                  <span>Accuracy</span>
+                <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-2.5 backdrop-blur-md">
+                  <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-rose-300 sm:text-[11px]">
+                    <XCircle className="h-3 w-3 text-rose-400" />
+                    <span>Wrong</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-black text-rose-400 sm:text-lg">
+                    {todayWrong}
+                  </div>
                 </div>
-                <div className="mt-0.5 text-sm font-black text-teal-600 sm:text-base dark:text-teal-400">
-                  {todayAccuracy}%
+
+                <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-2.5 backdrop-blur-md">
+                  <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-cyan-300 sm:text-[11px]">
+                    <Clock className="h-3 w-3 text-cyan-400" />
+                    <span>Accuracy</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-black text-cyan-400 sm:text-lg">
+                    {todayAccuracy}%
+                  </div>
                 </div>
               </div>
             </div>
