@@ -277,7 +277,16 @@ function Dashboard() {
   };
 
   if (loading || !user) {
-      return (
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const firstName = profile?.full_name?.trim()?.split(" ")[0] || user?.email?.split("@")[0] || "Doctor";
+
+  return (
     <PageShell>
       <div className="relative -mx-4 -my-8 overflow-hidden px-4 py-6 sm:-mx-6 sm:-my-10 sm:px-6 sm:py-8 lg:-mx-8 lg:px-8 bg-slate-50/60 dark:bg-[#070d18] min-h-[calc(100vh-4rem)]">
         {/* Subtle, refined background ambient glow */}
@@ -370,7 +379,7 @@ function Dashboard() {
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
-                    style={{ width:  }}
+                    style={{ width: `${progressPercent}%` }}
                   />
                 </div>
               </div>
@@ -465,7 +474,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div className="h-full rounded-full bg-sky-500" style={{ width:  }} />
+                  <div className="h-full rounded-full bg-sky-500" style={{ width: `${subjectProgress.physics}%` }} />
                 </div>
               </Link>
 
@@ -490,7 +499,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div className="h-full rounded-full bg-teal-500" style={{ width:  }} />
+                  <div className="h-full rounded-full bg-teal-500" style={{ width: `${subjectProgress.chemistry}%` }} />
                 </div>
               </Link>
 
@@ -515,7 +524,7 @@ function Dashboard() {
                   </div>
                 </div>
                 <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                  <div className="h-full rounded-full bg-purple-500" style={{ width:  }} />
+                  <div className="h-full rounded-full bg-purple-500" style={{ width: `${subjectProgress.biology}%` }} />
                 </div>
               </Link>
             </div>
@@ -899,7 +908,11 @@ function Dashboard() {
                         key={preset}
                         type="button"
                         onClick={() => setGoalDraft(preset)}
-                        className={}
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
+                          goalDraft === preset
+                            ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                        }`}
                       >
                         {preset} MCQs
                       </button>
@@ -951,7 +964,7 @@ function TypewriterGreeting({ name }: { name: string }) {
     const hour = new Date().getHours();
     const salutation =
       hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-    const target = ;
+    const target = `${salutation}, ${name || "student"}!`;
 
     let idx = 0;
     setDisplayText("");
@@ -975,7 +988,7 @@ function TypewriterGreeting({ name }: { name: string }) {
       <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white sm:text-2xl">
         <span>{displayText}</span>
         <span
-          className={}
+          className="ml-1 inline-block h-5 w-0.5 animate-pulse bg-primary align-middle"
         />
       </h1>
     </div>

@@ -21,7 +21,6 @@ import { Route as CollaboratorsRouteImport } from './routes/collaborators'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ContestsRouteImport } from './routes/contests'
 import { Route as DailyRouteImport } from './routes/daily'
-import { Route as TodoRouteImport } from './routes/todo'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DedicatedProgramRouteImport } from './routes/dedicated-program'
 import { Route as DppRouteImport } from './routes/dpp'
@@ -44,6 +43,7 @@ import { Route as PyqsRouteImport } from './routes/pyqs'
 import { Route as ReferralsRouteImport } from './routes/referrals'
 import { Route as ScorePredictorRouteImport } from './routes/score-predictor'
 import { Route as SubscriptionRouteImport } from './routes/subscription'
+import { Route as TodoRouteImport } from './routes/todo'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
@@ -131,11 +131,6 @@ const ContestsRoute = ContestsRouteImport.update({
 const DailyRoute = DailyRouteImport.update({
   id: '/daily',
   path: '/daily',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TodoRoute = TodoRouteImport.update({
-  id: '/todo',
-  path: '/todo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -246,6 +241,11 @@ const ScorePredictorRoute = ScorePredictorRouteImport.update({
 const SubscriptionRoute = SubscriptionRouteImport.update({
   id: '/subscription',
   path: '/subscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TodoRoute = TodoRouteImport.update({
+  id: '/todo',
+  path: '/todo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WalletRoute = WalletRouteImport.update({
@@ -411,7 +411,6 @@ export interface FileRoutesByFullPath {
   '/community': typeof CommunityRoute
   '/contests': typeof ContestsRoute
   '/daily': typeof DailyRoute
-  '/todo': typeof TodoRoute
   '/dashboard': typeof DashboardRoute
   '/dedicated-program': typeof DedicatedProgramRoute
   '/dpp': typeof DppRoute
@@ -434,6 +433,7 @@ export interface FileRoutesByFullPath {
   '/referrals': typeof ReferralsRoute
   '/score-predictor': typeof ScorePredictorRoute
   '/subscription': typeof SubscriptionRoute
+  '/todo': typeof TodoRoute
   '/wallet': typeof WalletRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/inbox': typeof AdminInboxRoute
@@ -476,7 +476,6 @@ export interface FileRoutesByTo {
   '/community': typeof CommunityRoute
   '/contests': typeof ContestsRoute
   '/daily': typeof DailyRoute
-  '/todo': typeof TodoRoute
   '/dashboard': typeof DashboardRoute
   '/dedicated-program': typeof DedicatedProgramRoute
   '/dpp': typeof DppRoute
@@ -499,6 +498,7 @@ export interface FileRoutesByTo {
   '/referrals': typeof ReferralsRoute
   '/score-predictor': typeof ScorePredictorRoute
   '/subscription': typeof SubscriptionRoute
+  '/todo': typeof TodoRoute
   '/wallet': typeof WalletRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/inbox': typeof AdminInboxRoute
@@ -542,7 +542,6 @@ export interface FileRoutesById {
   '/community': typeof CommunityRoute
   '/contests': typeof ContestsRoute
   '/daily': typeof DailyRoute
-  '/todo': typeof TodoRoute
   '/dashboard': typeof DashboardRoute
   '/dedicated-program': typeof DedicatedProgramRoute
   '/dpp': typeof DppRoute
@@ -565,6 +564,7 @@ export interface FileRoutesById {
   '/referrals': typeof ReferralsRoute
   '/score-predictor': typeof ScorePredictorRoute
   '/subscription': typeof SubscriptionRoute
+  '/todo': typeof TodoRoute
   '/wallet': typeof WalletRoute
   '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/inbox': typeof AdminInboxRoute
@@ -609,7 +609,6 @@ export interface FileRouteTypes {
     | '/community'
     | '/contests'
     | '/daily'
-    | '/todo'
     | '/dashboard'
     | '/dedicated-program'
     | '/dpp'
@@ -632,6 +631,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/score-predictor'
     | '/subscription'
+    | '/todo'
     | '/wallet'
     | '/admin/feedback'
     | '/admin/inbox'
@@ -674,7 +674,6 @@ export interface FileRouteTypes {
     | '/community'
     | '/contests'
     | '/daily'
-    | '/todo'
     | '/dashboard'
     | '/dedicated-program'
     | '/dpp'
@@ -697,6 +696,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/score-predictor'
     | '/subscription'
+    | '/todo'
     | '/wallet'
     | '/admin/feedback'
     | '/admin/inbox'
@@ -739,7 +739,6 @@ export interface FileRouteTypes {
     | '/community'
     | '/contests'
     | '/daily'
-    | '/todo'
     | '/dashboard'
     | '/dedicated-program'
     | '/dpp'
@@ -762,6 +761,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/score-predictor'
     | '/subscription'
+    | '/todo'
     | '/wallet'
     | '/admin/feedback'
     | '/admin/inbox'
@@ -805,7 +805,6 @@ export interface RootRouteChildren {
   CommunityRoute: typeof CommunityRoute
   ContestsRoute: typeof ContestsRoute
   DailyRoute: typeof DailyRoute
-  TodoRoute: typeof TodoRoute
   DashboardRoute: typeof DashboardRoute
   DedicatedProgramRoute: typeof DedicatedProgramRoute
   DppRoute: typeof DppRoute
@@ -828,6 +827,7 @@ export interface RootRouteChildren {
   ReferralsRoute: typeof ReferralsRoute
   ScorePredictorRoute: typeof ScorePredictorRoute
   SubscriptionRoute: typeof SubscriptionRoute
+  TodoRoute: typeof TodoRoute
   WalletRoute: typeof WalletRoute
   AnalysisAttemptIdRoute: typeof AnalysisAttemptIdRoute
   ContestContestIdRoute: typeof ContestContestIdRouteWithChildren
@@ -1091,6 +1091,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubscriptionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/todo': {
+      id: '/todo'
+      path: '/todo'
+      fullPath: '/todo'
+      preLoaderRoute: typeof TodoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wallet': {
       id: '/wallet'
       path: '/wallet'
@@ -1344,7 +1351,6 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityRoute: CommunityRoute,
   ContestsRoute: ContestsRoute,
   DailyRoute: DailyRoute,
-  TodoRoute: TodoRoute,
   DashboardRoute: DashboardRoute,
   DedicatedProgramRoute: DedicatedProgramRoute,
   DppRoute: DppRoute,
@@ -1367,6 +1373,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReferralsRoute: ReferralsRoute,
   ScorePredictorRoute: ScorePredictorRoute,
   SubscriptionRoute: SubscriptionRoute,
+  TodoRoute: TodoRoute,
   WalletRoute: WalletRoute,
   AnalysisAttemptIdRoute: AnalysisAttemptIdRoute,
   ContestContestIdRoute: ContestContestIdRouteWithChildren,
