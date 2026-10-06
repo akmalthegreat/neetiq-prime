@@ -790,7 +790,7 @@ function QuizPlayer() {
   if (!q) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <DrAkzaLoader text="Preparing next question..." />
+        <DrAkzaLoader message="Preparing next question..." />
       </div>
     );
   }

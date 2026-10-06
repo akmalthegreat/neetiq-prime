@@ -3,6 +3,7 @@ import { Sparkles } from "lucide-react";
 
 interface DrAkzaLoaderProps {
   message?: string;
+  text?: string;
   subMessage?: string;
   fullScreen?: boolean;
   size?: "sm" | "md" | "lg";
@@ -10,7 +11,9 @@ interface DrAkzaLoaderProps {
 }
 
 export function DrAkzaLoader({
-  message = "Dr. Akza is preparing your session...",
+  message,
+  text,
+
   subMessage,
   fullScreen = false,
   size = "md",
@@ -22,6 +25,7 @@ export function DrAkzaLoader({
     lg: "w-48 h-48 md:w-56 md:h-56",
   };
 
+  const displayMessage = message || text || "Dr. Akza is preparing your session...";
   const content = (
     <div className={`flex flex-col items-center justify-center text-center p-6 select-none ${className}`}>
       {/* Frameless Mascot: Dr. Akza floats freely without clipping or frame box */}
@@ -46,7 +50,7 @@ export function DrAkzaLoader({
       {/* Dynamic Animated Status Text */}
       <div className="space-y-1.5 max-w-sm">
         <h3 className="text-base md:text-lg font-bold text-foreground tracking-tight flex items-center justify-center gap-1.5">
-          <span>{message}</span>
+          <span>{displayMessage}</span>
           <span className="inline-flex gap-0.5 ml-0.5">
             <span
               className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce"

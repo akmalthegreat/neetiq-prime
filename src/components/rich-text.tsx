@@ -33,6 +33,11 @@ export function RichText({ children, className }: { children?: string | null; cl
   }
 }
 
+export function formatCdnUrl(path: string): string {
+  const clean = path.replace(/^\/+/, "");
+  return `${QUESTION_IMAGE_CDN_BASE}/${clean}`;
+}
+
 export function resolveAnyImageUrl(url?: string | null): string | null {
   if (!url) return null;
   const trimmed = url.trim().replace(/^['"\s]+|['"\s]+$/g, "");
