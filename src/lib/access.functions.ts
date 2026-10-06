@@ -65,10 +65,14 @@ export const getMyAccess = createServerFn({ method: "GET" })
 
     if (subActive) {
       const feat = (sub as any).batches?.features ?? {};
-      const features = Object.entries(feat).filter(([, v]) => !!v).map(([k]) => k);
+      let features = Object.entries(feat).filter(([, v]) => !!v).map(([k]) => k);
+      // If subscription has no restrictive batch attached, or features array is empty, grant all features
+      if (!sub?.source_batch_id || features.length === 0) {
+        features = ["*"];
+      }
       // Derive tier from feature count
       let tier: AccessTier = "essential";
-      if (features.includes("neetlab") || features.includes("battlegrounds") || features.includes("dedicated_program")) tier = "elite";
+      if (features.includes("*") || features.includes("neetlab") || features.includes("battlegrounds") || features.includes("dedicated_program")) tier = "elite";
       else if (features.includes("flashcards") || features.includes("ai_path")) tier = "prime";
       return {
         tier,
