@@ -452,14 +452,14 @@ function Dashboard() {
           <div>
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5 fill-teal-500 text-teal-500" />
-                <span className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                <Zap className="h-3.5 w-3.5 fill-teal-400 text-teal-400" />
+                <span className="text-xs font-black uppercase tracking-wider text-slate-100">
                   SUBJECT MASTERY
                 </span>
               </div>
               <Link
                 to="/dpp"
-                className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400"
+                className="inline-flex items-center gap-1 text-xs font-bold text-teal-400 transition-colors hover:text-teal-300"
               >
                 <span>Question Bank</span>
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -471,26 +471,36 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Physics" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-sky-200/70 bg-sky-50/50 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/15 active:scale-[0.98] dark:border-sky-900/40"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-400/40 bg-slate-900 p-2.5 sm:p-3.5 shadow-lg shadow-sky-950/50 transition-all duration-300 hover:-translate-y-1 hover:border-sky-300 hover:shadow-xl hover:shadow-sky-500/20 active:scale-[0.98]"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/15 text-sky-600 sm:h-8 sm:w-8 dark:bg-sky-500/20 dark:text-sky-400">
+                {/* Themed Physics Background Illustration */}
+                <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                  <img
+                    src="/assets/dashboard/bg-physics.svg"
+                    alt=""
+                    className="h-full w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
+                </div>
+
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-sky-400/40 bg-sky-500/20 text-sky-200 backdrop-blur-md sm:h-8 sm:w-8">
                     <Atom className="h-4 w-4" />
                   </div>
-                  <span className="text-[11px] font-black text-sky-600 dark:text-sky-400">
+                  <span className="text-[11px] font-black text-sky-300 drop-shadow-sm">
                     {subjectProgress.physics}%
                   </span>
                 </div>
-                <div className="mt-2">
-                  <div className="truncate text-xs font-bold text-slate-900 group-hover:text-sky-600 sm:text-sm dark:text-white dark:group-hover:text-sky-400">
+                <div className="relative z-10 mt-3">
+                  <div className="truncate text-xs font-bold text-white group-hover:text-sky-200 sm:text-sm drop-shadow-sm">
                     Physics
                   </div>
-                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-sky-400/30 bg-sky-500/15 px-2 py-0.5 text-[11px] font-bold text-sky-900 shadow-2xs dark:border-sky-400/40 dark:bg-sky-400/20 dark:text-sky-100">
+                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-sky-400/40 bg-sky-950/80 px-2 py-0.5 text-[11px] font-bold text-sky-200 backdrop-blur-md shadow-xs">
                     <span>{subjectCounts.physics.toLocaleString()} MCQs</span>
                   </div>
-                  <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-950/60 p-0.5 border border-sky-400/20">
                     <div
-                      className="h-full rounded-full bg-sky-500 transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-sky-400 to-cyan-300 shadow-sm shadow-sky-400/60 transition-all duration-500"
                       style={{ width: `${Math.max(0, Math.min(100, subjectProgress.physics))}%` }}
                     />
                   </div>
@@ -501,26 +511,36 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Chemistry" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-teal-200/70 bg-teal-50/50 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-md hover:shadow-teal-500/15 active:scale-[0.98] dark:border-teal-900/40"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-400/40 bg-slate-900 p-2.5 sm:p-3.5 shadow-lg shadow-emerald-950/50 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-500/20 active:scale-[0.98]"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 sm:h-8 sm:w-8 dark:bg-teal-500/20 dark:text-teal-400">
+                {/* Themed Chemistry Background Illustration */}
+                <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                  <img
+                    src="/assets/dashboard/bg-chemistry.svg"
+                    alt=""
+                    className="h-full w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
+                </div>
+
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-emerald-400/40 bg-emerald-500/20 text-emerald-200 backdrop-blur-md sm:h-8 sm:w-8">
                     <FlaskConical className="h-4 w-4" />
                   </div>
-                  <span className="text-[11px] font-black text-teal-600 dark:text-teal-400">
+                  <span className="text-[11px] font-black text-emerald-300 drop-shadow-sm">
                     {subjectProgress.chemistry}%
                   </span>
                 </div>
-                <div className="mt-2">
-                  <div className="truncate text-xs font-bold text-slate-900 group-hover:text-teal-600 sm:text-sm dark:text-white dark:group-hover:text-teal-400">
+                <div className="relative z-10 mt-3">
+                  <div className="truncate text-xs font-bold text-white group-hover:text-emerald-200 sm:text-sm drop-shadow-sm">
                     Chemistry
                   </div>
-                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-teal-400/30 bg-teal-500/15 px-2 py-0.5 text-[11px] font-bold text-teal-900 shadow-2xs dark:border-teal-400/40 dark:bg-teal-400/20 dark:text-teal-100">
+                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-emerald-400/40 bg-emerald-950/80 px-2 py-0.5 text-[11px] font-bold text-emerald-200 backdrop-blur-md shadow-xs">
                     <span>{subjectCounts.chemistry.toLocaleString()} MCQs</span>
                   </div>
-                  <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-950/60 p-0.5 border border-emerald-400/20">
                     <div
-                      className="h-full rounded-full bg-teal-500 transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 shadow-sm shadow-emerald-400/60 transition-all duration-500"
                       style={{ width: `${Math.max(0, Math.min(100, subjectProgress.chemistry))}%` }}
                     />
                   </div>
@@ -531,26 +551,36 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Biology" }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-purple-200/70 bg-purple-50/50 dark:bg-slate-900/90 p-2.5 sm:p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-400 hover:shadow-md hover:shadow-purple-500/15 active:scale-[0.98] dark:border-purple-900/40"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-purple-400/40 bg-slate-900 p-2.5 sm:p-3.5 shadow-lg shadow-purple-950/50 transition-all duration-300 hover:-translate-y-1 hover:border-purple-300 hover:shadow-xl hover:shadow-purple-500/20 active:scale-[0.98]"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 sm:h-8 sm:w-8 dark:bg-purple-500/20 dark:text-purple-400">
+                {/* Themed Biology Background Illustration */}
+                <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                  <img
+                    src="/assets/dashboard/bg-biology.svg"
+                    alt=""
+                    className="h-full w-full object-cover opacity-90 transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
+                </div>
+
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-xl border border-purple-400/40 bg-purple-500/20 text-purple-200 backdrop-blur-md sm:h-8 sm:w-8">
                     <Dna className="h-4 w-4" />
                   </div>
-                  <span className="text-[11px] font-black text-purple-600 dark:text-purple-400">
+                  <span className="text-[11px] font-black text-purple-300 drop-shadow-sm">
                     {subjectProgress.biology}%
                   </span>
                 </div>
-                <div className="mt-2">
-                  <div className="truncate text-xs font-bold text-slate-900 group-hover:text-purple-600 sm:text-sm dark:text-white dark:group-hover:text-purple-400">
+                <div className="relative z-10 mt-3">
+                  <div className="truncate text-xs font-bold text-white group-hover:text-purple-200 sm:text-sm drop-shadow-sm">
                     Biology
                   </div>
-                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-purple-400/30 bg-purple-500/15 px-2 py-0.5 text-[11px] font-bold text-purple-900 shadow-2xs dark:border-purple-400/40 dark:bg-purple-400/20 dark:text-purple-100">
+                  <div className="mt-1 inline-flex items-center gap-1 rounded-md border border-purple-400/40 bg-purple-950/80 px-2 py-0.5 text-[11px] font-bold text-purple-200 backdrop-blur-md shadow-xs">
                     <span>{subjectCounts.biology.toLocaleString()} MCQs</span>
                   </div>
-                  <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-950/60 p-0.5 border border-purple-400/20">
                     <div
-                      className="h-full rounded-full bg-purple-500 transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-purple-400 to-fuchsia-300 shadow-sm shadow-purple-400/60 transition-all duration-500"
                       style={{ width: `${Math.max(0, Math.min(100, subjectProgress.biology))}%` }}
                     />
                   </div>
@@ -564,20 +594,20 @@ function Dashboard() {
               ========================================================= */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {/* Card 1: Quick Test Generator */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-200/70 bg-sky-50/30 p-3.5 shadow-2xs backdrop-blur-md transition-all hover:border-sky-400 hover:shadow-md hover:shadow-sky-500/10 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-sky-900 sm:p-4">
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-3.5 shadow-xl backdrop-blur-md transition-all hover:border-sky-400/50 sm:p-4">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/15 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400">
                       <Sparkles className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                    <span className="text-xs font-black uppercase tracking-wider text-white">
                       Quick Test Generator
                     </span>
                   </div>
                   <Link
                     to="/generate"
-                    className="text-[11px] font-bold text-sky-600 hover:text-sky-700 dark:text-sky-400"
+                    className="text-[11px] font-bold text-sky-400 hover:text-sky-300"
                   >
                     Custom →
                   </Link>
@@ -590,7 +620,7 @@ function Dashboard() {
                     <select
                       value={genQuestions}
                       onChange={(e) => setGenQuestions(Number(e.target.value))}
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-bold text-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      className="w-full rounded-lg border border-slate-700 bg-slate-800/90 px-2 py-1 text-xs font-bold text-white focus:outline-none focus:border-sky-400"
                     >
                       <option value={20}>20 Qs</option>
                       <option value={30}>30 Qs</option>
@@ -604,7 +634,7 @@ function Dashboard() {
                     <select
                       value={genDifficulty}
                       onChange={(e) => setGenDifficulty(e.target.value)}
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-bold text-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      className="w-full rounded-lg border border-slate-700 bg-slate-800/90 px-2 py-1 text-xs font-bold text-white focus:outline-none focus:border-sky-400"
                     >
                       <option value="Mixed">Mixed</option>
                       <option value="Easy">Easy</option>
@@ -618,7 +648,7 @@ function Dashboard() {
                     <select
                       value={genTimer}
                       onChange={(e) => setGenTimer(Number(e.target.value))}
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-bold text-slate-800 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      className="w-full rounded-lg border border-slate-700 bg-slate-800/90 px-2 py-1 text-xs font-bold text-white focus:outline-none focus:border-sky-400"
                     >
                       <option value={30}>30 min</option>
                       <option value={60}>60 min</option>
@@ -632,7 +662,7 @@ function Dashboard() {
               <div className="mt-3.5">
                 <Button
                   asChild
-                  className="w-full rounded-xl bg-gradient-to-r from-sky-600 via-teal-600 to-emerald-600 font-bold text-white shadow-xs transition-all hover:from-sky-500 hover:to-emerald-500 active:scale-[0.98]"
+                  className="w-full rounded-xl bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600 font-bold text-white shadow-md shadow-emerald-500/20 transition-all hover:brightness-110 active:scale-[0.98]"
                 >
                   <Link
                     to="/generate"
@@ -646,58 +676,97 @@ function Dashboard() {
             </div>
 
             {/* Card 2: Improvement Hub */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-3.5 shadow-2xs backdrop-blur-md transition-all hover:border-emerald-300 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-emerald-900 sm:p-4">
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-3.5 shadow-xl backdrop-blur-md transition-all hover:border-emerald-400/50 sm:p-4">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
                       <BarChart3 className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                    <span className="text-xs font-black uppercase tracking-wider text-white">
                       Improvement Zone
                     </span>
                   </div>
                   <Link
                     to="/analytics"
-                    className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
+                    className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300"
                   >
                     Deep Dive →
                   </Link>
                 </div>
 
-                <p className="mt-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-[11px] font-medium text-slate-300">
                   Target weak topics and eliminate negative marking
                 </p>
 
                 <div className="mt-3 grid grid-cols-3 gap-2">
+                  {/* Mistakes Button with Themed Background */}
                   <Link
                     to="/mistakes"
-                    className="group flex flex-col items-center justify-center rounded-xl border border-rose-200/70 bg-rose-50/50 p-2.5 text-center transition-all hover:border-rose-400 hover:shadow-xs active:scale-95 dark:border-rose-900/40 dark:bg-rose-950/20"
+                    className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-rose-400/40 bg-slate-950 p-2.5 text-center shadow-md transition-all hover:-translate-y-0.5 hover:border-rose-300 hover:shadow-lg hover:shadow-rose-500/20 active:scale-95"
                   >
-                    <XCircle className="h-4 w-4 text-rose-500" />
-                    <span className="mt-1 text-[11px] font-bold text-rose-800 dark:text-rose-300">
-                      Mistakes
-                    </span>
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-mistakes.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
+                    </div>
+                    <div className="relative z-10 flex flex-col items-center justify-center">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-rose-400/40 bg-rose-500/25 text-rose-200 backdrop-blur-md">
+                        <XCircle className="h-4 w-4" />
+                      </div>
+                      <span className="mt-1 text-[11px] font-bold text-white group-hover:text-rose-200 drop-shadow-xs">
+                        Mistakes
+                      </span>
+                    </div>
                   </Link>
 
+                  {/* Bookmarks Button with Themed Background */}
                   <Link
                     to="/bookmarks"
-                    className="group flex flex-col items-center justify-center rounded-xl border border-amber-200/70 bg-amber-50/50 p-2.5 text-center transition-all hover:border-amber-400 hover:shadow-xs active:scale-95 dark:border-amber-900/40 dark:bg-amber-950/20"
+                    className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-amber-400/40 bg-slate-950 p-2.5 text-center shadow-md transition-all hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95"
                   >
-                    <Bookmark className="h-4 w-4 text-amber-500" />
-                    <span className="mt-1 text-[11px] font-bold text-amber-800 dark:text-amber-300">
-                      Bookmarks
-                    </span>
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-bookmarks.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
+                    </div>
+                    <div className="relative z-10 flex flex-col items-center justify-center">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-amber-400/40 bg-amber-500/25 text-amber-200 backdrop-blur-md">
+                        <Bookmark className="h-4 w-4" />
+                      </div>
+                      <span className="mt-1 text-[11px] font-bold text-white group-hover:text-amber-200 drop-shadow-xs">
+                        Bookmarks
+                      </span>
+                    </div>
                   </Link>
 
+                  {/* Analytics Button with Themed Background */}
                   <Link
                     to="/analytics"
-                    className="group flex flex-col items-center justify-center rounded-xl border border-teal-200/70 bg-teal-50/50 p-2.5 text-center transition-all hover:border-teal-400 hover:shadow-xs active:scale-95 dark:border-teal-900/40 dark:bg-teal-950/20"
+                    className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-teal-400/40 bg-slate-950 p-2.5 text-center shadow-md transition-all hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-lg hover:shadow-teal-500/20 active:scale-95"
                   >
-                    <TrendingUp className="h-4 w-4 text-teal-500" />
-                    <span className="mt-1 text-[11px] font-bold text-teal-800 dark:text-teal-300">
-                      Analytics
-                    </span>
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-analytics.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent" />
+                    </div>
+                    <div className="relative z-10 flex flex-col items-center justify-center">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-teal-400/40 bg-teal-500/25 text-teal-200 backdrop-blur-md">
+                        <TrendingUp className="h-4 w-4" />
+                      </div>
+                      <span className="mt-1 text-[11px] font-bold text-white group-hover:text-teal-200 drop-shadow-xs">
+                        Analytics
+                      </span>
+                    </div>
                   </Link>
                 </div>
               </div>
@@ -705,7 +774,7 @@ function Dashboard() {
               <div className="mt-3.5">
                 <Link
                   to="/mistakes"
-                  className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2 text-xs font-bold text-slate-700 transition-all hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300"
+                  className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 transition-all hover:bg-white/10 hover:text-white"
                 >
                   <span className="text-[11px]">Resolve Past Mistakes</span>
                   <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
@@ -714,49 +783,79 @@ function Dashboard() {
             </div>
 
             {/* Card 3: Mocks & PYQs Hub */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-200/70 bg-amber-50/30 p-3.5 shadow-2xs backdrop-blur-md transition-all hover:border-amber-400 hover:shadow-md hover:shadow-amber-500/10 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-amber-900 sm:p-4">
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-3.5 shadow-xl backdrop-blur-md transition-all hover:border-amber-400/50 sm:p-4">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400">
                       <Trophy className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                    <span className="text-xs font-black uppercase tracking-wider text-white">
                       Exam Simulation
                     </span>
                   </div>
-                  <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-black text-amber-700 dark:text-amber-300">
+                  <span className="rounded-md border border-amber-400/30 bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-black text-amber-300">
                     NTA Pattern
                   </span>
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
+                  {/* Full Mocks Button with Themed Background */}
                   <Link
                     to="/mocks"
-                    className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-amber-50/30 p-2.5 transition-all hover:border-amber-400 hover:shadow-xs active:scale-95 dark:border-slate-800 dark:from-slate-900 dark:to-amber-950/20"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-amber-400/40 bg-slate-950 p-3 shadow-md transition-all hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95"
                   >
-                    <div className="flex items-center justify-between">
-                      <Trophy className="h-4 w-4 text-amber-500" />
-                      <span className="text-[9px] font-black text-amber-600">720 Marks</span>
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-mocks.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
                     </div>
-                    <div className="mt-2 text-xs font-black text-slate-900 dark:text-white">
-                      Full Mocks
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-amber-400/40 bg-amber-500/25 text-amber-200 backdrop-blur-md">
+                        <Trophy className="h-4 w-4" />
+                      </div>
+                      <span className="rounded-md border border-amber-400/40 bg-amber-950/80 px-1.5 py-0.5 text-[9px] font-black text-amber-300 backdrop-blur-md">
+                        720 Marks
+                      </span>
                     </div>
-                    <div className="text-[10px] text-slate-400">All-India Ranking</div>
+                    <div className="relative z-10 mt-2.5">
+                      <div className="text-xs font-black text-white group-hover:text-amber-200 drop-shadow-xs">
+                        Full Mocks
+                      </div>
+                      <div className="text-[10px] font-medium text-amber-200/80">All-India Ranking</div>
+                    </div>
                   </Link>
 
+                  {/* NEET PYQs Button with Themed Background */}
                   <Link
                     to="/pyqs"
-                    className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-blue-50/30 p-2.5 transition-all hover:border-blue-400 hover:shadow-xs active:scale-95 dark:border-slate-800 dark:from-slate-900 dark:to-blue-950/20"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-blue-400/40 bg-slate-950 p-3 shadow-md transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
                   >
-                    <div className="flex items-center justify-between">
-                      <FileCheck className="h-4 w-4 text-blue-500" />
-                      <span className="text-[9px] font-black text-blue-600">2010–2025</span>
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-pyqs.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
                     </div>
-                    <div className="mt-2 text-xs font-black text-slate-900 dark:text-white">
-                      NEET PYQs
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-blue-400/40 bg-blue-500/25 text-blue-200 backdrop-blur-md">
+                        <FileCheck className="h-4 w-4" />
+                      </div>
+                      <span className="rounded-md border border-blue-400/40 bg-blue-950/80 px-1.5 py-0.5 text-[9px] font-black text-blue-300 backdrop-blur-md">
+                        2010–2025
+                      </span>
                     </div>
-                    <div className="text-[10px] text-slate-400">Chapter & Year-wise</div>
+                    <div className="relative z-10 mt-2.5">
+                      <div className="text-xs font-black text-white group-hover:text-blue-200 drop-shadow-xs">
+                        NEET PYQs
+                      </div>
+                      <div className="text-[10px] font-medium text-blue-200/80">Chapter & Year-wise</div>
+                    </div>
                   </Link>
                 </div>
               </div>
@@ -764,62 +863,80 @@ function Dashboard() {
               <div className="mt-3">
                 <Link
                   to="/mocks"
-                  className="flex items-center justify-between rounded-xl border border-amber-200/60 bg-amber-50/60 px-3 py-2 text-xs font-bold text-amber-900 transition-all hover:bg-amber-100/70 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300"
+                  className="flex items-center justify-between rounded-xl border border-amber-400/30 bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-200 transition-all hover:bg-amber-500/25"
                 >
                   <span className="text-[11px]">Start Full Syllabus Mock</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <ArrowRight className="h-3.5 w-3.5 text-amber-300" />
                 </Link>
               </div>
             </div>
 
             {/* Card 4: Study Tools & Community Quick Hub */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-3.5 shadow-2xs backdrop-blur-md transition-all hover:border-violet-300 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-violet-900 sm:p-4">
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-3.5 shadow-xl backdrop-blur-md transition-all hover:border-purple-400/50 sm:p-4">
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-500/15 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400">
                       <Layers className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                    <span className="text-xs font-black uppercase tracking-wider text-white">
                       High-Yield Tools
                     </span>
                   </div>
                   <Link
                     to="/flashcards"
-                    className="text-[11px] font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400"
+                    className="text-[11px] font-bold text-purple-400 hover:text-purple-300"
                   >
                     All Tools →
                   </Link>
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
+                  {/* Flashcards Button with Themed Background */}
                   <Link
                     to="/flashcards"
-                    className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/80 p-2 transition-all hover:border-violet-300 hover:bg-white active:scale-95 dark:border-slate-800 dark:bg-slate-800/50"
+                    className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-purple-400/40 bg-slate-950 p-2.5 shadow-md transition-all hover:-translate-y-0.5 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/20 active:scale-95"
                   >
-                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
-                      <Layers className="h-3.5 w-3.5" />
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-flashcards.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="truncate text-xs font-bold text-slate-800 dark:text-slate-200">
+                    <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-purple-400/40 bg-purple-500/25 text-purple-200 backdrop-blur-md">
+                      <Layers className="h-4 w-4" />
+                    </div>
+                    <div className="relative z-10 min-w-0">
+                      <div className="truncate text-xs font-bold text-white group-hover:text-purple-200 drop-shadow-xs">
                         Flashcards
                       </div>
-                      <div className="truncate text-[9px] text-slate-400">Spaced recall</div>
+                      <div className="truncate text-[10px] font-medium text-purple-200/80">Spaced recall</div>
                     </div>
                   </Link>
 
+                  {/* Community Button with Themed Background */}
                   <Link
                     to="/community"
-                    className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50/80 p-2 transition-all hover:border-purple-300 hover:bg-white active:scale-95 dark:border-slate-800 dark:bg-slate-800/50"
+                    className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-fuchsia-400/40 bg-slate-950 p-2.5 shadow-md transition-all hover:-translate-y-0.5 hover:border-fuchsia-300 hover:shadow-lg hover:shadow-fuchsia-500/20 active:scale-95"
                   >
-                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                      <Users className="h-3.5 w-3.5" />
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                      <img
+                        src="/assets/dashboard/bg-community.svg"
+                        alt=""
+                        className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="truncate text-xs font-bold text-slate-800 dark:text-slate-200">
+                    <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-fuchsia-400/40 bg-fuchsia-500/25 text-fuchsia-200 backdrop-blur-md">
+                      <Users className="h-4 w-4" />
+                    </div>
+                    <div className="relative z-10 min-w-0">
+                      <div className="truncate text-xs font-bold text-white group-hover:text-fuchsia-200 drop-shadow-xs">
                         Community
                       </div>
-                      <div className="truncate text-[9px] text-slate-400">Ask & Discuss</div>
+                      <div className="truncate text-[10px] font-medium text-fuchsia-200/80">Ask & Discuss</div>
                     </div>
                   </Link>
                 </div>
@@ -828,16 +945,14 @@ function Dashboard() {
               <div className="mt-3">
                 <Link
                   to="/community"
-                  className="flex items-center justify-between rounded-xl border border-violet-200/60 bg-violet-50/60 px-3 py-2 text-xs font-bold text-violet-900 transition-all hover:bg-violet-100/70 dark:border-violet-900/50 dark:bg-violet-950/30 dark:text-violet-300"
+                  className="flex items-center justify-between rounded-xl border border-purple-400/30 bg-purple-500/15 px-3 py-2 text-xs font-bold text-purple-200 transition-all hover:bg-purple-500/25"
                 >
                   <span className="text-[11px]">Join Aspirants Discussion</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
+                  <ChevronRight className="h-3.5 w-3.5 text-purple-300" />
                 </Link>
               </div>
             </div>
-          </div>
-
-          {/* Goal Dialog Modal */}
+          </div>          {/* Goal Dialog Modal */}
           <Dialog open={goalDialog} onOpenChange={setGoalDialog}>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>

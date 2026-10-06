@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 180" fill="none">
+  <defs>
+    <linearGradient id="cm_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b0764"/>
+      <stop offset="60%" stop-color="#701a75"/>
+      <stop offset="100%" stop-color="#a21caf"/>
+    </linearGradient>
+    <radialGradient id="cm_glow" cx="80%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#f0abfc" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#3b0764" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="180" rx="14" fill="url(#cm_bg)"/>
+  <rect width="300" height="180" fill="url(#cm_glow)"/>
+
+  <!-- Aspirant Network & Conversation Chat Bubbles -->
+  <g transform="translate(225, 90)">
+    <!-- Connected Aspirant Avatar Bubbles -->
+    <circle cx="-25" cy="-15" r="18" fill="#f5d0fe" stroke="#c026d3" stroke-width="2"/>
+    <circle cx="-25" cy="-20" r="6" fill="#86198f"/>
+    <path d="M-36 -5 A 12 12 0 0 1 -14 -5" stroke="#86198f" stroke-width="2" fill="none"/>
+
+    <circle cx="15" cy="-5" r="22" fill="#fae8ff" stroke="#d946ef" stroke-width="2.5"/>
+    <circle cx="15" cy="-11" r="7.5" fill="#a21caf"/>
+    <path d="M2 7 A 15 15 0 0 1 28 7" stroke="#a21caf" stroke-width="2.2" fill="none"/>
+
+    <circle cx="-10" cy="26" r="15" fill="#fdf4ff" stroke="#c026d3" stroke-width="2"/>
+    <circle cx="-10" cy="22" r="5" fill="#86198f"/>
+    <path d="M-19 33 A 10 10 0 0 1 -1 33" stroke="#86198f" stroke-width="1.8" fill="none"/>
+
+    <!-- Connecting conversation pulse wave -->
+    <path d="M-10 -15 Q 0 -30, 25 -28" stroke="#f0abfc" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3"/>
+    <path d="M25 -32 L35 -32 L35 -24 Z" fill="#f0abfc"/>
+  </g>
+</svg>

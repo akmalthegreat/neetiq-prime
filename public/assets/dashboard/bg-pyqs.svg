@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 200" fill="none">
+  <defs>
+    <linearGradient id="pq_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#172554"/>
+      <stop offset="60%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <radialGradient id="pq_glow" cx="80%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#172554" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="350" height="200" rx="14" fill="url(#pq_bg)"/>
+  <rect width="350" height="200" fill="url(#pq_glow)"/>
+
+  <!-- Stack of Question Paper Booklets (2010-2025) & Solved Verification Seal -->
+  <g transform="translate(265, 100)">
+    <!-- Back Paper -->
+    <rect x="-38" y="-45" width="55" height="75" rx="4" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1.5" transform="rotate(-12)"/>
+    <!-- Middle Paper -->
+    <rect x="-32" y="-42" width="55" height="75" rx="4" fill="#1d4ed8" stroke="#93c5fd" stroke-width="1.8" transform="rotate(-4)"/>
+    <!-- Front Paper -->
+    <g transform="rotate(6)">
+      <rect x="-28" y="-40" width="58" height="78" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+      <!-- Lines on exam paper -->
+      <line x1="-18" y1="-26" x2="18" y2="-26" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="-18" y1="-16" x2="18" y2="-16" stroke="#bfdbfe" stroke-width="2" stroke-linecap="round"/>
+      <line x1="-18" y1="-6" x2="10" y2="-6" stroke="#bfdbfe" stroke-width="2" stroke-linecap="round"/>
+      <line x1="-18" y1="4" x2="18" y2="4" stroke="#bfdbfe" stroke-width="2" stroke-linecap="round"/>
+      <line x1="-18" y1="14" x2="6" y2="14" stroke="#bfdbfe" stroke-width="2" stroke-linecap="round"/>
+
+      <!-- Solved Stamp Emblem -->
+      <circle cx="12" cy="22" r="11" fill="#2563eb" stroke="#60a5fa" stroke-width="1.5"/>
+      <path d="M7 22 L11 26 L17 18" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- Fountain Pen Nib -->
+    <g transform="translate(-55, 15) rotate(-35)" opacity="0.6">
+      <path d="M0 -30 L8 -15 L5 20 L-5 20 L-8 -15 Z" fill="#93c5fd" stroke="#fff" stroke-width="1.5"/>
+      <line x1="0" y1="-30" x2="0" y2="5" stroke="#1e3a8a" stroke-width="1.2"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 180" fill="none">
+  <defs>
+    <linearGradient id="fc_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2e1065"/>
+      <stop offset="60%" stop-color="#6b21a8"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    <radialGradient id="fc_glow" cx="80%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#d8b4fe" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#2e1065" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="180" rx="14" fill="url(#fc_bg)"/>
+  <rect width="300" height="180" fill="url(#fc_glow)"/>
+
+  <!-- 3D Layered Recall Flashcard Deck -->
+  <g transform="translate(225, 95)">
+    <!-- Deck Base Card -->
+    <rect x="-35" y="-45" width="60" height="75" rx="6" fill="#581c87" stroke="#a855f7" stroke-width="1.5" transform="rotate(-15)"/>
+    <!-- Middle Card -->
+    <rect x="-30" y="-42" width="60" height="75" rx="6" fill="#7e22ce" stroke="#c084fc" stroke-width="1.8" transform="rotate(-5)"/>
+    <!-- Front Flipping Flashcard -->
+    <g transform="rotate(8)">
+      <rect x="-26" y="-38" width="62" height="76" rx="6" fill="#faf5ff" stroke="#a855f7" stroke-width="2"/>
+      <!-- Card question prompt line -->
+      <line x1="-14" y1="-20" x2="14" y2="-20" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Recall prompt icon: Zap / Brain wave -->
+      <path d="M3 -8 L-5 2 L1 2 L-2 12 L7 0 L1 0 Z" fill="#9333ea"/>
+      <!-- Recall stars -->
+      <circle cx="-10" cy="22" r="2.5" fill="#a855f7"/>
+      <circle cx="0" cy="22" r="2.5" fill="#a855f7"/>
+      <circle cx="10" cy="22" r="2.5" fill="#a855f7"/>
+    </g>
+  </g>
+</svg>

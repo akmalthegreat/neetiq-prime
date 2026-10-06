@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="c_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#042f2e"/>
+      <stop offset="55%" stop-color="#065f46"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <radialGradient id="c_glow" cx="80%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#059669" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#042f2e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="240" rx="16" fill="url(#c_bg)"/>
+  <rect width="400" height="240" fill="url(#c_glow)"/>
+
+  <!-- Molecular Hexagons (Benzene rings) & bonds -->
+  <g transform="translate(290, 110)" stroke="#a7f3d0" stroke-width="2.5" fill="none">
+    <!-- Main Hexagon -->
+    <polygon points="0,-45 38,-23 38,23 0,45 -38,23 -38,-23" stroke-opacity="0.85"/>
+    <!-- Inner benzene ring -->
+    <circle cx="0" cy="0" r="25" stroke="#6ee7b7" stroke-opacity="0.5" stroke-dasharray="6 4" stroke-width="1.8"/>
+    <!-- Atom vertices -->
+    <circle cx="0" cy="-45" r="4.5" fill="#ecfdf5"/>
+    <circle cx="38" cy="-23" r="4.5" fill="#a7f3d0"/>
+    <circle cx="38" cy="23" r="4.5" fill="#a7f3d0"/>
+    <circle cx="0" cy="45" r="4.5" fill="#ecfdf5"/>
+    <circle cx="-38" cy="23" r="4.5" fill="#a7f3d0"/>
+    <circle cx="-38" cy="-23" r="4.5" fill="#a7f3d0"/>
+
+    <!-- Connected secondary ring -->
+    <g transform="translate(65, -38)">
+      <polygon points="0,-32 27,-16 27,16 0,32 -27,16 -27,-16" stroke-opacity="0.55" stroke-width="2"/>
+      <circle cx="27" cy="16" r="3.5" fill="#a7f3d0"/>
+      <circle cx="0" cy="32" r="3.5" fill="#ecfdf5"/>
+    </g>
+
+    <!-- Branch bond to functional group -->
+    <line x1="-38" y1="-23" x2="-68" y2="-40" stroke-opacity="0.7"/>
+    <circle cx="-68" cy="-40" r="5" fill="#34d399"/>
+  </g>
+
+  <!-- Laboratory Flask Silhouette with Bubbles -->
+  <g transform="translate(195, 125)" opacity="0.35">
+    <path d="M15 -60 L15 -35 L45 25 A 10 10 0 0 1 38 40 L -38 40 A 10 10 0 0 1 -45 25 L -15 -35 L -15 -60 Z" fill="#6ee7b7" fill-opacity="0.2" stroke="#6ee7b7" stroke-width="2"/>
+    <!-- Liquid in flask -->
+    <path d="M -35 22 Q 0 16, 35 22 L 35 36 A 6 6 0 0 1 30 40 L -30 40 A 6 6 0 0 1 -35 36 Z" fill="#34d399" fill-opacity="0.6"/>
+    <!-- Floating effervescence bubbles -->
+    <circle cx="0" cy="5" r="3" fill="#ecfdf5"/>
+    <circle cx="-12" cy="-10" r="2.5" fill="#ecfdf5"/>
+    <circle cx="8" cy="-20" r="4" fill="#ecfdf5"/>
+    <circle cx="-3" cy="-45" r="2.5" fill="#ecfdf5"/>
+  </g>
+</svg>

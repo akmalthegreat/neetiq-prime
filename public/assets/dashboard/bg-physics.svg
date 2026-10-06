@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="p_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c2340"/>
+      <stop offset="60%" stop-color="#075985"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <radialGradient id="p_glow" cx="75%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#0284c7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0c2340" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="p_ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" rx="16" fill="url(#p_bg)"/>
+  <rect width="400" height="240" fill="url(#p_glow)"/>
+
+  <!-- Orbital Ellipses representing quantum electron tracks -->
+  <g transform="translate(300, 110)">
+    <!-- Core nucleus glow -->
+    <circle cx="0" cy="0" r="16" fill="#38bdf8" fill-opacity="0.4" filter="blur(4px)"/>
+    <circle cx="0" cy="0" r="9" fill="#e0f2fe"/>
+    <circle cx="0" cy="0" r="5" fill="#38bdf8"/>
+
+    <!-- Orbit 1 (tilted 30 deg) -->
+    <ellipse cx="0" cy="0" rx="75" ry="24" transform="rotate(-30)" stroke="url(#p_ring)" stroke-width="2.2" stroke-dasharray="160 8" fill="none"/>
+    <circle cx="62" cy="-35" r="5" fill="#bae6fd"/>
+    <circle cx="62" cy="-35" r="9" fill="#38bdf8" fill-opacity="0.4"/>
+
+    <!-- Orbit 2 (tilted 60 deg) -->
+    <ellipse cx="0" cy="0" rx="75" ry="24" transform="rotate(35)" stroke="url(#p_ring)" stroke-width="2" fill="none"/>
+    <circle cx="-55" cy="40" r="4.5" fill="#7dd3fc"/>
+
+    <!-- Orbit 3 (horizontal) -->
+    <ellipse cx="0" cy="0" rx="85" ry="26" transform="rotate(95)" stroke="url(#p_ring)" stroke-width="1.8" fill="none"/>
+    <circle cx="-10" cy="-80" r="4" fill="#e0f2fe"/>
+  </g>
+
+  <!-- Electromagnetic wave oscillations along bottom/side -->
+  <path d="M-20 200 Q 40 160, 100 200 T 220 200 T 340 200 T 420 200" stroke="#7dd3fc" stroke-opacity="0.25" stroke-width="2.5" fill="none"/>
+  <path d="M-20 215 Q 40 185, 100 215 T 220 215 T 340 215 T 420 215" stroke="#38bdf8" stroke-opacity="0.35" stroke-width="2" fill="none"/>
+
+  <!-- Physics formula / particle annotations -->
+  <g opacity="0.3" fill="#bae6fd">
+    <circle cx="160" cy="50" r="2"/>
+    <circle cx="210" cy="35" r="3"/>
+    <circle cx="260" cy="70" r="2.5"/>
+    <circle cx="120" cy="110" r="1.5"/>
+    <path d="M180 80 L200 80 M190 70 L190 90" stroke="#7dd3fc" stroke-width="1.5"/>
+  </g>
+</svg>

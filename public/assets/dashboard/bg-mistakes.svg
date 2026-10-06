@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 180" fill="none">
+  <defs>
+    <linearGradient id="m_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c0519"/>
+      <stop offset="60%" stop-color="#9f1239"/>
+      <stop offset="100%" stop-color="#be123c"/>
+    </linearGradient>
+    <radialGradient id="m_glow" cx="80%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#fb7185" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#4c0519" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="180" rx="14" fill="url(#m_bg)"/>
+  <rect width="300" height="180" fill="url(#m_glow)"/>
+
+  <!-- Diagnostic Audit Target with Crosshair & Red Pen Circle -->
+  <g transform="translate(225, 90)">
+    <circle cx="0" cy="0" r="48" stroke="#f43f5e" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <circle cx="0" cy="0" r="36" stroke="#fda4af" stroke-opacity="0.5" stroke-width="2"/>
+    <circle cx="0" cy="0" r="22" fill="#e11d48" fill-opacity="0.4"/>
+    
+    <!-- Bold Red Cross with glow -->
+    <path d="M-12 -12 L12 12 M12 -12 L-12 12" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+    
+    <!-- Audit checkmark checklist background silhouette -->
+    <path d="M-55 -40 L-30 -40 M-55 -25 L-20 -25 M-55 -10 L-35 -10" stroke="#fda4af" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 200" fill="none">
+  <defs>
+    <linearGradient id="mk_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b1d07"/>
+      <stop offset="60%" stop-color="#854d0e"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+    <radialGradient id="mk_glow" cx="80%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#fde047" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#3b1d07" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="350" height="200" rx="14" fill="url(#mk_bg)"/>
+  <rect width="350" height="200" fill="url(#mk_glow)"/>
+
+  <!-- Grand Trophy, 720 Score Badge & Exam Timer -->
+  <g transform="translate(265, 105)">
+    <!-- Golden Trophy Cup -->
+    <path d="M-22 -45 L22 -45 L18 -15 Q 15 5, 0 12 Q -15 5, -18 -15 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
+    <!-- Trophy Handles -->
+    <path d="M-22 -40 C -36 -40, -36 -20, -18 -18" stroke="#fef08a" stroke-width="2.5" fill="none"/>
+    <path d="M22 -40 C 36 -40, 36 -20, 18 -18" stroke="#fef08a" stroke-width="2.5" fill="none"/>
+    <!-- Trophy Stem & Base -->
+    <rect x="-4" y="12" width="8" height="15" fill="#eab308"/>
+    <rect x="-18" y="27" width="36" height="8" rx="2" fill="#ca8a04" stroke="#fef08a" stroke-width="1.5"/>
+
+    <!-- Stopwatch Countdown Dial Silhouette -->
+    <g transform="translate(-55, -15)" opacity="0.45">
+      <circle cx="0" cy="0" r="26" stroke="#fde047" stroke-width="2.2" stroke-dasharray="6 3"/>
+      <line x1="0" y1="0" x2="0" y2="-16" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="10" y2="4" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="3.5" fill="#fff"/>
+      <rect x="-3" y="-31" width="6" height="5" rx="1" fill="#fde047"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 180" fill="none">
+  <defs>
+    <linearGradient id="a_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#042f2e"/>
+      <stop offset="60%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <radialGradient id="a_glow" cx="80%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#5eead4" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#042f2e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="180" rx="14" fill="url(#a_bg)"/>
+  <rect width="300" height="180" fill="url(#a_glow)"/>
+
+  <!-- Ascending Analytics Telemetry & Bar Pillars -->
+  <g transform="translate(180, 130)">
+    <!-- Bar columns -->
+    <rect x="0" y="-30" width="12" height="30" rx="3" fill="#2dd4bf" fill-opacity="0.45"/>
+    <rect x="18" y="-50" width="12" height="50" rx="3" fill="#2dd4bf" fill-opacity="0.6"/>
+    <rect x="36" y="-72" width="12" height="72" rx="3" fill="#5eead4" fill-opacity="0.75"/>
+    <rect x="54" y="-95" width="12" height="95" rx="3" fill="#ccfbf1" fill-opacity="0.9"/>
+
+    <!-- Sharp trendline graph with glowing markers -->
+    <path d="M-30 -15 L6 -35 L24 -55 L42 -78 L60 -105" stroke="#f0fdfa" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <circle cx="60" cy="-105" r="5" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+    <circle cx="60" cy="-105" r="9" stroke="#5eead4" stroke-opacity="0.6" stroke-width="1.5"/>
+
+    <circle cx="42" cy="-78" r="3" fill="#f0fdfa"/>
+    <circle cx="24" cy="-55" r="3" fill="#f0fdfa"/>
+  </g>
+</svg>
