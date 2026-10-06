@@ -907,11 +907,11 @@ function QuizPlayer() {
     { not_visited: 0, not_answered: 0, answered: 0, marked: 0, answered_marked: 0 } as Record<CbtStatus, number>,
   );
   const cbtTile: Record<CbtStatus, string> = {
-    not_visited: "bg-[#e9ecef] text-slate-700 border-slate-300",
-    not_answered: "bg-[#e8590c] text-white border-[#c2410c]",
-    answered: "bg-[#2f9e44] text-white border-[#237a35]",
-    marked: "bg-[#1c7ed6] text-white border-[#1864ab]",
-    answered_marked: "bg-[#1c7ed6] text-white border-[#1864ab]",
+    not_visited: "bg-slate-100 text-slate-700 border-slate-300 rounded-md",
+    not_answered: "bg-gradient-to-b from-amber-500 to-orange-600 text-white border-orange-600 rounded-b-xl rounded-t-sm shadow-sm",
+    answered: "bg-gradient-to-br from-emerald-500 to-green-600 text-white border-emerald-600 rounded-lg shadow-sm",
+    marked: "bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-700 rounded-full shadow-sm",
+    answered_marked: "bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-700 rounded-full shadow-sm",
   };
   const cbtBtn = "h-10 rounded-[3px] border px-4 text-sm font-bold uppercase tracking-wide shadow-sm transition active:translate-y-px disabled:opacity-50";
 
@@ -1035,25 +1035,34 @@ function QuizPlayer() {
 
           {/* Right: status + palette */}
           <aside className="w-full shrink-0 space-y-3 lg:w-[360px]">
-            <div className="space-y-2 rounded border border-slate-200 bg-slate-50 p-3 text-sm">
+            <div className="space-y-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-sm">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Question Status Legend</div>
               {([
-                ["not_visited", "Not Visited"],
-                ["not_answered", "Not Answered"],
-                ["answered", "Answered"],
-                ["marked", "Marked"],
-                ["answered_marked", "Marked & Ans"],
-              ] as [CbtStatus, string][]).map(([k, label]) => (
-                <div key={k} className="flex items-center gap-2.5">
-                  <span className={cn("relative flex h-6 min-w-6 items-center justify-center rounded-[3px] border px-1 text-xs font-bold", cbtTile[k])}>
-                    {cbtCounts[k]}
-                    {k === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border border-white bg-[#2f9e44]" />}
-                  </span>
-                  <span className="text-slate-700">{label}</span>
+                ["answered", "Answered (Done)", "✓"],
+                ["marked", "Marked for Review", "★"],
+                ["answered_marked", "Answered & Marked", "✓"],
+                ["not_answered", "Not Answered", "—"],
+                ["not_visited", "Not Visited", ""],
+              ] as [CbtStatus, string, string][]).map(([k, label, symbol]) => (
+                <div key={k} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span className={cn("relative flex h-6 w-6 items-center justify-center border text-[11px] font-black", cbtTile[k])}>
+                      {symbol ? symbol : ""}
+                      {k === "answered" && <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full border border-white bg-emerald-500 shadow-sm" />}
+                      {k === "marked" && <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full border border-white bg-purple-500 shadow-sm" />}
+                      {k === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5 items-center justify-center rounded-full border border-white bg-emerald-500 text-[8px] text-white">✓</span>}
+                    </span>
+                    <span className="text-slate-700 font-medium text-xs">{label}</span>
+                  </div>
+                  <span className="font-mono text-xs font-bold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">{cbtCounts[k]}</span>
                 </div>
               ))}
             </div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">
-              <div className="mb-3 text-sm font-bold uppercase text-slate-700">Question Palette</div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Question Palette</span>
+                <span className="text-[11px] font-semibold text-slate-500">{total} Questions</span>
+              </div>
               <div className="grid max-h-[420px] grid-cols-6 gap-2 overflow-y-auto pr-1">
                 {questions.map((qq, i) => {
                   const s = cbtStatus(i);
@@ -1063,19 +1072,33 @@ function QuizPlayer() {
                       onClick={() => cbtGo(i)}
                       aria-label={`Question ${i + 1}`}
                       className={cn(
-                        "relative flex h-10 w-full items-center justify-center rounded-md border text-sm font-semibold",
+                        "relative flex h-10 w-full items-center justify-center border text-xs font-bold transition-transform active:scale-95",
                         cbtTile[s],
-                        i === idx && "ring-2 ring-[#e8590c] ring-offset-1",
+                        i === idx && "ring-2 ring-primary ring-offset-2 ring-offset-white shadow-md z-10",
                       )}
                     >
                       {i + 1}
-                      {s === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-white bg-[#2f9e44]" />}
+                      {s === "answered" && (
+                        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white bg-emerald-600 text-[8px] font-black text-white shadow-sm">
+                          ✓
+                        </span>
+                      )}
+                      {s === "marked" && (
+                        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white bg-purple-600 text-[8px] font-black text-white shadow-sm">
+                          ★
+                        </span>
+                      )}
+                      {s === "answered_marked" && (
+                        <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white bg-emerald-500 text-[8px] font-black text-white shadow-sm">
+                          ✓
+                        </span>
+                      )}
                     </button>
                   );
                 })}
               </div>
             </div>
-            <Link to="/dashboard" className="block text-right text-xs text-slate-500 hover:underline">Exit test</Link>
+            <Link to="/dashboard" className="block text-right text-xs font-medium text-slate-500 hover:text-slate-800 hover:underline">Exit test</Link>
           </aside>
         </div>
         {cbtSubmitDialog}
