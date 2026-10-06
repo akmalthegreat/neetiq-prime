@@ -5,8 +5,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { assertAdmin, logAdminAction } from "./admin-content.server";
 
 const SubjectChaptersSchema = z.object({
-  subjectId: z.string().uuid(),
-  chapterIds: z.array(z.string().uuid()).min(1),
+  subjectId: z.string().min(1),
+  chapterIds: z.array(z.string().min(1)).min(1),
 });
 
 const DifficultySchema = z.enum(["easy", "medium", "hard", "mixed"]);

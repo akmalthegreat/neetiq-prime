@@ -68,35 +68,7 @@ const SUBJECT_CONFIG = {
   },
 };
 
-const DEFAULT_TODOS: TodoItem[] = [
-  {
-    id: "def-1",
-    title: "Solve 45 MCQs in Genetics & Evolution",
-    subject: "Biology",
-    timeMinutes: 45,
-    priority: "high",
-    completed: false,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "def-2",
-    title: "Practice Chemical Kinetics numerical problems",
-    subject: "Chemistry",
-    timeMinutes: 60,
-    priority: "high",
-    completed: false,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "def-3",
-    title: "Revise Ray Optics formulas & high-yield PYQs",
-    subject: "Physics",
-    timeMinutes: 40,
-    priority: "medium",
-    completed: false,
-    createdAt: new Date().toISOString(),
-  },
-];
+const DEFAULT_TODOS: TodoItem[] = [];
 
 export function TodoListPage() {
   const { user } = useAuth();
@@ -106,11 +78,14 @@ export function TodoListPage() {
   const [todos, setTodos] = useState<TodoItem[]>(() => {
     try {
       const saved = localStorage.getItem(storageKey);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
     } catch {
       // fallback
     }
-    return DEFAULT_TODOS;
+    return [];
   });
 
   const [title, setTitle] = useState("");
