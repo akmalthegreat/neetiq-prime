@@ -235,6 +235,11 @@ export function SiteHeader() {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <ThemeToggle />
             {user && <NotificationBell />}
+            {isAdmin && (
+              <Button asChild size="sm" variant="outline" className="h-8 rounded-xl border-amber-500/40 bg-amber-500/10 px-2 text-xs font-bold text-amber-600 hover:bg-amber-500/20 dark:text-amber-400">
+                <Link to="/admin">Admin</Link>
+              </Button>
+            )}
             <button
               aria-label="Toggle menu"
               onClick={() => setOpen((v) => !v)}
@@ -261,6 +266,19 @@ export function SiteHeader() {
                     <User className="h-4 w-4" />
                   )}
                   <span className="truncate text-xs font-semibold">{displayName || "Profile"}</span>
+                </Link>
+              )}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setOpen(false)}
+                  className="mb-3 flex items-center justify-between rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent px-3.5 py-2.5 text-xs font-bold text-amber-600 shadow-2xs hover:bg-amber-500/20 dark:text-amber-400"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                    Admin Control Panel
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider font-mono">Open →</span>
                 </Link>
               )}
               <NavLinks path={path} onNavigate={() => setOpen(false)} />
