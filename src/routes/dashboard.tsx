@@ -277,763 +277,663 @@ function Dashboard() {
   };
 
   if (loading || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const firstName = profile?.full_name?.trim()?.split(" ")[0] || user?.email?.split("@")[0] || "Doctor";
-
-  return (
+      return (
     <PageShell>
-      <div className="relative -mx-4 -my-10 overflow-hidden px-4 py-8 sm:-mx-6 sm:-my-14 sm:px-6 sm:py-10 lg:-mx-8 lg:px-8 bg-gradient-to-br from-slate-100/90 via-teal-50/80 via-40% to-indigo-100/60 dark:from-[#081826] dark:via-[#0c2231] dark:to-[#091625] min-h-[calc(100vh-4rem)]">
-        {/* Ambient artistic atmosphere — layered glow mesh */}
-        <div className="pointer-events-none absolute -top-24 -left-20 h-96 w-96 rounded-full bg-teal-300/25 blur-3xl dark:bg-teal-500/15" />
-        <div className="pointer-events-none absolute top-1/4 -right-24 h-96 w-96 rounded-full bg-cyan-300/25 blur-3xl dark:bg-cyan-500/15" />
-        <div className="pointer-events-none absolute top-1/2 left-1/3 h-80 w-80 rounded-full bg-violet-300/20 blur-3xl dark:bg-violet-600/15" />
-        <div className="pointer-events-none absolute bottom-10 -left-10 h-80 w-80 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-500/15" />
+      <div className="relative -mx-4 -my-8 overflow-hidden px-4 py-6 sm:-mx-6 sm:-my-10 sm:px-6 sm:py-8 lg:-mx-8 lg:px-8 bg-slate-50/60 dark:bg-[#070d18] min-h-[calc(100vh-4rem)]">
+        {/* Subtle, refined background ambient glow */}
+        <div className="pointer-events-none absolute -top-32 -left-20 h-96 w-96 rounded-full bg-teal-400/10 blur-3xl dark:bg-teal-500/10" />
+        <div className="pointer-events-none absolute top-1/3 -right-24 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl dark:bg-blue-500/10" />
+        <div className="pointer-events-none absolute bottom-10 left-1/4 h-80 w-80 rounded-full bg-indigo-400/10 blur-3xl dark:bg-indigo-500/10" />
 
         <TrialBanner />
 
-        <div className="relative z-10 mx-auto max-w-4xl space-y-4 pb-8">
-        {/* =========================================================
-            1. HERO GREETING & DAILY TARGET CARD (Matching Screenshot)
-            ========================================================= */}
-        <div className="relative overflow-hidden rounded-2xl border border-teal-300/70 bg-gradient-to-br from-teal-500/15 via-white/90 to-emerald-500/15 p-4 sm:p-5 text-slate-800 shadow-xl shadow-teal-500/10 ring-1 ring-white/80 backdrop-blur-xl dark:border-teal-400/30 dark:bg-gradient-to-br dark:from-[#0d343c]/95 dark:via-[#13404b]/90 dark:to-[#0a2930]/95 dark:text-white dark:ring-white/10 dark:shadow-teal-500/20">
-          {/* Subtle medical watermark glow */}
-          <div className="pointer-events-none absolute -right-12 -top-12 h-64 w-64 rounded-full bg-gradient-to-br from-emerald-400/30 to-teal-400/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-12 -left-10 h-60 w-60 rounded-full bg-gradient-to-br from-cyan-400/25 to-sky-400/20 blur-3xl" />
+        <div className="relative z-10 mx-auto max-w-4xl space-y-4 pb-10">
+          {/* =========================================================
+              1. HERO GREETING & DAILY TARGET (Sleek Clean Card)
+              ========================================================= */}
+          <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-4 sm:p-5 text-slate-800 shadow-sm backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/80 dark:text-slate-100 transition-all">
+            {/* Soft decorative accent */}
+            <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-gradient-to-br from-teal-400/15 via-emerald-400/10 to-transparent blur-2xl" />
 
-          <div className="relative z-10">
-            {/* Top Row: Greeting + Study Streak */}
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <TypewriterGreeting name={firstName} />
-                <p className="mt-0.5 text-xs text-slate-600 dark:text-teal-100/80 sm:text-sm font-medium">
-                  Discipline today = Doctor tomorrow. You're on track!
-                </p>
-              </div>
-
-              {/* Study Streak Badge matching screenshot */}
-              <Link
-                to="/leaderboard"
-                className="group flex shrink-0 flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-white/80 px-3.5 py-1.5 backdrop-blur-md transition-all hover:border-amber-400/50 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-amber-400/40 dark:hover:bg-white/10 shadow-xs"
-              >
-                <div className="flex items-center gap-1 text-xs font-black text-amber-500 dark:text-amber-400">
-                  <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
-                  <span>{streak}d</span>
-                </div>
-                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-300">Study Streak</span>
-              </Link>
-            </div>
-
-                        {/* To-Do List & Time Ticket Quick Launcher */}
-            <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-teal-200/90 bg-gradient-to-r from-teal-500/10 via-cyan-500/10 to-emerald-500/10 p-2.5 backdrop-blur-xs dark:border-teal-400/30 dark:bg-white/5">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 dark:bg-teal-500/25 dark:text-teal-300">
-                  <ListTodo className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-900 dark:text-white">
-                    Today's Study Plan &amp; Time Tickets
-                  </div>
-                  <div className="text-[10px] text-slate-500 dark:text-teal-200/70">
-                    Set targeted time tickets &amp; stay disciplined
-                  </div>
-                </div>
-              </div>
-
-              <Link
-                to="/todo"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm shadow-teal-500/20 transition-all hover:scale-[1.02] hover:from-teal-700 hover:to-emerald-700 active:scale-[0.98]"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Create Today's To-Do List</span>
-              </Link>
-            </div>
-
-            {/* Daily Target Section */}
-            <div className="mt-4 space-y-2">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                    <Target className="h-3.5 w-3.5" />
-                  </div>
-                  <span className="font-bold text-slate-900 dark:text-white">Daily Target</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {todayCorrect + todayWrong} / {dailyGoal} MCQs ({progressPercent}%)
-                  </span>
+            <div className="relative z-10">
+              {/* Top Row: Greeting + Study Streak */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <TypewriterGreeting name={firstName} />
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400 sm:text-sm font-medium">
+                    Discipline today = Doctor tomorrow. You're on track!
+                  </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setGoalDialog(true)}
-                  className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-white hover:text-slate-900 dark:border-white/20 dark:bg-white/10 dark:text-slate-200 dark:hover:border-white/40 dark:hover:bg-white/20 dark:hover:text-white"
+                {/* Study Streak Badge */}
+                <Link
+                  to="/leaderboard"
+                  className="group flex shrink-0 flex-col items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-1.5 transition-all hover:bg-amber-100/70 dark:border-amber-500/20 dark:bg-amber-950/30 dark:hover:bg-amber-900/40 shadow-xs"
                 >
-                  <Pencil className="h-3 w-3" />
-                  <span>Edit Target</span>
-                </button>
+                  <div className="flex items-center gap-1 text-xs font-black text-amber-600 dark:text-amber-400">
+                    <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
+                    <span>{streak}d</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-amber-700/80 dark:text-amber-300/80">Streak</span>
+                </Link>
               </div>
 
-              {/* Progress Bar with Cyan-Emerald Gradient */}
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#10b981] via-[#06b6d4] to-[#14b8a6] transition-all duration-700 shadow-sm shadow-cyan-500/50"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
-
-            {/* 4 Stats Metrics Row matching screenshot */}
-            <div className="mt-4 grid grid-cols-4 gap-2 border-t border-teal-200/50 dark:border-white/10 pt-3 text-center">
-              <div className="flex flex-col items-center justify-center rounded-xl border border-cyan-200/60 bg-cyan-500/10 p-2 backdrop-blur-xs shadow-xs dark:border-white/10 dark:bg-white/5 transition-all hover:bg-cyan-500/15">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-cyan-700 dark:text-cyan-300">
-                  <FileText className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
-                  <span>Done</span>
-                </div>
-                <div className="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white sm:text-lg">
-                  {todayQuestions}
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-500/10 p-2 backdrop-blur-xs shadow-xs dark:border-white/10 dark:bg-white/5 transition-all hover:bg-emerald-500/15">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Correct</span>
-                </div>
-                <div className="mt-0.5 text-base font-extrabold text-emerald-600 dark:text-emerald-400 sm:text-lg">
-                  {todayCorrect}
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center justify-center rounded-xl border border-rose-200/60 bg-rose-500/10 p-2 backdrop-blur-xs shadow-xs dark:border-white/10 dark:bg-white/5 transition-all hover:bg-rose-500/15">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-rose-700 dark:text-rose-300">
-                  <XCircle className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
-                  <span>Wrong</span>
-                </div>
-                <div className="mt-0.5 text-base font-extrabold text-rose-600 dark:text-rose-400 sm:text-lg">
-                  {todayWrong}
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center justify-center rounded-xl border border-teal-200/60 bg-teal-500/10 p-2 backdrop-blur-xs shadow-xs dark:border-white/10 dark:bg-white/5 transition-all hover:bg-teal-500/15">
-                <div className="flex items-center gap-1 text-[11px] font-medium text-teal-700 dark:text-teal-300">
-                  <Clock className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
-                  <span>Accuracy</span>
-                </div>
-                <div className="mt-0.5 text-base font-extrabold text-teal-600 dark:text-teal-400 sm:text-lg">
-                  {todayAccuracy}%
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* =========================================================
-            2. QUICK PRACTICE (Physics, Chemistry, Biology)
-            ========================================================= */}
-        <div>
-          <div className="mb-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Zap className="h-4 w-4 fill-emerald-400 text-emerald-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
-                QUICK PRACTICE
-              </span>
-              <span className="hidden text-xs text-muted-foreground sm:inline">
-                — Jump into subject-wise practice
-              </span>
-            </div>
-            <Link
-              to="/dpp"
-              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
-            >
-              <span>View All Subjects</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            {/* Physics Card */}
-            <Link
-              to="/subjects/$subject"
-              params={{ subject: "Physics" }}
-              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-sky-300/70 bg-gradient-to-br from-sky-500/15 via-white/90 to-blue-500/15 p-2.5 sm:p-3.5 text-slate-800 shadow-lg shadow-sky-500/10 ring-1 ring-white/80 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:border-sky-400 hover:shadow-xl hover:shadow-sky-500/25 dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0d2a4e]/95 dark:via-[#133965]/90 dark:to-[#0a213c]/95 dark:text-white dark:ring-white/10 dark:shadow-sky-500/20"
-            >
-              {/* Card ambient glow */}
-              <div className="pointer-events-none absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-sky-400/20 blur-2xl transition-all group-hover:bg-sky-400/30" />
-
-              <div className="flex items-start justify-between relative z-10">
-                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-md shadow-sky-500/35 border border-white/30 transition-transform group-hover:rotate-3">
-                  <Atom className="h-4 w-4 sm:h-6 sm:w-6" />
-                </div>
-              </div>
-
-              <div className="mt-2 sm:mt-3 relative z-10">
-                <div className="text-xs sm:text-base font-bold text-slate-900 group-hover:text-sky-600 dark:text-white dark:group-hover:text-blue-200 truncate">
-                  Physics
-                </div>
-                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-blue-200/80 truncate">
-                  {subjectCounts.physics.toLocaleString()} Qs
-                </div>
-              </div>
-
-              {/* Bottom Progress Bar + Chevron */}
-              <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2 relative z-10">
-                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
-                  <div className="h-full rounded-full bg-gradient-to-r from-sky-400 to-blue-500 shadow-[0_0_8px_rgba(56,189,248,0.7)]" style={{ width: `${subjectProgress.physics}%` }} />
-                </div>
-                <span className="text-[10px] sm:text-xs font-bold text-sky-600 dark:text-cyan-300">{subjectProgress.physics}%</span>
-                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/70 text-slate-500 group-hover:bg-sky-100 group-hover:text-sky-700 dark:bg-white/10 dark:text-white/80 dark:group-hover:bg-white/20 dark:group-hover:text-white">
-                  <ChevronRight className="h-3 w-3" />
-                </div>
-              </div>
-            </Link>
-
-            {/* Chemistry Card */}
-            <Link
-              to="/subjects/$subject"
-              params={{ subject: "Chemistry" }}
-              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-teal-300/70 bg-gradient-to-br from-teal-500/15 via-white/90 to-emerald-500/15 p-2.5 sm:p-3.5 text-slate-800 shadow-lg shadow-teal-500/10 ring-1 ring-white/80 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:border-teal-400 hover:shadow-xl hover:shadow-teal-500/25 dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#0a352d]/95 dark:via-[#0e483e]/90 dark:to-[#082923]/95 dark:text-white dark:ring-white/10 dark:shadow-teal-500/20"
-            >
-              {/* Card ambient glow */}
-              <div className="pointer-events-none absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-teal-400/20 blur-2xl transition-all group-hover:bg-teal-400/30" />
-
-              <div className="flex items-start justify-between relative z-10">
-                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-teal-400 to-emerald-600 text-white shadow-md shadow-teal-500/35 border border-white/30 transition-transform group-hover:rotate-3">
-                  <FlaskConical className="h-4 w-4 sm:h-6 sm:w-6" />
-                </div>
-              </div>
-
-              <div className="mt-2 sm:mt-3 relative z-10">
-                <div className="text-xs sm:text-base font-bold text-slate-900 group-hover:text-teal-600 dark:text-white dark:group-hover:text-teal-200 truncate">
-                  Chemistry
-                </div>
-                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-teal-200/80 truncate">
-                  {subjectCounts.chemistry.toLocaleString()} Qs
-                </div>
-              </div>
-
-              {/* Bottom Progress Bar + Chevron */}
-              <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2 relative z-10">
-                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
-                  <div className="h-full rounded-full bg-gradient-to-r from-teal-400 to-emerald-500 shadow-[0_0_8px_rgba(20,184,166,0.7)]" style={{ width: `${subjectProgress.chemistry}%` }} />
-                </div>
-                <span className="text-[10px] sm:text-xs font-bold text-teal-600 dark:text-emerald-300">{subjectProgress.chemistry}%</span>
-                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/70 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-700 dark:bg-white/10 dark:text-white/80 dark:group-hover:bg-white/20 dark:group-hover:text-white">
-                  <ChevronRight className="h-3 w-3" />
-                </div>
-              </div>
-            </Link>
-
-            {/* Biology Card */}
-            <Link
-              to="/subjects/$subject"
-              params={{ subject: "Biology" }}
-              className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-purple-300/70 bg-gradient-to-br from-purple-500/15 via-white/90 to-fuchsia-500/15 p-2.5 sm:p-3.5 text-slate-800 shadow-lg shadow-purple-500/10 ring-1 ring-white/80 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:border-purple-400 hover:shadow-xl hover:shadow-purple-500/25 dark:border-purple-500/30 dark:bg-gradient-to-br dark:from-[#2a1443]/95 dark:via-[#371b57]/90 dark:to-[#1e0e31]/95 dark:text-white dark:ring-white/10 dark:shadow-purple-500/20"
-            >
-              {/* Card ambient glow */}
-              <div className="pointer-events-none absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-purple-400/20 blur-2xl transition-all group-hover:bg-purple-400/30" />
-
-              <div className="flex items-start justify-between relative z-10">
-                <div className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-400 to-fuchsia-600 text-white shadow-md shadow-purple-500/35 border border-white/30 transition-transform group-hover:rotate-3">
-                  <Dna className="h-4 w-4 sm:h-6 sm:w-6" />
-                </div>
-              </div>
-
-              <div className="mt-2 sm:mt-3 relative z-10">
-                <div className="text-xs sm:text-base font-bold text-slate-900 group-hover:text-purple-600 dark:text-white dark:group-hover:text-purple-200 truncate">
-                  Biology
-                </div>
-                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-purple-200/80 truncate">
-                  {subjectCounts.biology.toLocaleString()} Qs
-                </div>
-              </div>
-
-              {/* Bottom Progress Bar + Chevron */}
-              <div className="mt-2.5 sm:mt-4 flex items-center justify-between gap-1.5 sm:gap-2 relative z-10">
-                <div className="relative h-1 sm:h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
-                  <div className="h-full rounded-full bg-gradient-to-r from-purple-400 to-fuchsia-500 shadow-[0_0_8px_rgba(168,85,247,0.7)]" style={{ width: `${subjectProgress.biology}%` }} />
-                </div>
-                <span className="text-[10px] sm:text-xs font-bold text-purple-600 dark:text-purple-300">{subjectProgress.biology}%</span>
-                <div className="hidden sm:flex h-5 w-5 items-center justify-center rounded-full bg-white/70 text-slate-500 group-hover:bg-purple-100 group-hover:text-purple-700 dark:bg-white/10 dark:text-white/80 dark:group-hover:bg-white/20 dark:group-hover:text-white">
-                  <ChevronRight className="h-3 w-3" />
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
-
-        {/* =========================================================
-            3. 2x2 FEATURE GRID (Improvement Zone, Generate Test, Mock Tests, PYQs)
-            ========================================================= */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {/* Card 1: IMPROVEMENT ZONE (Top-Left) */}
-          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-300/70 bg-gradient-to-br from-emerald-500/15 via-white/90 to-teal-500/15 p-4 sm:p-5 text-slate-800 shadow-lg shadow-emerald-500/10 ring-1 ring-white/80 backdrop-blur-xl transition-all hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-500/25 dark:border-emerald-500/30 dark:bg-gradient-to-br dark:from-[#0d342a]/95 dark:via-[#124235]/90 dark:to-[#09261f]/95 dark:text-white dark:ring-white/10 dark:shadow-emerald-500/20">
-            {/* Ambient card glow */}
-            <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-emerald-400/20 blur-2xl transition-all group-hover:bg-emerald-400/30" />
-            {/* Top row */}
-            <div>
-              <div className="flex items-center justify-between">
+              {/* To-Do List & Time Ticket Quick Launcher */}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-teal-200/70 bg-gradient-to-r from-teal-50/80 to-emerald-50/80 p-2.5 dark:border-teal-900/40 dark:bg-gradient-to-r dark:from-teal-950/40 dark:to-emerald-950/30">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-400/30">
-                    <BarChart3 className="h-4 w-4" />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-600 text-white shadow-xs">
+                    <ListTodo className="h-4 w-4" />
                   </div>
                   <div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                      Today's Study Plan &amp; Time Tickets
+                    </div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Set targeted time tickets &amp; stay disciplined
+                    </div>
+                  </div>
+                </div>
+
+                <Link
+                  to="/todo"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-all active:scale-[0.98]"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Create Today's To-Do List</span>
+                </Link>
+              </div>
+
+              {/* Daily Target Section */}
+              <div className="mt-3.5 space-y-2">
+                <div className="flex items-center justify-between text-xs sm:text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                      <Target className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="font-bold text-slate-900 dark:text-white">Daily Target</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      {todayCorrect + todayWrong} / {dailyGoal} MCQs ({progressPercent}%)
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setGoalDialog(true)}
+                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  >
+                    <Pencil className="h-3 w-3" />
+                    <span>Edit Target</span>
+                  </button>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
+                    style={{ width:  }}
+                  />
+                </div>
+              </div>
+
+              {/* 4 Stats Metrics Row */}
+              <div className="mt-3.5 grid grid-cols-4 gap-2 border-t border-slate-100 dark:border-slate-800/80 pt-3 text-center">
+                <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200/60 bg-slate-50/80 p-2 dark:border-slate-800 dark:bg-slate-800/50">
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-400">
+                    <FileText className="h-3.5 w-3.5 text-blue-500" />
+                    <span>Done</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white sm:text-lg">
+                    {todayQuestions}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50/50 p-2 dark:border-emerald-950/60 dark:bg-emerald-950/30">
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Correct</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-extrabold text-emerald-600 dark:text-emerald-400 sm:text-lg">
+                    {todayCorrect}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center rounded-xl border border-rose-200/60 bg-rose-50/50 p-2 dark:border-rose-950/60 dark:bg-rose-950/30">
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-rose-700 dark:text-rose-400">
+                    <XCircle className="h-3.5 w-3.5 text-rose-500" />
+                    <span>Wrong</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-extrabold text-rose-600 dark:text-rose-400 sm:text-lg">
+                    {todayWrong}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center rounded-xl border border-teal-200/60 bg-teal-50/50 p-2 dark:border-teal-950/60 dark:bg-teal-950/30">
+                  <div className="flex items-center gap-1 text-[11px] font-medium text-teal-700 dark:text-teal-400">
+                    <Clock className="h-3.5 w-3.5 text-teal-500" />
+                    <span>Accuracy</span>
+                  </div>
+                  <div className="mt-0.5 text-base font-extrabold text-teal-600 dark:text-teal-400 sm:text-lg">
+                    {todayAccuracy}%
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* =========================================================
+              2. QUICK PRACTICE (Physics, Chemistry, Biology)
+              ========================================================= */}
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Zap className="h-4 w-4 fill-emerald-500 text-emerald-500" />
+                <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
+                  QUICK PRACTICE
+                </span>
+                <span className="hidden text-xs text-muted-foreground sm:inline">
+                  — Jump into subject-wise practice
+                </span>
+              </div>
+              <Link
+                to="/dpp"
+                className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
+              >
+                <span>View All Subjects</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {/* Physics */}
+              <Link
+                to="/subjects/"
+                params={{ subject: "Physics" }}
+                className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-sky-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-sky-500/15 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400">
+                    <Atom className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
+                  <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">{subjectProgress.physics}%</span>
+                </div>
+                <div className="mt-2">
+                  <div className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-sky-600 dark:text-white truncate">
+                    Physics
+                  </div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                    {subjectCounts.physics.toLocaleString()} Qs
+                  </div>
+                </div>
+                <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div className="h-full rounded-full bg-sky-500" style={{ width:  }} />
+                </div>
+              </Link>
+
+              {/* Chemistry */}
+              <Link
+                to="/subjects/"
+                params={{ subject: "Chemistry" }}
+                className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-teal-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400">
+                    <FlaskConical className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
+                  <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400">{subjectProgress.chemistry}%</span>
+                </div>
+                <div className="mt-2">
+                  <div className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-600 dark:text-white truncate">
+                    Chemistry
+                  </div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                    {subjectCounts.chemistry.toLocaleString()} Qs
+                  </div>
+                </div>
+                <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div className="h-full rounded-full bg-teal-500" style={{ width:  }} />
+                </div>
+              </Link>
+
+              {/* Biology */}
+              <Link
+                to="/subjects/"
+                params={{ subject: "Biology" }}
+                className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-purple-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400">
+                    <Dna className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
+                  <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400">{subjectProgress.biology}%</span>
+                </div>
+                <div className="mt-2">
+                  <div className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-600 dark:text-white truncate">
+                    Biology
+                  </div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                    {subjectCounts.biology.toLocaleString()} Qs
+                  </div>
+                </div>
+                <div className="mt-2 relative h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                  <div className="h-full rounded-full bg-purple-500" style={{ width:  }} />
+                </div>
+              </Link>
+            </div>
+          </div>
+
+          {/* =========================================================
+              3. 2x2 FEATURE GRID (Improvement Zone, Generate Test, Mock Tests, PYQs)
+              ========================================================= */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {/* Card 1: IMPROVEMENT ZONE */}
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 text-slate-800 shadow-xs hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white transition-all">
+              <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                      <BarChart3 className="h-4 w-4" />
+                    </div>
                     <h3 className="text-sm font-black tracking-wide text-foreground uppercase">
                       IMPROVEMENT ZONE
                     </h3>
                   </div>
+                  <Link
+                    to="/analytics"
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+                    aria-label="Improvement Zone"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
                 </div>
-                <Link
-                  to="/analytics"
-                  aria-label="Improvement Zone"
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
-                >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Link>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Analyse. Learn. Improve Faster.
+                </p>
               </div>
 
-              <p className="mt-1 text-xs text-muted-foreground">Analyse. Learn. Improve Faster.</p>
+              {/* Action buttons with full legible labels */}
+              <div className="mt-4 grid grid-cols-3 gap-1.5">
+                <Link
+                  to="/bookmarks"
+                  className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <Bookmark className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span className="truncate">Bookmarks</span>
+                </Link>
+
+                <Link
+                  to="/mistakes"
+                  className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <FileText className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span className="truncate">Mistakes</span>
+                </Link>
+
+                <Link
+                  to="/analytics"
+                  className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <TrendingUp className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span className="truncate">Analytics</span>
+                </Link>
+              </div>
             </div>
 
-            {/* 3 Pills at bottom with balanced emerald gradient */}
-            <div className="mt-6 grid grid-cols-3 gap-1.5">
-              <Link
-                to="/bookmarks"
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200/80 bg-emerald-500/10 hover:bg-emerald-500/15 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 px-2 py-2 text-[11px] font-semibold text-emerald-900 dark:text-emerald-200 shadow-xs transition-all hover:scale-[1.02]"
-              >
-                <Bookmark className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="truncate">Saved Questions</span>
-              </Link>
-
-              <Link
-                to="/mistakes"
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200/80 bg-emerald-500/10 hover:bg-emerald-500/15 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 px-2 py-2 text-[11px] font-semibold text-emerald-900 dark:text-emerald-200 shadow-xs transition-all hover:scale-[1.02]"
-              >
-                <FileText className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="truncate">My Mistakes</span>
-              </Link>
-
-              <Link
-                to="/analytics"
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200/80 bg-emerald-500/10 hover:bg-emerald-500/15 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 px-2 py-2 text-[11px] font-semibold text-emerald-900 dark:text-emerald-200 shadow-xs transition-all hover:scale-[1.02]"
-              >
-                <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="truncate">Deep Analytics</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Card 2: GENERATE TEST (Top-Right) */}
-          <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-300/70 bg-gradient-to-br from-sky-500/15 via-white/90 to-cyan-500/15 p-4 sm:p-5 text-slate-800 shadow-lg shadow-sky-500/10 ring-1 ring-white/80 backdrop-blur-xl transition-all hover:border-cyan-400 hover:shadow-xl hover:shadow-cyan-500/25 dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0d2e54]/95 dark:via-[#133c6c]/90 dark:to-[#0a2340]/95 dark:text-white dark:ring-white/10 dark:shadow-cyan-500/20">
-            {/* Ambient card glow */}
-            <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-cyan-400/20 blur-2xl transition-all group-hover:bg-cyan-400/30" />
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-cyan-400 border border-cyan-400/30">
-                    <FileText className="h-4 w-4" />
-                  </div>
-                  <div>
+            {/* Card 2: GENERATE TEST */}
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 text-slate-800 shadow-xs hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white transition-all">
+              <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/15 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400">
+                      <Sparkles className="h-4 w-4" />
+                    </div>
                     <h3 className="text-sm font-black tracking-wide text-foreground uppercase">
                       GENERATE TEST
                     </h3>
                   </div>
-                </div>
-                <Link
-                  to="/generate"
-                  aria-label="Generate Test"
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
-                >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-
-              <p className="mt-1 text-xs text-muted-foreground">
-                Create your own custom test with full control.
-              </p>
-
-              {/* 3 Selectors matching screenshot: Questions, Difficulty, Timer */}
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                <div>
-                  <div className="text-[10px] text-slate-600 dark:text-sky-200/70 font-medium mb-1">Questions</div>
-                  <select
-                    value={genQuestions}
-                    onChange={(e) => setGenQuestions(Number(e.target.value))}
-                    className="w-full rounded-lg border border-slate-200/80 bg-white dark:border-white/15 dark:bg-white/10 px-2 py-1 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-cyan-400"
+                  <Link
+                    to="/generate"
+                    aria-label="Generate Test"
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
                   >
-                    <option value={20} className="bg-slate-900 text-white">
-                      20
-                    </option>
-                    <option value={30} className="bg-slate-900 text-white">
-                      30
-                    </option>
-                    <option value={50} className="bg-slate-900 text-white">
-                      50
-                    </option>
-                    <option value={90} className="bg-slate-900 text-white">
-                      90
-                    </option>
-                    <option value={180} className="bg-slate-900 text-white">
-                      180
-                    </option>
-                  </select>
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
                 </div>
 
-                <div>
-                  <div className="text-[10px] text-slate-600 dark:text-sky-200/70 font-medium mb-1">Difficulty</div>
-                  <select
-                    value={genDifficulty}
-                    onChange={(e) => setGenDifficulty(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200/80 bg-white dark:border-white/15 dark:bg-white/10 px-2 py-1 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-cyan-400"
-                  >
-                    <option value="Mixed" className="bg-slate-900 text-white">
-                      Mixed
-                    </option>
-                    <option value="Easy" className="bg-slate-900 text-white">
-                      Easy
-                    </option>
-                    <option value="Medium" className="bg-slate-900 text-white">
-                      Medium
-                    </option>
-                    <option value="Hard" className="bg-slate-900 text-white">
-                      Hard
-                    </option>
-                  </select>
-                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Create your custom test with full control.
+                </p>
 
-                <div>
-                  <div className="text-[10px] text-slate-600 dark:text-sky-200/70 font-medium mb-1">Timer</div>
-                  <select
-                    value={genTimer}
-                    onChange={(e) => setGenTimer(Number(e.target.value))}
-                    className="w-full rounded-lg border border-slate-200/80 bg-white dark:border-white/15 dark:bg-white/10 px-2 py-1 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-cyan-400"
-                  >
-                    <option value={30} className="bg-slate-900 text-white">
-                      30 min
-                    </option>
-                    <option value={60} className="bg-slate-900 text-white">
-                      60 min
-                    </option>
-                    <option value={90} className="bg-slate-900 text-white">
-                      90 min
-                    </option>
-                    <option value={180} className="bg-slate-900 text-white">
-                      180 min
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Create Test Button matching screenshot */}
-            <div className="mt-4">
-              <Button
-                asChild
-                className="w-full rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#10b981] font-bold text-slate-950 transition-all hover:from-[#0891b2] hover:to-[#059669] hover:shadow-lg shadow-cyan-500/20"
-              >
-                <Link
-                  to="/generate"
-                  search={{ q: genQuestions, diff: genDifficulty, timer: genTimer } as never}
-                >
-                  <span>Create Test →</span>
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* Card 3: MOCK TESTS (Bottom-Left) */}
-          <Link
-            to="/mocks"
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-300/70 bg-gradient-to-br from-amber-500/15 via-white/90 to-orange-500/15 p-4 sm:p-5 text-slate-800 shadow-lg shadow-amber-500/10 ring-1 ring-white/80 backdrop-blur-xl transition-all hover:border-amber-400 hover:shadow-xl hover:shadow-amber-500/25 dark:border-amber-500/30 dark:bg-gradient-to-br dark:from-[#352414]/95 dark:via-[#47301c]/90 dark:to-[#26190d]/95 dark:text-white dark:ring-white/10 dark:shadow-amber-500/20"
-          >
-            {/* Ambient card glow */}
-            <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-amber-400/20 blur-2xl transition-all group-hover:bg-amber-400/30" />
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400 border border-amber-400/30">
-                    <Trophy className="h-4 w-4" />
-                  </div>
+                {/* 3 Selectors */}
+                <div className="mt-3 grid grid-cols-3 gap-2">
                   <div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">Questions</div>
+                    <select
+                      value={genQuestions}
+                      onChange={(e) => setGenQuestions(Number(e.target.value))}
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none"
+                    >
+                      <option value={20}>20</option>
+                      <option value={30}>30</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">Difficulty</div>
+                    <select
+                      value={genDifficulty}
+                      onChange={(e) => setGenDifficulty(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none"
+                    >
+                      <option value="Mixed">Mixed</option>
+                      <option value="Easy">Easy</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Hard">Hard</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">Timer</div>
+                    <select
+                      value={genTimer}
+                      onChange={(e) => setGenTimer(Number(e.target.value))}
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none"
+                    >
+                      <option value={30}>30 min</option>
+                      <option value={60}>60 min</option>
+                      <option value={90}>90 min</option>
+                      <option value={180}>180 min</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Create Test Button */}
+              <div className="mt-3.5">
+                <Button
+                  asChild
+                  className="w-full rounded-xl bg-teal-600 hover:bg-teal-700 font-bold text-white shadow-xs transition-all"
+                >
+                  <Link
+                    to="/generate"
+                    search={{ q: genQuestions, diff: genDifficulty, timer: genTimer } as never}
+                  >
+                    <span>Create Test →</span>
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Card 3: MOCK TESTS */}
+            <Link
+              to="/mocks"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 text-slate-800 shadow-xs hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white transition-all"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                      <Trophy className="h-4 w-4" />
+                    </div>
                     <h3 className="text-sm font-black tracking-wide text-foreground uppercase">
                       MOCK TESTS
                     </h3>
                   </div>
-                </div>
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors group-hover:bg-white/20 group-hover:text-white">
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </div>
-              </div>
-
-              <p className="mt-1 text-xs text-muted-foreground">
-                Full NEET syllabus simulation with real exam experience.
-              </p>
-            </div>
-
-            {/* 3 Pills at bottom with balanced amber gradient */}
-            <div className="mt-6 grid grid-cols-3 gap-1.5">
-              <div className="flex items-center justify-center gap-1.5 rounded-xl border border-amber-200/80 bg-amber-500/10 dark:border-amber-500/30 dark:bg-amber-950/40 px-2 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200 shadow-xs">
-                <FileText className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                <span className="truncate">Full Syllabus</span>
-              </div>
-
-              <div className="flex items-center justify-center gap-1.5 rounded-xl border border-amber-200/80 bg-amber-500/10 dark:border-amber-500/30 dark:bg-amber-950/40 px-2 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200 shadow-xs">
-                <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                <span className="truncate">Real Pattern</span>
-              </div>
-
-              <div className="flex items-center justify-center gap-1.5 rounded-xl border border-amber-200/80 bg-amber-500/10 dark:border-amber-500/30 dark:bg-amber-950/40 px-2 py-2 text-[11px] font-semibold text-amber-900 dark:text-amber-200 shadow-xs">
-                <BarChart3 className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                <span className="truncate">Detailed Analysis</span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Card 4: PYQs (Bottom-Right) */}
-          <Link
-            to="/pyqs"
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-blue-300/70 bg-gradient-to-br from-blue-500/15 via-white/90 to-indigo-500/15 p-4 sm:p-5 text-slate-800 shadow-lg shadow-blue-500/10 ring-1 ring-white/80 backdrop-blur-xl transition-all hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/25 dark:border-blue-500/30 dark:bg-gradient-to-br dark:from-[#0d2a4e]/95 dark:via-[#133660]/90 dark:to-[#0a1f3a]/95 dark:text-white dark:ring-white/10 dark:shadow-blue-500/20"
-          >
-            {/* Ambient card glow */}
-            <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-blue-400/20 blur-2xl transition-all group-hover:bg-blue-400/30" />
-            <div>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-cyan-400 border border-cyan-400/30">
-                    <BookOpen className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black tracking-wide text-foreground uppercase">PYQs</h3>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground group-hover:text-foreground">
+                    <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
 
-                {/* Stacked NEET Year Badges matching screenshot */}
-                <div className="flex flex-col items-end gap-1">
-                  <div className="rounded-md bg-blue-500/20 border border-blue-400/30 px-2 py-0.5 text-[10px] font-extrabold text-cyan-300">
-                    NEET 2025
-                  </div>
-                  <div className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[9px] font-bold text-slate-300">
-                    NEET 2024
-                  </div>
-                  <div className="rounded-md bg-blue-500/10 px-2 py-0.5 text-[9px] font-bold text-slate-400">
-                    NEET 2023
-                  </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Full NEET syllabus simulation with real exam experience.
+                </p>
+              </div>
+
+              {/* 3 Pills */}
+              <div className="mt-4 grid grid-cols-3 gap-1.5">
+                <div className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+                  <FileCheck className="h-3 w-3 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span className="truncate">Full Tests</span>
+                </div>
+
+                <div className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+                  <Clock className="h-3 w-3 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span className="truncate">Real Pattern</span>
+                </div>
+
+                <div className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+                  <BarChart3 className="h-3 w-3 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span className="truncate">Rank Predict</span>
                 </div>
               </div>
-
-              <p className="mt-1 text-xs text-muted-foreground">
-                Previous Year Questions (NEET 2013 – 2025)
-              </p>
-            </div>
-
-            {/* 3 Pills at bottom with balanced cyan/sky gradient */}
-            <div className="mt-4 grid grid-cols-3 gap-1.5">
-              <div className="flex items-center justify-center gap-1.5 rounded-xl border border-sky-200/80 bg-sky-500/10 dark:border-sky-500/30 dark:bg-sky-950/40 px-2 py-2 text-[11px] font-semibold text-sky-900 dark:text-sky-200 shadow-xs">
-                <CalendarDays className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
-                <span className="truncate">Year-wise</span>
-              </div>
-
-              <div className="flex items-center justify-center gap-1.5 rounded-xl border border-sky-200/80 bg-sky-500/10 dark:border-sky-500/30 dark:bg-sky-950/40 px-2 py-2 text-[11px] font-semibold text-sky-900 dark:text-sky-200 shadow-xs">
-                <LayoutGrid className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
-                <span className="truncate">Chapter-wise</span>
-              </div>
-
-              <div className="flex items-center justify-center gap-1.5 rounded-xl border border-sky-200/80 bg-sky-500/10 dark:border-sky-500/30 dark:bg-sky-950/40 px-2 py-2 text-[11px] font-semibold text-sky-900 dark:text-sky-200 shadow-xs">
-                <FileCheck className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
-                <span className="truncate">Detailed Solutions</span>
-              </div>
-            </div>
-          </Link>
-        </div>
-
-        {/* =========================================================
-            4. STUDY TOOLS (6 Tools in 3-column Grid matching screenshot)
-            ========================================================= */}
-        <div>
-          <div className="mb-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Layers className="h-4 w-4 text-emerald-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
-                STUDY TOOLS
-              </span>
-              <span className="hidden text-xs text-muted-foreground sm:inline">
-                — Everything you need to study smarter
-              </span>
-            </div>
-            <Link
-              to="/flashcards"
-              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
-            >
-              <span>View All Tools</span>
-              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-          </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-3.5">
-            {/* Tool 1: Short Notes (Purple & Violet Cube) */}
-            <StudyToolItem
-              to="/highlighted-ncert"
-              title="Short Notes"
-              subtitle="Concise & High Yield"
-              badge="High Yield"
-              icon={FileText}
-              gradientClass="bg-gradient-to-br from-violet-500/15 via-purple-500/10 to-indigo-500/20 dark:from-purple-950/40 dark:via-violet-950/30 dark:to-indigo-950/50"
-              iconGradient="bg-gradient-to-br from-violet-500 to-purple-600 shadow-purple-500/30"
-              borderClass="border-purple-200/80 dark:border-purple-500/30 hover:border-purple-400 dark:hover:border-purple-400/60 shadow-purple-500/5"
-            />
-
-            {/* Tool 2: Flashcards (Emerald & Teal Cube) */}
-            <StudyToolItem
-              to="/flashcards"
-              title="Flashcards"
-              subtitle="Revise Anytime Anywhere"
-              badge="Spaced Rep"
-              icon={Layers}
-              gradientClass="bg-gradient-to-br from-emerald-500/15 via-teal-500/10 to-cyan-500/20 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-cyan-950/50"
-              iconGradient="bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/30"
-              borderClass="border-emerald-200/80 dark:border-emerald-500/30 hover:border-emerald-400 dark:hover:border-emerald-400/60 shadow-emerald-500/5"
-            />
-
-            {/* Tool 3: Highlights (Pink & Rose Cube) */}
-            <StudyToolItem
-              to="/ncert-highlights"
-              title="Highlights"
-              subtitle="NCERT Key Points"
-              badge="NCERT"
-              icon={Sparkles}
-              gradientClass="bg-gradient-to-br from-pink-500/15 via-rose-500/10 to-fuchsia-500/20 dark:from-pink-950/40 dark:via-rose-950/30 dark:to-fuchsia-950/50"
-              iconGradient="bg-gradient-to-br from-pink-500 to-rose-600 shadow-pink-500/30"
-              borderClass="border-pink-200/80 dark:border-pink-500/30 hover:border-pink-400 dark:hover:border-pink-400/60 shadow-pink-500/5"
-            />
-
-            {/* Tool 4: Score Predictor (Amber & Orange Cube) */}
-            <StudyToolItem
-              to="/score-predictor"
-              title="Score Predictor"
-              subtitle="Estimate NEET Rank"
-              badge="AI Rank"
-              icon={TrendingUp}
-              gradientClass="bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-yellow-500/20 dark:from-amber-950/40 dark:via-orange-950/30 dark:to-yellow-950/50"
-              iconGradient="bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/30"
-              borderClass="border-amber-200/80 dark:border-amber-500/30 hover:border-amber-400 dark:hover:border-amber-400/60 shadow-amber-500/5"
-            />
-          </div>
-        </div>
-
-        {/* =========================================================
-            5. LIVE & COMMUNITY (3 Cards matching screenshot)
-            ========================================================= */}
-        <div>
-          <div className="mb-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Users className="h-4 w-4 text-emerald-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
-                LIVE & COMMUNITY
-              </span>
-              <span className="hidden text-xs text-muted-foreground sm:inline">
-                — Compete. Discuss. Grow Together.
-              </span>
-            </div>
+            {/* Card 4: PYQs */}
             <Link
-              to="/community"
-              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+              to="/pyqs"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 text-slate-800 shadow-xs hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white transition-all"
             >
-              <span>View All</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
+              <div>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/15 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+                      <BookOpen className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-sm font-black tracking-wide text-foreground uppercase">
+                      PYQS
+                    </h3>
+                  </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            {/* Community & Doubts */}
-            <Link
-              to="/community"
-              className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-500/10 via-purple-500/5 to-indigo-500/15 p-3.5 shadow-sm transition-all hover:scale-[1.02] hover:border-violet-400 dark:border-violet-500/30 dark:bg-gradient-to-br dark:from-violet-950/40 dark:via-purple-950/20 dark:to-indigo-950/50"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-sm shadow-violet-500/30">
-                  <Users className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="truncate text-xs font-black text-foreground group-hover:text-violet-500">
-                      Community
+                  <div className="flex items-center gap-1">
+                    <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-bold text-blue-600 dark:text-blue-400">
+                      2013-2025
                     </span>
-                    <span className="rounded-full bg-violet-500/20 px-1.5 py-0.5 text-[9px] font-bold text-violet-600 dark:text-violet-300">
-                      Discuss
-                    </span>
-                  </div>
-                  <div className="truncate text-[10px] text-muted-foreground font-medium">
-                    Ask doubts &amp; share tips
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground group-hover:text-foreground">
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
                   </div>
                 </div>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Previous Year Questions (NEET 2013 – 2025)
+                </p>
               </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-violet-500 transition-transform group-hover:translate-x-0.5" />
+
+              {/* 3 Pills */}
+              <div className="mt-4 grid grid-cols-3 gap-1.5">
+                <div className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+                  <CalendarDays className="h-3 w-3 shrink-0 text-blue-600 dark:text-blue-400" />
+                  <span className="truncate">Year-wise</span>
+                </div>
+
+                <div className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+                  <LayoutGrid className="h-3 w-3 shrink-0 text-blue-600 dark:text-blue-400" />
+                  <span className="truncate">Chapter</span>
+                </div>
+
+                <div className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+                  <FileCheck className="h-3 w-3 shrink-0 text-blue-600 dark:text-blue-400" />
+                  <span className="truncate">Solutions</span>
+                </div>
+              </div>
             </Link>
           </div>
-        </div>
 
-        {/* Target Setting Dialog */}
-        <Dialog open={goalDialog} onOpenChange={setGoalDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Set Your Daily Target</DialogTitle>
-              <DialogDescription>
-                Set the number of MCQs you aim to solve each day to build exam stamina.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-2">
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold">Quick Presets</Label>
-                <div className="flex flex-wrap gap-2">
-                  {PRESET_GOALS.map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setGoalDraft(preset)}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                        goalDraft === preset
-                          ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
-                          : "border-white/15 bg-white/5 text-slate-300 hover:border-emerald-400/50 hover:text-white"
-                      }`}
-                    >
-                      {preset} MCQs
-                    </button>
-                  ))}
-                </div>
+          {/* =========================================================
+              4. STUDY TOOLS (Clean 4-Card Grid)
+              ========================================================= */}
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
+                  STUDY TOOLS
+                </span>
+                <span className="hidden text-xs text-muted-foreground sm:inline">
+                  — Everything you need to study smarter
+                </span>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="custom-goal" className="text-xs font-semibold">
-                  Or enter custom questions count
-                </Label>
-                <Input
-                  id="custom-goal"
-                  type="number"
-                  min={5}
-                  max={300}
-                  value={goalDraft}
-                  onChange={(e) => setGoalDraft(Number(e.target.value))}
-                  placeholder="20"
-                  className="h-10 rounded-xl"
-                />
-              </div>
-            </div>
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button variant="ghost" onClick={() => setGoalDialog(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={saveDailyGoal}
-                className="bg-primary text-primary-foreground font-bold"
+              <Link
+                to="/flashcards"
+                className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
               >
-                Save Target
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                <span>View All Tools</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
+              {/* Short Notes */}
+              <StudyToolItem
+                to="/highlighted-ncert"
+                title="Short Notes"
+                subtitle="Concise & High Yield"
+                badge="High Yield"
+                icon={FileText}
+                badgeClass="bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20"
+                iconClass="bg-violet-500/15 text-violet-600 dark:text-violet-400"
+              />
+
+              {/* Flashcards */}
+              <StudyToolItem
+                to="/flashcards"
+                title="Flashcards"
+                subtitle="Revise Anytime Anywhere"
+                badge="Spaced Rep"
+                icon={Layers}
+                badgeClass="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                iconClass="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+              />
+
+              {/* Highlights */}
+              <StudyToolItem
+                to="/ncert-highlights"
+                title="Highlights"
+                subtitle="NCERT Key Points"
+                badge="NCERT"
+                icon={Sparkles}
+                badgeClass="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                iconClass="bg-rose-500/15 text-rose-600 dark:text-rose-400"
+              />
+
+              {/* Score Predictor */}
+              <StudyToolItem
+                to="/score-predictor"
+                title="Score Predictor"
+                subtitle="Estimate NEET Rank"
+                badge="AI Rank"
+                icon={TrendingUp}
+                badgeClass="bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                iconClass="bg-amber-500/15 text-amber-600 dark:text-amber-400"
+              />
+            </div>
+          </div>
+
+          {/* =========================================================
+              5. LIVE & COMMUNITY
+              ========================================================= */}
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-xs font-black uppercase tracking-wider text-foreground sm:text-sm">
+                  LIVE &amp; COMMUNITY
+                </span>
+              </div>
+              <Link
+                to="/community"
+                className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 transition-colors hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300"
+              >
+                <span>View All</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              <Link
+                to="/community"
+                className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition-all hover:border-violet-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="truncate text-xs font-black text-foreground group-hover:text-violet-600">
+                        Community
+                      </span>
+                      <span className="rounded-full bg-violet-500/10 px-1.5 py-0.5 text-[9px] font-bold text-violet-600 dark:text-violet-400">
+                        Discuss
+                      </span>
+                    </div>
+                    <div className="truncate text-[11px] text-muted-foreground">
+                      Ask doubts &amp; share tips with NEET aspirants
+                    </div>
+                  </div>
+                </div>
+                <div className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground group-hover:text-foreground">
+                  <ChevronRight className="h-4 w-4" />
+                </div>
+              </Link>
+            </div>
+          </div>
+
+          {/* Goal Dialog */}
+          <Dialog open={goalDialog} onOpenChange={setGoalDialog}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Set Your Daily Target</DialogTitle>
+                <DialogDescription>
+                  Set the number of MCQs you aim to solve each day to build exam stamina.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold">Quick Presets</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {PRESET_GOALS.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setGoalDraft(preset)}
+                        className={}
+                      >
+                        {preset} MCQs
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="custom-goal" className="text-xs font-semibold">
+                    Custom Daily Target
+                  </Label>
+                  <Input
+                    id="custom-goal"
+                    type="number"
+                    min={5}
+                    max={300}
+                    value={goalDraft}
+                    onChange={(e) => setGoalDraft(Number(e.target.value) || 0)}
+                    placeholder="e.g. 50"
+                  />
+                </div>
+              </div>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button variant="ghost" onClick={() => setGoalDialog(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={saveDailyGoal}
+                  className="bg-teal-600 hover:bg-teal-700 text-white font-bold"
+                >
+                  Save Target
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </PageShell>
@@ -1049,11 +949,10 @@ function TypewriterGreeting({ name }: { name: string }) {
 
   useEffect(() => {
     const hour = new Date().getHours();
-    let prefix = "Good morning";
-    if (hour >= 12 && hour < 17) prefix = "Good afternoon";
-    else if (hour >= 17) prefix = "Good evening";
+    const salutation =
+      hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+    const target = ;
 
-    const target = `${prefix}, ${name}!`;
     let idx = 0;
     setDisplayText("");
     setIsDone(false);
@@ -1076,7 +975,7 @@ function TypewriterGreeting({ name }: { name: string }) {
       <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white sm:text-2xl">
         <span>{displayText}</span>
         <span
-          className={`ml-1 inline-block h-5 w-0.5 bg-emerald-500 dark:bg-emerald-300 align-middle ${isDone ? "opacity-0" : "animate-pulse"}`}
+          className={}
         />
       </h1>
     </div>
@@ -1084,7 +983,7 @@ function TypewriterGreeting({ name }: { name: string }) {
 }
 
 /* =========================================================================
-   Study Tool Item Helper Component
+   Study Tool Item
    ========================================================================= */
 function StudyToolItem({
   to,
@@ -1093,9 +992,8 @@ function StudyToolItem({
   subtitle,
   badge,
   icon: Icon,
-  gradientClass,
-  iconGradient,
-  borderClass,
+  badgeClass,
+  iconClass,
 }: {
   to: string;
   params?: Record<string, string>;
@@ -1103,45 +1001,31 @@ function StudyToolItem({
   subtitle: string;
   badge?: string;
   icon: React.ComponentType<{ className?: string }>;
-  gradientClass?: string;
-  iconGradient?: string;
-  borderClass?: string;
+  badgeClass?: string;
+  iconClass?: string;
 }) {
   return (
     <Link
       to={to as never}
       params={params as never}
-      className={cn(
-        "group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-3.5 transition-all duration-200 hover:scale-[1.03] hover:shadow-xl ring-1 ring-white/80 dark:ring-white/10 backdrop-blur-xl active:scale-[0.98]",
-        gradientClass || "bg-card",
-        borderClass || "border-border/70"
-      )}
+      className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3.5 transition-all hover:border-slate-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 active:scale-[0.98]"
     >
-      {/* Subtle interior ambient glow */}
-      <div className="pointer-events-none absolute -right-6 -bottom-6 h-20 w-20 rounded-full bg-white/25 blur-xl transition-transform duration-500 group-hover:scale-150 dark:bg-white/5" />
-      {/* Top Row: Icon + Badge */}
       <div className="flex items-start justify-between gap-2">
-        <div
-          className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-md transition-transform group-hover:rotate-3",
-            iconGradient || "bg-primary"
-          )}
-        >
-          <Icon className="h-5 w-5" />
+        <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg", iconClass || "bg-slate-100 text-slate-700")}>
+          <Icon className="h-4 w-4" />
         </div>
         {badge && (
-          <span className="rounded-full bg-white/70 dark:bg-white/10 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold text-foreground/80 border border-black/5 dark:border-white/10">
+          <span className={cn("rounded-md px-1.5 py-0.5 text-[9px] font-bold", badgeClass || "bg-slate-100 text-slate-600")}>
             {badge}
           </span>
         )}
       </div>
 
-      {/* Bottom Content */}
       <div className="mt-3">
-        <div className="text-xs sm:text-sm font-black text-foreground tracking-tight group-hover:underline decoration-primary/40 underline-offset-2">
+        <div className="text-xs sm:text-sm font-black text-foreground tracking-tight group-hover:text-teal-600">
           {title}
         </div>
-        <div className="text-[10px] sm:text-[11px] text-muted-foreground font-medium line-clamp-1 mt-0.5">
+        <div className="text-[10px] text-muted-foreground font-medium line-clamp-1 mt-0.5">
           {subtitle}
         </div>
       </div>
