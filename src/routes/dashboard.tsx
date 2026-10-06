@@ -447,6 +447,41 @@ function Dashboard() {
           </div>
 
           {/* =========================================================
+              DR. AZKA AI TUTOR PRESCRIPTION BANNER
+              ========================================================= */}
+          <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/50 via-slate-900/90 to-teal-950/50 p-3 sm:p-4 shadow-sm backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="relative shrink-0">
+                <img
+                  src="/dr-azka.png"
+                  alt="Dr. Azka"
+                  className="h-12 w-12 sm:h-14 sm:w-14 object-contain drop-shadow-[0_4px_12px_rgba(16,185,129,0.35)]"
+                />
+                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white shadow-xs">
+                  AI
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3 text-amber-400 fill-amber-400" />
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-400">
+                    Dr. Azka • AI NEET Mentor
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs sm:text-sm font-semibold text-slate-100 truncate">
+                  Focus on High-Yield Genetics & Reaction Mechanisms for 680+ NEET target!
+                </p>
+              </div>
+              <Link
+                to="/ai-path"
+                className="shrink-0 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 px-3 py-1.5 text-xs font-bold text-emerald-300 transition-colors shadow-2xs"
+              >
+                Consult →
+              </Link>
+            </div>
+          </div>
+
+          {/* =========================================================
               2. SLEEK SUBJECT PILLARS (Physics, Chemistry, Biology)
               ========================================================= */}
           <div>

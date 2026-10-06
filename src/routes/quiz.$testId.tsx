@@ -682,7 +682,7 @@ function QuizPlayer() {
     return (
       <DrAkzaLoader
         fullScreen
-        message="Dr. Akza is preparing your quiz..."
+        message="Dr. Azka is preparing your quiz..."
         subMessage="Setting up your questions, timer, and CBT exam environment"
       />
     );

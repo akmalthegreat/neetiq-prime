@@ -606,7 +606,7 @@ function GeneratePage() {
           <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
             <DrAkzaLoader
               size="sm"
-              message="Dr. Akza is generating test questions..."
+              message="Dr. Azka is generating test questions..."
               subMessage={`Crafting your ${totalQuestions}-question customized test`}
             />
           </div>

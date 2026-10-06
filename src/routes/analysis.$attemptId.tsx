@@ -70,7 +70,7 @@ function AnalysisPage() {
     })();
   }, [attemptId, nav]);
 
-  if (loading || authLoading) return <DrAkzaLoader fullScreen message="Dr. Akza is analyzing your performance..." subMessage="Calculating score, chapter accuracy, and question insights" />;
+  if (loading || authLoading) return <DrAkzaLoader fullScreen message="Dr. Azka is analyzing your performance..." subMessage="Calculating score, chapter accuracy, and question insights" />;
   if (!attempt || !test) return (
     <div className="flex min-h-screen items-center justify-center p-6 text-center">
       <div>

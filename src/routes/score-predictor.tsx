@@ -61,7 +61,7 @@ function ScorePredictorPage() {
   }
 
   if (loading || !user || latest === undefined) {
-    return <DrAkzaLoader fullScreen message="Dr. Akza is calculating your NEET score prediction..." subMessage="Evaluating past mock performances & chapter weightage" />;
+    return <DrAkzaLoader fullScreen message="Dr. Azka is calculating your NEET score prediction..." subMessage="Evaluating past mock performances & chapter weightage" />;
   }
 
   return (

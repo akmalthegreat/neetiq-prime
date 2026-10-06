@@ -10,7 +10,7 @@ interface DrAkzaLoaderProps {
   className?: string;
 }
 
-export function DrAkzaLoader({
+export function DrAzkaLoader({
   message,
   text,
   subMessage,
@@ -24,7 +24,7 @@ export function DrAkzaLoader({
     lg: "w-48 h-48 md:w-56 md:h-56",
   };
 
-  const displayMessage = message || text || "Dr. Akza is preparing your session...";
+  const displayMessage = message || text || "Dr. Azka is preparing your session...";
 
   const content = (
     <div className={`relative flex flex-col items-center justify-center text-center p-6 select-none ${className}`}>
@@ -158,8 +158,8 @@ export function DrAkzaLoader({
           }}
         >
           <img
-            src="/dr-akza.png"
-            alt="Dr. Akza Mascot"
+            src="/dr-azka.png"
+            alt="Dr. Azka Mascot"
             className={`relative z-10 ${imageSizes[size]} object-contain drop-shadow-[0_12px_24px_rgba(16,185,129,0.22)] pointer-events-none select-none transition-transform duration-300`}
           />
         </div>
@@ -178,7 +178,7 @@ export function DrAkzaLoader({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <span className="tracking-wide">Dr. Akza AI Tutor</span>
+          <span className="tracking-wide">Dr. Azka AI Tutor</span>
           <HeartPulse className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
         </div>
       </div>
@@ -234,3 +234,5 @@ export function DrAkzaLoader({
 
   return content;
 }
+
+export const DrAkzaLoader = DrAzkaLoader;

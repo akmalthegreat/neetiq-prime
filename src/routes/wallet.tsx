@@ -170,7 +170,7 @@ function WalletPage() {
     finally { setSubmittingWd(false); }
   };
 
-  if (loading || !user) return <DrAkzaLoader fullScreen message="Dr. Akza is loading your wallet..." subMessage="Fetching balance, coins, and transaction history" />;
+  if (loading || !user) return <DrAkzaLoader fullScreen message="Dr. Azka is loading your wallet..." subMessage="Fetching balance, coins, and transaction history" />;
 
   return (
     <PageShell eyebrow="Your money" title="Wallet" description="Recharge, withdraw winnings, and track every rupee.">

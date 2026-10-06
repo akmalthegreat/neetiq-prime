@@ -82,7 +82,7 @@ function ContestsPage() {
   // which handles pre / live / post states + confirm-join dialog.
   const goToContest = (c: Contest) => nav({ to: "/contest/$contestId", params: { contestId: c.id } });
 
-  if (loading || !user) return <DrAkzaLoader fullScreen message="Dr. Akza is preparing the contest arena..." subMessage="Fetching upcoming live contests & registrations" />;
+  if (loading || !user) return <DrAkzaLoader fullScreen message="Dr. Azka is preparing the contest arena..." subMessage="Fetching upcoming live contests & registrations" />;
 
   const live = (contests ?? []).filter((c) => { const n = Date.now(); return n >= new Date(c.starts_at).getTime() && n < new Date(c.ends_at).getTime(); });
   const upcoming = (contests ?? []).filter((c) => Date.now() < new Date(c.starts_at).getTime());
