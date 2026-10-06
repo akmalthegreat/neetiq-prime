@@ -242,6 +242,95 @@ export function TodoListPage() {
           </div>
 
 
+          {/* Add Task Form Card */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 sm:p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/60 dark:text-white backdrop-blur-xs">
+            <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+              <Plus className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+              <span>Create New Study Ticket</span>
+            </h2>
+
+            <form onSubmit={handleAdd} className="space-y-3">
+              <div>
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Complete 50 questions in Human Reproduction & analyze mistakes..."
+                  className="rounded-xl border-slate-200 bg-white dark:border-white/15 dark:bg-white/5 h-10 text-xs sm:text-sm font-medium focus-visible:ring-teal-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {/* Subject Selector */}
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
+                    Subject
+                  </label>
+                  <select
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value as TodoItem["subject"])}
+                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
+                  >
+                    <option value="Biology" className="bg-slate-900 text-white">Biology</option>
+                    <option value="Chemistry" className="bg-slate-900 text-white">Chemistry</option>
+                    <option value="Physics" className="bg-slate-900 text-white">Physics</option>
+                    <option value="Mock" className="bg-slate-900 text-white">Mock Test</option>
+                    <option value="Revision" className="bg-slate-900 text-white">Revision</option>
+                    <option value="General" className="bg-slate-900 text-white">General / Doubt</option>
+                  </select>
+                </div>
+
+                {/* Time Ticket Duration */}
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
+                    Time Ticket (Mins)
+                  </label>
+                  <select
+                    value={timeMinutes}
+                    onChange={(e) => setTimeMinutes(Number(e.target.value))}
+                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
+                  >
+                    <option value={20} className="bg-slate-900 text-white">20 Mins (Sprint)</option>
+                    <option value={30} className="bg-slate-900 text-white">30 Mins (Quick)</option>
+                    <option value={45} className="bg-slate-900 text-white">45 Mins (Standard)</option>
+                    <option value={60} className="bg-slate-900 text-white">60 Mins (1 Hour)</option>
+                    <option value={90} className="bg-slate-900 text-white">90 Mins (1.5 Hours)</option>
+                    <option value={120} className="bg-slate-900 text-white">120 Mins (2 Hours)</option>
+                    <option value={150} className="bg-slate-900 text-white">150 Mins (2.5 Hours)</option>
+                    <option value={180} className="bg-slate-900 text-white">180 Mins (3 Hours)</option>
+                    <option value={210} className="bg-slate-900 text-white">210 Mins (3.5 Hours)</option>
+                    <option value={240} className="bg-slate-900 text-white">240 Mins (4 Hours Max Power Block)</option>
+                  </select>
+                </div>
+
+                {/* Priority */}
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
+                    Priority
+                  </label>
+                  <select
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value as TodoItem["priority"])}
+                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
+                  >
+                    <option value="high" className="bg-slate-900 text-white">🔥 High Priority</option>
+                    <option value="medium" className="bg-slate-900 text-white">⚡ Medium</option>
+                    <option value="low" className="bg-slate-900 text-white">🌱 Low</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-1 flex justify-end">
+                <Button
+                  type="submit"
+                  className="rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold shadow-md shadow-teal-500/20 text-xs px-4 py-2 h-9"
+                >
+                  <Plus className="mr-1.5 h-3.5 w-3.5" />
+                  <span>Add To-Do Ticket</span>
+                </Button>
+              </div>
+            </form>
+          </div>
+
           {/* =========================================================
               WEEKLY TRACK REPORT SECTION
               ========================================================= */}
@@ -341,95 +430,6 @@ export function TodoListPage() {
                 ))}
               </div>
             </div>
-          </div>
-
-          {/* Add Task Form Card */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 sm:p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/60 dark:text-white backdrop-blur-xs">
-            <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2 mb-3">
-              <Plus className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-              <span>Create New Study Ticket</span>
-            </h2>
-
-            <form onSubmit={handleAdd} className="space-y-3">
-              <div>
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Complete 50 questions in Human Reproduction & analyze mistakes..."
-                  className="rounded-xl border-slate-200 bg-white dark:border-white/15 dark:bg-white/5 h-10 text-xs sm:text-sm font-medium focus-visible:ring-teal-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {/* Subject Selector */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
-                    Subject
-                  </label>
-                  <select
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value as TodoItem["subject"])}
-                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
-                  >
-                    <option value="Biology" className="bg-slate-900 text-white">Biology</option>
-                    <option value="Chemistry" className="bg-slate-900 text-white">Chemistry</option>
-                    <option value="Physics" className="bg-slate-900 text-white">Physics</option>
-                    <option value="Mock" className="bg-slate-900 text-white">Mock Test</option>
-                    <option value="Revision" className="bg-slate-900 text-white">Revision</option>
-                    <option value="General" className="bg-slate-900 text-white">General / Doubt</option>
-                  </select>
-                </div>
-
-                {/* Time Ticket Duration */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
-                    Time Ticket (Mins)
-                  </label>
-                  <select
-                    value={timeMinutes}
-                    onChange={(e) => setTimeMinutes(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
-                  >
-                    <option value={20} className="bg-slate-900 text-white">20 Mins (Sprint)</option>
-                    <option value={30} className="bg-slate-900 text-white">30 Mins (Quick)</option>
-                    <option value={45} className="bg-slate-900 text-white">45 Mins (Standard)</option>
-                    <option value={60} className="bg-slate-900 text-white">60 Mins (1 Hour)</option>
-                    <option value={90} className="bg-slate-900 text-white">90 Mins (1.5 Hours)</option>
-                    <option value={120} className="bg-slate-900 text-white">120 Mins (2 Hours)</option>
-                    <option value={150} className="bg-slate-900 text-white">150 Mins (2.5 Hours)</option>
-                    <option value={180} className="bg-slate-900 text-white">180 Mins (3 Hours)</option>
-                    <option value={210} className="bg-slate-900 text-white">210 Mins (3.5 Hours)</option>
-                    <option value={240} className="bg-slate-900 text-white">240 Mins (4 Hours Max Power Block)</option>
-                  </select>
-                </div>
-
-                {/* Priority */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
-                    Priority
-                  </label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value as TodoItem["priority"])}
-                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
-                  >
-                    <option value="high" className="bg-slate-900 text-white">🔥 High Priority</option>
-                    <option value="medium" className="bg-slate-900 text-white">⚡ Medium</option>
-                    <option value="low" className="bg-slate-900 text-white">🌱 Low</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="pt-1 flex justify-end">
-                <Button
-                  type="submit"
-                  className="rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold shadow-md shadow-teal-500/20 text-xs px-4 py-2 h-9"
-                >
-                  <Plus className="mr-1.5 h-3.5 w-3.5" />
-                  <span>Add To-Do Ticket</span>
-                </Button>
-              </div>
-            </form>
           </div>
 
           {/* Filter Bar & List Header */}

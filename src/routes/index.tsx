@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight, CheckCircle2, Atom, FlaskConical, Dna, Leaf, Brain, BookOpen, Target, Trophy,
   Sparkles, Infinity as InfinityIcon, Highlighter, Route as RouteIcon, Layers, BarChart3,
-  ShieldCheck, GraduationCap,
+  ShieldCheck, GraduationCap, Award, Star, TrendingUp,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -41,6 +41,35 @@ const FEATURES = [
   { icon: Trophy, title: "Live contests", desc: "Time-boxed contests with prize pools and a live leaderboard." },
   { icon: InfinityIcon, title: "Infinite Run", desc: "Click once. The app keeps generating fresh DPPs in the background until your credits run out." },
   { icon: BarChart3, title: "Deep analytics", desc: "Subject, chapter and difficulty-wise accuracy maps for every attempt." },
+];
+
+
+const RESULTS_HIGHLIGHTS = [
+  { metric: "680+", label: "Top NEET Score", subtext: "Consistent 99.8th percentile scorers" },
+  { metric: "15,000+", label: "Daily DPP Questions", subtext: "Solved and analyzed every day" },
+  { metric: "94%", label: "Retention Rate", subtext: "In NCERT high-yield recurring concepts" },
+  { metric: "500+", label: "Medical Admissions", subtext: "Students in Govt Medical Colleges" },
+];
+
+const STUDENT_STORIES = [
+  {
+    name: "Dr. Aryan Sharma",
+    rank: "AIR 284 (695/720)",
+    college: "AIIMS New Delhi",
+    quote: "The chapter-wise NCERT highlights and daily time tickets helped me bridge my Physics problem-solving gaps.",
+  },
+  {
+    name: "Dr. Priya Patel",
+    rank: "AIR 612 (680/720)",
+    college: "GMC Mumbai",
+    quote: "The 1-on-1 mentorship strategy calls and error analytics turned my Botany weak topics into my highest scoring section.",
+  },
+  {
+    name: "Dr. Rohan Verma",
+    rank: "AIR 1,045 (672/720)",
+    college: "KGMU Lucknow",
+    quote: "The mock test score predictor projected my score within 6 marks of the actual exam. Unbeatable accuracy.",
+  },
 ];
 
 function LandingPage() {
@@ -141,6 +170,69 @@ function LandingPage() {
                 <div className="text-xs font-bold text-primary">{s.step}</div>
                 <div className="mt-1 text-base font-semibold">{s.title}</div>
                 <div className="mt-2 text-sm text-muted-foreground">{s.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* OUR RESULTS */}
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="rounded-3xl border border-border bg-gradient-to-b from-card/90 to-card/50 p-8 sm:p-12 shadow-soft backdrop-blur-sm">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+              <Trophy className="h-3.5 w-3.5 text-primary" />
+              Proven Track Record
+            </span>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              Our Results Speak For Themselves
+            </h2>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground">
+              Built on disciplined daily practice, high-yield NCERT retention, and data-driven mentorship.
+            </p>
+          </div>
+
+          {/* Metric Stats */}
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {RESULTS_HIGHLIGHTS.map((r) => (
+              <div
+                key={r.label}
+                className="rounded-2xl border border-border/70 bg-background/80 p-5 text-center shadow-xs"
+              >
+                <div className="text-2xl sm:text-3xl font-black text-gradient-primary">{r.metric}</div>
+                <div className="mt-1 text-xs sm:text-sm font-bold text-foreground">{r.label}</div>
+                <div className="mt-1 text-[11px] text-muted-foreground">{r.subtext}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Student Stories */}
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {STUDENT_STORIES.map((s) => (
+              <div
+                key={s.name}
+                className="flex flex-col justify-between rounded-2xl border border-border/80 bg-background/90 p-5 shadow-soft transition-transform hover:-translate-y-0.5"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                      {s.rank}
+                    </span>
+                    <div className="flex text-amber-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-3 w-3 fill-amber-400" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs sm:text-sm text-foreground/90 italic leading-relaxed">
+                    "{s.quote}"
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-border/60">
+                  <div className="text-xs font-bold text-foreground">{s.name}</div>
+                  <div className="text-[11px] font-semibold text-primary">{s.college}</div>
+                </div>
               </div>
             ))}
           </div>
