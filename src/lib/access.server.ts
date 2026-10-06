@@ -8,7 +8,7 @@ export async function getUserAccessServer(userId: string) {
     db.from("profiles").select("trial_expires_at").eq("id", userId).maybeSingle(),
     db
       .from("subscriptions")
-      .select("expires_at, batches:source_batch_id(features)")
+      .select("expires_at, source_batch_id, batches:source_batch_id(features)")
       .eq("user_id", userId)
       .eq("status", "active")
       .gt("expires_at", new Date().toISOString())
@@ -25,6 +25,10 @@ export async function getUserAccessServer(userId: string) {
   else if (sub) {
     const feat = (sub as any).batches?.features ?? {};
     features = Object.entries(feat).filter(([, v]) => !!v).map(([k]) => k);
+    // Active subscription without a restricting batch or with empty features gets full feature access
+    if (!sub.source_batch_id || features.length === 0) {
+      features = ["*"];
+    }
   } else if (trialActive) features = [...TRIAL_FEATURES];
   return { features, isAdmin, trialActive, subscriptionActive: !!sub };
 }
