@@ -317,7 +317,7 @@ function Dashboard() {
                 {/* Study Streak Badge */}
                 <Link
                   to="/leaderboard"
-                  className="group flex shrink-0 flex-col items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-1.5 transition-all hover:bg-amber-100/70 dark:border-amber-500/20 dark:bg-amber-950/30 dark:hover:bg-amber-900/40 shadow-xs"
+                  className="group flex shrink-0 flex-col items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-1.5 transition-all duration-200 hover:border-amber-400 hover:bg-amber-100/90 hover:shadow-md hover:shadow-amber-500/25 dark:border-amber-500/30 dark:bg-amber-950/40 dark:hover:border-amber-400 dark:hover:shadow-amber-500/20 active:scale-[0.97]"
                 >
                   <div className="flex items-center gap-1 text-xs font-black text-amber-600 dark:text-amber-400">
                     <Flame className="h-3.5 w-3.5 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
@@ -345,7 +345,7 @@ function Dashboard() {
 
                 <Link
                   to="/todo"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-all active:scale-[0.98]"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm shadow-teal-500/20 hover:shadow-md hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98]"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Create Today's To-Do List</span>
@@ -368,7 +368,7 @@ function Dashboard() {
                   <button
                     type="button"
                     onClick={() => setGoalDialog(true)}
-                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/80 bg-emerald-50/70 px-3 py-1 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 hover:border-emerald-400 hover:shadow-sm hover:shadow-emerald-500/25 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50 transition-all duration-200 active:scale-[0.97]"
                   >
                     <Pencil className="h-3 w-3" />
                     <span>Edit Target</span>
@@ -457,7 +457,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Physics" }}
-                className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-sky-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                className="group relative overflow-hidden rounded-xl border border-sky-200/60 bg-gradient-to-b from-white to-sky-50/30 p-3 sm:p-4 text-slate-800 shadow-xs transition-all duration-200 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/20 hover:-translate-y-0.5 dark:border-sky-900/40 dark:from-slate-900 dark:to-sky-950/20 dark:text-white dark:hover:border-sky-500/60 dark:hover:shadow-sky-500/25"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-sky-500/15 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400">
@@ -482,7 +482,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Chemistry" }}
-                className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-teal-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                className="group relative overflow-hidden rounded-xl border border-teal-200/60 bg-gradient-to-b from-white to-teal-50/30 p-3 sm:p-4 text-slate-800 shadow-xs transition-all duration-200 hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/20 hover:-translate-y-0.5 dark:border-teal-900/40 dark:from-slate-900 dark:to-teal-950/20 dark:text-white dark:hover:border-teal-500/60 dark:hover:shadow-teal-500/25"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400">
@@ -507,7 +507,7 @@ function Dashboard() {
               <Link
                 to="/subjects/$subject"
                 params={{ subject: "Biology" }}
-                className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-purple-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                className="group relative overflow-hidden rounded-xl border border-purple-200/60 bg-gradient-to-b from-white to-purple-50/30 p-3 sm:p-4 text-slate-800 shadow-xs transition-all duration-200 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-0.5 dark:border-purple-900/40 dark:from-slate-900 dark:to-purple-950/20 dark:text-white dark:hover:border-purple-500/60 dark:hover:shadow-purple-500/25"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-purple-500/15 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400">
@@ -564,7 +564,7 @@ function Dashboard() {
               <div className="mt-4 grid grid-cols-3 gap-1.5">
                 <Link
                   to="/bookmarks"
-                  className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-amber-200/80 bg-amber-50/60 px-1.5 py-2 text-[11px] font-bold text-amber-900 hover:border-amber-400 hover:bg-amber-100/80 hover:shadow-md hover:shadow-amber-500/25 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:border-amber-500/50 dark:hover:bg-amber-900/40 transition-all duration-200 active:scale-[0.97]"
                 >
                   <Bookmark className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
                   <span className="truncate">Bookmarks</span>
@@ -572,7 +572,7 @@ function Dashboard() {
 
                 <Link
                   to="/mistakes"
-                  className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-rose-200/80 bg-rose-50/60 px-1.5 py-2 text-[11px] font-bold text-rose-900 hover:border-rose-400 hover:bg-rose-100/80 hover:shadow-md hover:shadow-rose-500/25 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300 dark:hover:border-rose-500/50 dark:hover:bg-rose-900/40 transition-all duration-200 active:scale-[0.97]"
                 >
                   <FileText className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
                   <span className="truncate">Mistakes</span>
@@ -580,7 +580,7 @@ function Dashboard() {
 
                 <Link
                   to="/analytics"
-                  className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-teal-200/80 bg-teal-50/60 px-1.5 py-2 text-[11px] font-bold text-teal-900 hover:border-teal-400 hover:bg-teal-100/80 hover:shadow-md hover:shadow-teal-500/25 dark:border-teal-900/40 dark:bg-teal-950/30 dark:text-teal-300 dark:hover:border-teal-500/50 dark:hover:bg-teal-900/40 transition-all duration-200 active:scale-[0.97]"
                 >
                   <TrendingUp className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
                   <span className="truncate">Analytics</span>
@@ -663,7 +663,7 @@ function Dashboard() {
               <div className="mt-3.5">
                 <Button
                   asChild
-                  className="w-full rounded-xl bg-teal-600 hover:bg-teal-700 font-bold text-white shadow-xs transition-all"
+                  className="w-full rounded-xl bg-gradient-to-r from-sky-600 via-teal-600 to-emerald-600 hover:from-sky-500 hover:via-teal-500 hover:to-emerald-500 font-bold text-white shadow-md shadow-teal-500/25 hover:shadow-lg hover:shadow-teal-500/40 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98]"
                 >
                   <Link
                     to="/generate"
@@ -678,7 +678,7 @@ function Dashboard() {
             {/* Card 3: MOCK TESTS */}
             <Link
               to="/mocks"
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 text-slate-800 shadow-xs hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white transition-all"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-200/70 bg-gradient-to-b from-white to-amber-50/20 p-4 sm:p-5 text-slate-800 shadow-xs transition-all duration-200 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 dark:border-amber-900/30 dark:from-slate-900 dark:to-amber-950/10 dark:text-white dark:hover:border-amber-500/50"
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -722,7 +722,7 @@ function Dashboard() {
             {/* Card 4: PYQs */}
             <Link
               to="/pyqs"
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 text-slate-800 shadow-xs hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white transition-all"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-blue-200/70 bg-gradient-to-b from-white to-blue-50/20 p-4 sm:p-5 text-slate-800 shadow-xs transition-all duration-200 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-0.5 dark:border-blue-900/30 dark:from-slate-900 dark:to-blue-950/10 dark:text-white dark:hover:border-blue-500/50"
             >
               <div>
                 <div className="flex items-start justify-between">
@@ -863,7 +863,7 @@ function Dashboard() {
             <div className="grid grid-cols-1 gap-3">
               <Link
                 to="/community"
-                className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition-all hover:border-violet-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+                className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-violet-200/70 bg-gradient-to-r from-white via-violet-50/30 to-purple-50/30 p-3.5 shadow-xs transition-all duration-200 hover:border-violet-400 hover:shadow-lg hover:shadow-violet-500/20 hover:-translate-y-0.5 dark:border-violet-900/40 dark:from-slate-900 dark:to-violet-950/20"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
@@ -1021,7 +1021,7 @@ function StudyToolItem({
     <Link
       to={to as never}
       params={params as never}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3.5 transition-all hover:border-slate-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 active:scale-[0.98]"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3.5 transition-all duration-200 hover:border-teal-400/80 hover:shadow-lg hover:shadow-teal-500/15 hover:-translate-y-0.5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-teal-500/40 dark:hover:shadow-teal-500/10 active:scale-[0.98]"
     >
       <div className="flex items-start justify-between gap-2">
         <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg", iconClass || "bg-slate-100 text-slate-700")}>
