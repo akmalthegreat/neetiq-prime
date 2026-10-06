@@ -44,7 +44,9 @@ import {
   Play,
   Check,
   BookOpen,
-, Highlighter, Boxes } from "lucide-react";
+  Highlighter,
+  Boxes,
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { TrialBanner } from "@/components/dashboard/trial-banner";
