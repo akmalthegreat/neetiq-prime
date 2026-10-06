@@ -16,7 +16,7 @@ export function useAccess() {
   const hasFeature = (key: string) => {
     if (!access) return false;
     if (access.isAdmin) return true;
-    return access.features.includes("*") || access.features.includes(key);
+    return access.features?.includes("*") || access.features?.includes(key) || false;
   };
   return {
     access,

@@ -455,7 +455,7 @@ function Dashboard() {
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {/* Physics */}
               <Link
-                to="/subjects/"
+                to="/subjects/$subject"
                 params={{ subject: "Physics" }}
                 className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-sky-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
               >
@@ -480,7 +480,7 @@ function Dashboard() {
 
               {/* Chemistry */}
               <Link
-                to="/subjects/"
+                to="/subjects/$subject"
                 params={{ subject: "Chemistry" }}
                 className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-teal-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
               >
@@ -505,7 +505,7 @@ function Dashboard() {
 
               {/* Biology */}
               <Link
-                to="/subjects/"
+                to="/subjects/$subject"
                 params={{ subject: "Biology" }}
                 className="group relative overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 sm:p-4 text-slate-800 shadow-xs transition-all hover:border-purple-400 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:text-white"
               >

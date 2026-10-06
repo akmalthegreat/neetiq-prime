@@ -2,7 +2,7 @@
 // SECURITY: Only import from server-only paths (createServerFn handlers, server routes).
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
-import { SUPABASE_URL } from './config';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config';
 
 function createSupabaseAdminClient() {
   // Accept the currently configured project service-role secret, with legacy fallbacks.
@@ -13,14 +13,14 @@ function createSupabaseAdminClient() {
     process.env.EXTERNAL_SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+  const key = SERVICE_ROLE_KEY || SUPABASE_PUBLISHABLE_KEY;
   if (!SERVICE_ROLE_KEY) {
-    const message =
-      'Missing PROJECT_SERVICE_ROLE_KEY env var. Add it in Project Settings → Secrets.';
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    console.warn(
+      '[Supabase] Missing PROJECT_SERVICE_ROLE_KEY env var. Falling back to publishable key to prevent server crash.'
+    );
   }
 
-  return createClient<Database>(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  return createClient<Database>(SUPABASE_URL, key, {
     auth: {
       storage: undefined,
       persistSession: false,

@@ -54,6 +54,12 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
         <p className="mt-2 text-sm text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
+        {error && (
+          <details className="mt-4 rounded-lg border border-border bg-muted/40 p-3 text-left text-xs text-muted-foreground">
+            <summary className="cursor-pointer font-medium text-foreground">Error details</summary>
+            <pre className="mt-2 whitespace-pre-wrap overflow-auto max-h-40 font-mono text-[11px]">{error instanceof Error ? (error.stack || error.message) : String(error)}</pre>
+          </details>
+        )}
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => { router.invalidate(); reset(); }}
