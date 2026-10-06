@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, Clock, User, Check, AlertCircle, FileText, Maximize2, Laptop } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, Loader2, X, Bookmark, GraduationCap, Flag, Trophy, LayoutGrid, Clock, User, Check, AlertCircle, FileText, Maximize2, Laptop } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { RichText, resolveAnyImageUrl, handleImageFallback } from "@/components/rich-text";
@@ -1055,9 +1055,7 @@ function QuizPlayer() {
                   <span className={cn("min-w-0 truncate rounded-md border px-2 py-0.5 text-xs font-bold", boxColor)}>
                     {test.title}
                   </span>
-                  <span className="shrink-0 rounded-md border border-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 dark:border-emerald-500/40">
-                    +{test.marks_correct}/{test.marks_wrong}
-                  </span>
+
                   {isCbt && (
                     <span className="shrink-0 rounded-md border border-rose-300 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-rose-700 dark:text-rose-300 dark:border-rose-500/40">
                       {hh}:{mm}:{ss}
@@ -1066,12 +1064,18 @@ function QuizPlayer() {
                 </div>
               );
             })()}
-            <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              <Flag className="h-3 w-3 text-emerald-600" />
-              <span className="font-semibold">NEET</span>
-              <span className="ml-2">
-                Q {idx + 1} / {total}
-              </span>
+            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-1 font-semibold text-foreground/90">
+                <User className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <span className="truncate max-w-[140px] sm:max-w-[200px]">
+                  {(user?.user_metadata as { full_name?: string; name?: string } | undefined)?.full_name ||
+                    (user?.user_metadata as { name?: string } | undefined)?.name ||
+                    user?.email?.split("@")[0] ||
+                    "Student"}
+                </span>
+              </div>
+              <span className="text-muted-foreground/50">•</span>
+              <span>Q {idx + 1} / {total}</span>
             </div>
           </div>
           <div className="flex items-center gap-1">
@@ -1396,34 +1400,54 @@ function QuizPlayer() {
           >
             <Bookmark className={cn("h-5 w-5", bookmarks.has(q.id) && "fill-current")} />
           </Button>
+          {/* < (Previous) */}
           <Button
             variant="outline"
-            className="h-11 flex-1"
+            size="icon"
             disabled={idx === 0}
             onClick={() => setIdx((i) => Math.max(0, i - 1))}
+            className="h-11 w-12 shrink-0 font-bold text-base"
+            aria-label="Previous question"
+            title="Previous question"
           >
-            Previous
+            <ChevronLeft className="h-5 w-5" />
           </Button>
-          {idx < total - 1 ? (
-            <Button
-              className={cn("h-11 flex-1", isQuiz && "bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs")}
-              onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
-            >
-              Next
-            </Button>
-          ) : isChapterPractice || isQuiz ? (
-            <Button className="h-11 flex-1" onClick={() => submit()} disabled={submitting}>
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Finish"}
-            </Button>
-          ) : (
-            <Button
-              className="h-11 flex-1 bg-emerald-600 hover:bg-emerald-700"
-              onClick={() => setConfirmSubmit(true)}
-              disabled={submitting}
-            >
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
-            </Button>
-          )}
+
+          {/* > (Next) */}
+          <Button
+            variant={idx < total - 1 ? "outline" : "ghost"}
+            size="icon"
+            disabled={idx === total - 1}
+            onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
+            className={cn(
+              "h-11 w-12 shrink-0 font-bold text-base",
+              isQuiz && idx < total - 1 && "border-blue-200 text-blue-700 hover:bg-blue-50"
+            )}
+            aria-label="Next question"
+            title="Next question"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+
+          {/* Submit */}
+          <Button
+            className={cn(
+              "h-11 flex-1 font-bold tracking-wide shadow-xs",
+              isQuiz
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-emerald-600 hover:bg-emerald-700 text-white"
+            )}
+            onClick={() => {
+              if (isChapterPractice || isQuiz) {
+                submit();
+              } else {
+                setConfirmSubmit(true);
+              }
+            }}
+            disabled={submitting}
+          >
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
+          </Button>
         </div>
       </footer>
 

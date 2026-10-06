@@ -52,43 +52,65 @@ export function resolveAnyImageUrl(url?: string | null): string | null {
       return formatCdnUrl(ntMatch[1]);
     }
 
-    // Keep all other external URLs (Cloudinary, Mathpix, etc.) intact
+    // 3. Map old neetbuddy-media URLs
+    const nbMatch = trimmed.match(/(?:ncert\/)?(physics|chemistry|biology)\/(?:images\/)?(.+)$/i);
+    if (nbMatch && nbMatch[1] && nbMatch[2]) {
+      return formatCdnUrl(`${nbMatch[1].toLowerCase()}/${nbMatch[2]}`);
+    }
+
     return trimmed;
   }
 
-  // Relative paths: e.g. "/img/data/biology/...", "biology/...", "physics/...", "question-images/..."
-  const clean = trimmed
+  // Relative paths: e.g. "/img/data/biology/...", "biology/...", "physics/...", "ncert/...", or just "opt_1.png"
+  let clean = trimmed
     .replace(/^\/+/, "")
     .replace(/^public\//i, "")
     .replace(/^img\/data\//i, "")
     .replace(/^question-images\//i, "");
+
+  // Convert ncert/physics/images/... -> physics/...
+  const ncertMatch = clean.match(/^ncert\/(physics|chemistry|biology)\/(?:images\/)?(.+)$/i);
+  if (ncertMatch) {
+    clean = `${ncertMatch[1].toLowerCase()}/${ncertMatch[2]}`;
+  }
 
   if (!clean || clean.split("/").some((part) => part === "..")) return null;
 
   return formatCdnUrl(clean);
 }
 
-function formatCdnUrl(relPath: string): string {
-  const clean = relPath.replace(/^\/+/, "");
-  const encodedParts = clean
-    .split("/")
-    .map((part) => encodeURIComponent(decodeURIComponentSafe(part)))
-    .join("/");
-  return `${QUESTION_IMAGE_CDN_BASE}/${encodedParts}`;
-}
-
 export function handleImageFallback(image: HTMLImageElement) {
   const currentSrc = image.getAttribute("src") || "";
-  // Seamlessly fall back from jsDelivr to raw GitHub if needed
-  if (currentSrc.startsWith(JSDELIVR_CDN_BASE)) {
-    image.src = currentSrc.replace(JSDELIVR_CDN_BASE, RAW_GITHUB_CDN_BASE);
+  let step = parseInt(image.dataset.fallbackStep || "0", 10);
+  image.dataset.fallbackStep = String(step + 1);
+
+  // Extract base filename
+  const filename = currentSrc.split("/").pop()?.split("?")[0] || "";
+  if (!filename) {
+    showImageFallback(image);
     return;
   }
-  showImageFallback(image);
-}
 
-function decodeURIComponentSafe(value: string) {
-  try { return decodeURIComponent(value); } catch { return value; }
+  // Fallback sequence: try raw github, then test across all 3 subjects (physics, chemistry, biology)
+  const candidateUrls = [
+    currentSrc.replace(JSDELIVR_CDN_BASE, RAW_GITHUB_CDN_BASE),
+    `${JSDELIVR_CDN_BASE}/physics/${filename}`,
+    `${RAW_GITHUB_CDN_BASE}/physics/${filename}`,
+    `${JSDELIVR_CDN_BASE}/chemistry/${filename}`,
+    `${RAW_GITHUB_CDN_BASE}/chemistry/${filename}`,
+    `${JSDELIVR_CDN_BASE}/biology/${filename}`,
+    `${RAW_GITHUB_CDN_BASE}/biology/${filename}`
+  ];
+
+  if (step < candidateUrls.length) {
+    const nextUrl = candidateUrls[step];
+    if (nextUrl && nextUrl !== currentSrc) {
+      image.src = nextUrl;
+      return;
+    }
+  }
+
+  showImageFallback(image);
 }
 
 function showImageFallback(image: HTMLImageElement) {
@@ -286,16 +308,31 @@ function renderInline(src: string): ReactNode[] {
           />,
         );
       }
-    } else if (m[5] !== undefined || m[6] !== undefined) {
+    } else if (m[5] !== undefined) {
+      // Standalone bare image path or filename (e.g. 66_25638_optimg_1_1.png, physics/xxx.png)
+      const resolved = resolveAnyImageUrl(m[5]);
+      if (resolved) {
+        out.push(
+          <img
+            key={k++}
+            src={resolved}
+            alt="option diagram"
+            loading="lazy"
+            className="my-2 block max-h-60 max-w-full rounded-lg border border-border/80 bg-white p-1 object-contain shadow-xs"
+            onError={(e) => handleImageFallback(e.currentTarget)}
+          />,
+        );
+      }
+    } else if (m[6] !== undefined || m[7] !== undefined) {
       // Inline LaTeX
-      const tex = (m[5] ?? m[6]) as string;
+      const tex = (m[6] ?? m[7]) as string;
       out.push(<SafeInlineMath key={k++} tex={tex} />);
-    } else if (m[7] !== undefined) {
-      out.push(<strong key={k++}>{m[7]}</strong>);
     } else if (m[8] !== undefined) {
-      out.push(<em key={k++}>{m[8]}</em>);
+      out.push(<strong key={k++}>{m[8]}</strong>);
     } else if (m[9] !== undefined) {
-      out.push(<code key={k++} className="rounded bg-secondary px-1 py-0.5 text-[0.9em]">{m[9]}</code>);
+      out.push(<em key={k++}>{m[9]}</em>);
+    } else if (m[10] !== undefined) {
+      out.push(<code key={k++} className="rounded bg-secondary px-1 py-0.5 text-[0.9em]">{m[10]}</code>);
     }
 
     last = m.index + m[0].length;
