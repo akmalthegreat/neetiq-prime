@@ -533,6 +533,8 @@ export const HOME_CSS = `
 .nth .w4-ring svg{width:58px;height:58px}
 .nth .w4-chips{position:relative;margin-top:auto;padding-top:12px;flex-wrap:nowrap}
 .nth .w4-chips .chip{height:32px;padding:0 10px;font-size:11.5px;white-space:nowrap}
+@media (min-width:520px) and (max-width:899px){.nth .w4-photo{width:62%;left:auto;right:-2%;top:50%;transform-origin:50% 40%;translate:0 -46%}
+.nth .w4-fade{background:linear-gradient(90deg,#0B1630 0%,#0B1630 38%,rgba(11,22,48,.9) 44%,rgba(11,22,48,.6) 52%,rgba(11,22,48,.25) 60%,rgba(11,22,48,0) 72%),linear-gradient(0deg,rgba(11,22,48,.7) 0%,rgba(11,22,48,0) 30%),linear-gradient(180deg,rgba(11,22,48,.5) 0%,rgba(11,22,48,0) 20%)}}
 @media (min-width:900px){.nth .w4{grid-column:1/-1;min-height:330px;padding:28px 32px}
 .nth .w4-photo{width:62%;left:auto;right:-2%;top:50%;transform-origin:50% 40%;translate:0 -46%}
 .nth .w4-fade{background:linear-gradient(90deg,#0B1630 0%,#0B1630 40%,rgba(11,22,48,.9) 45%,rgba(11,22,48,.6) 52%,rgba(11,22,48,.25) 60%,rgba(11,22,48,0) 72%),linear-gradient(0deg,rgba(11,22,48,.7) 0%,rgba(11,22,48,0) 30%),linear-gradient(180deg,rgba(11,22,48,.5) 0%,rgba(11,22,48,0) 20%)}
