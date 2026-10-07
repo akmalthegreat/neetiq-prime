@@ -20,6 +20,11 @@ const MY_SUPABASE_PUBLISHABLE_KEY = JSON.stringify(
 export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
+    // Load route components on demand instead of shipping every route
+    // and its heavy dependencies in the first browser bundle.
+    router: {
+      autoCodeSplitting: true,
+    },
   },
   nitro: {
     preset: "cloudflare-module",
