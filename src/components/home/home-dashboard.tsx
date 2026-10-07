@@ -93,9 +93,16 @@ function useTodayAndStreak(userId: string | undefined) {
 function useSubjectCounts() {
   const [counts, setCounts] = useState({ physics: 16047, chemistry: 15602, biology: 15146 });
   useEffect(() => {
-    Promise.all(["physics", "chemistry", "biology"].map((s) =>
-      supabase.from("questions").select("id", { count: "exact", head: true }).eq("subject_id", s)))
-      .then(([p, c, b]) => setCounts((old) => ({ physics: p.count ?? old.physics, chemistry: c.count ?? old.chemistry, biology: b.count ?? old.biology })))
+    // Totals are pre-computed hourly in the database, so this is one tiny request.
+    Promise.resolve((supabase as any).rpc("question_bank_counts"))
+      .then(({ data }: { data: Record<string, number> | null }) => {
+        if (!data) return;
+        setCounts((old) => ({
+          physics: Number(data.physics ?? old.physics),
+          chemistry: Number(data.chemistry ?? old.chemistry),
+          biology: Number(data.biology ?? old.biology),
+        }));
+      })
       .catch(() => { /* keep defaults */ });
   }, []);
   return counts;

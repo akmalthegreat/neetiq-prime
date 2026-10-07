@@ -49,3 +49,24 @@ LANGUAGE sql STABLE SET search_path = public AS $$
 $$;
 REVOKE ALL ON FUNCTION public.chapter_question_counts(text[], text, text, boolean) FROM public;
 GRANT EXECUTE ON FUNCTION public.chapter_question_counts(text[], text, text, boolean) TO anon, authenticated;
+
+-- 5) Question bank totals, pre-computed hourly (home page / dashboard).
+CREATE TABLE IF NOT EXISTS public.question_bank_stats (id int PRIMARY KEY DEFAULT 1 CHECK (id = 1), counts jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE public.question_bank_stats ENABLE ROW LEVEL SECURITY;
+GRANT ALL ON public.question_bank_stats TO service_role;
+CREATE OR REPLACE FUNCTION public.refresh_question_bank_stats()
+RETURNS void LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  INSERT INTO public.question_bank_stats (id, counts, updated_at)
+  SELECT 1, coalesce(jsonb_object_agg(subject_id, n), '{}'::jsonb) || jsonb_build_object('total', coalesce(sum(n), 0)), now()
+  FROM (SELECT q.subject_id, count(*) n FROM public.questions q GROUP BY q.subject_id) s
+  ON CONFLICT (id) DO UPDATE SET counts = EXCLUDED.counts, updated_at = EXCLUDED.updated_at;
+$$;
+REVOKE ALL ON FUNCTION public.refresh_question_bank_stats() FROM public, anon, authenticated;
+CREATE OR REPLACE FUNCTION public.question_bank_counts()
+RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT counts FROM public.question_bank_stats WHERE id = 1
+$$;
+REVOKE ALL ON FUNCTION public.question_bank_counts() FROM public;
+GRANT EXECUTE ON FUNCTION public.question_bank_counts() TO anon, authenticated, service_role;
+SELECT public.refresh_question_bank_stats();
+SELECT cron.schedule('question_bank_stats', '7 * * * *', $$ select public.refresh_question_bank_stats(); $$);
