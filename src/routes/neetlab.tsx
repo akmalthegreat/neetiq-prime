@@ -1,13 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { BookMarked, FlaskConical, Atom, Microscope } from "lucide-react";
-import { SubjectIndex } from "@/neetlab/components/SubjectIndex";
-import { BioTopic } from "@/neetlab/components/BiologyTopic";
-import { PhyTopic } from "@/neetlab/components/PhysicsTopic";
-import { ChemTopic } from "@/neetlab/components/ChemistryTopic";
+// NEETLab is one of the heaviest areas (3D/simulation code). Keep it out of
+// the initial route bundle and load each subject experience only when opened.
+const SubjectIndex = lazy(() => import("@/neetlab/components/SubjectIndex").then((m) => ({ default: m.SubjectIndex })));
+const BioTopic = lazy(() => import("@/neetlab/components/BiologyTopic").then((m) => ({ default: m.BioTopic })));
+const PhyTopic = lazy(() => import("@/neetlab/components/PhysicsTopic").then((m) => ({ default: m.PhyTopic })));
+const ChemTopic = lazy(() => import("@/neetlab/components/ChemistryTopic").then((m) => ({ default: m.ChemTopic })));
 import { subjects } from "@/neetlab/data/topics";
 import { FeatureLock } from "@/components/feature-lock";
 
@@ -26,6 +28,7 @@ function NEETLabPage() {
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 pb-24 pt-6">
+        <Suspense fallback={<div className="rounded-2xl border bg-card p-6 text-sm text-muted-foreground">Loading NEETLab tools…</div>}>
         <div className="mb-6 flex items-center gap-3">
           <div className="rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 p-3 text-white shadow-lg">
             <FlaskConical className="h-6 w-6" />
@@ -75,6 +78,7 @@ function NEETLabPage() {
             </div>
           </TabsContent>
         </Tabs>
+        </Suspense>
       </main>
     </div>
   );
