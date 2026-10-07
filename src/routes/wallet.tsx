@@ -276,7 +276,7 @@ function WalletPage() {
             </div>
             <div>
               <div className="text-sm font-bold">Go Premium 👑</div>
-              <div className="text-xs text-muted-foreground">Unlimited AI tests + all paid mocks. From ₹299/mo.</div>
+              <div className="text-xs text-muted-foreground">Unlimited custom tests + all paid mocks. From ₹299/mo.</div>
             </div>
           </div>
           <Button asChild className="bg-gradient-primary">

@@ -29,7 +29,7 @@ export function ReportQuestionButton({ questionId, size = "sm" }: { questionId: 
     setSubmitting(true);
     try {
       await submit({ data: { question_id: questionId, reason, details: details.trim() || undefined } });
-      toast.success("Reported. Our AI reviewer will verify it shortly.");
+      toast.success("Reported. We will review it shortly.");
       setOpen(false);
       setDetails("");
     } catch (e) {
@@ -58,7 +58,7 @@ export function ReportQuestionButton({ questionId, size = "sm" }: { questionId: 
           <DialogHeader>
             <DialogTitle>Report this question</DialogTitle>
             <DialogDescription>
-              Our AI will review and remove the question if it's confirmed wrong.
+              We will review it and remove the question if it's confirmed wrong.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

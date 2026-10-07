@@ -14,20 +14,20 @@ type Step = {
 
 const STEPS: Step[] = [
   { route: "/dashboard", title: "Welcome to NEET Track 👋", body: "Quick tour of every feature. The app stays fully interactive — tap around and explore as we go. Skip anytime." },
-  { route: "/daily", title: "DPP HUB", body: "A fresh AI-generated Daily Practice Problem set every morning. Free, forever." },
-  { route: "/generate", title: "Custom Test", body: "Pick subject, chapters and difficulty. AI builds you a custom test in seconds." },
+  { route: "/daily", title: "DPP HUB", body: "A fresh Daily Practice Problem set every morning. Free, forever." },
+  { route: "/generate", title: "Custom Test", body: "Pick subject, chapters and difficulty. Your custom test is ready in seconds." },
   { route: "/flashcards", title: "Flashcards 🧠", body: "Flip through high-yield cards, reveal the answer, then rate yourself Easy / Medium / Hard. Open a deck to try it now." },
   { route: "/ncert-highlights", title: "NCERT Highlights ✨", body: "The most-repeated NCERT lines that show up in NEET. Quick, exam-focused revision." },
-  { route: "/ai-path", title: "AI Path 🧭", body: "A personalized 7-day study plan generated from your performance — knows exactly what to fix next." },
-  { route: "/score-predictor", title: "Score Predictor 🎯", body: "AI forecasts your NEET marks and rank band from your attempts, with tips to push higher." },
+  { route: "/ai-path", title: "Study Path 🧭", body: "A personalised 7-day study plan built from your performance — shows exactly what to fix next." },
+  { route: "/score-predictor", title: "Score Predictor 🎯", body: "Forecasts your NEET marks and rank band from your attempts, with tips to push higher." },
   { route: "/mocks", title: "Mock tests", body: "Full-length NEET pattern mocks with timers, negative marking and detailed analysis." },
   { route: "/pyqs", title: "Previous Year Questions", body: "Browse and practice tagged PYQs across every chapter." },
   { route: "/contests", title: "Live contests", body: "Compete with everyone for real prize money. Free daily + paid weekly contests." },
   { route: "/leaderboard", title: "Leaderboard 🏆", body: "See where you rank among all aspirants — weekly and all-time. Climb it by keeping your streak and winning contests." },
   { route: "/analytics", title: "Progress & analytics", body: "Subject-wise accuracy, time per question, weak chapters and your weekly progress report." },
-  { route: "/wallet", title: "Wallet & bonus", body: "Recharge, withdraw winnings (min ₹50) and top up bonus coins used to unlock AI tools." },
+  { route: "/wallet", title: "Wallet & bonus", body: "Recharge, withdraw winnings (min ₹50) and top up bonus coins used to unlock premium tools." },
   { route: "/referrals", title: "Refer & earn", body: "Share your code — when a friend joins and plays, you both get bonus credits." },
-  { route: "/subscription", title: "Premium 👑", body: "Unlock unlimited AI tests, every paid mock and free access to all premium study tools." },
+  { route: "/subscription", title: "Premium 👑", body: "Unlock unlimited custom tests, every paid mock and free access to all premium study tools." },
   { route: "/dashboard", title: "Need help? 🛟", body: "Tap the floating support button bottom-right anytime. You're all set — go explore! 🚀" },
 ];
 

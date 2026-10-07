@@ -65,7 +65,7 @@ function ScorePredictorPage() {
   }
 
   return (
-    <PageShell eyebrow="Insights" title="Score Predictor" description={`AI-powered NEET score forecast from your test history. Costs ${cost} bonus per run.`}>
+    <PageShell eyebrow="Insights" title="Score Predictor" description={`NEET score forecast from your test history. Costs ${cost} bonus per run.`}>
       <Card className="mb-4 border-0 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 text-white shadow-elegant">
         <CardContent className="p-5">
           <div className="flex items-center gap-3">

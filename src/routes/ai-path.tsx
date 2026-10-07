@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { FeatureLock } from "@/components/feature-lock";
 
 export const Route = createFileRoute("/ai-path")({
-  head: () => ({ meta: [{ title: "AI Path — NEET Track" }] }),
+  head: () => ({ meta: [{ title: "Study Path — NEET Track" }] }),
   component: () => (<FeatureLock feature="ai_path"><AiPathPage/></FeatureLock>),
 });
 
@@ -62,13 +62,13 @@ function AiPathPage() {
   }
 
   return (
-    <PageShell eyebrow="Personalized" title="AI Path" description={`A 7-day NEET prep plan built around your strengths & weaknesses. Costs ${cost} bonus per plan.`}>
+    <PageShell eyebrow="Personalized" title="Study Path" description={`A 7-day NEET prep plan built around your strengths & weaknesses. Costs ${cost} bonus per plan.`}>
       <Card className="mb-4 border-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 text-white shadow-elegant">
         <CardContent className="p-5">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur"><RouteIcon className="h-6 w-6" /></div>
             <div className="min-w-0 flex-1">
-              <div className="text-xs font-bold uppercase tracking-widest opacity-90">7-Day AI Plan</div>
+              <div className="text-xs font-bold uppercase tracking-widest opacity-90">7-Day Study Plan</div>
               {plan ? (
                 <>
                   <div className="text-lg font-extrabold">Started {new Date(plan.start_date).toLocaleDateString()}</div>

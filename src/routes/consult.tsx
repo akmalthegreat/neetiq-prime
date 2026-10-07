@@ -48,7 +48,7 @@ function ConsultHub() {
             <img src="/dr-azka.png" alt="Dr. Azka" className="h-20 w-20 shrink-0 object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.25)] sm:h-24 sm:w-24" />
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-100">
-                <Sparkles className="h-3.5 w-3.5" /> Dr. Azka · AI NEET Mentor
+                <Sparkles className="h-3.5 w-3.5" /> Dr. Azka · NEET Mentor
               </div>
               <h1 className="mt-1 text-2xl font-extrabold leading-tight sm:text-3xl">Hi {name}, let's review your preparation</h1>
               <p className="mt-1.5 text-sm text-white/85">

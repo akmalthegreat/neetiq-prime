@@ -12,10 +12,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NEET Track — AI-powered NEET prep" },
-      { name: "description", content: "Daily DPPs, AI-generated quizzes, full mock tests, flashcards, NCERT highlights, AI study path and live contests — built for NEET-UG aspirants." },
-      { property: "og:title", content: "NEET Track — AI-powered NEET prep" },
-      { property: "og:description", content: "Daily DPPs, AI-generated quizzes, full mock tests, flashcards, NCERT highlights and live contests for NEET aspirants." },
+      { title: "NEET Track — NEET Preparation with Daily DPP, PYQs & Mock Tests" },
+      { name: "description", content: "NEET Track is a complete NEET-UG preparation platform: daily DPPs, chapter-wise NEET-level questions, PYQs, full-length NTA-style mock tests, short notes, flashcards, analytics and live contests." },
+      { property: "og:title", content: "NEET Track — NEET Preparation with Daily DPP, PYQs & Mock Tests" },
+      { property: "og:description", content: "Daily DPPs, chapter-wise NEET-level questions, PYQs, NTA-style mock tests, short notes and live contests for NEET-UG aspirants." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -32,12 +32,12 @@ const SUBJECTS = [
 
 const FEATURES = [
   { icon: BookOpen, title: "Daily DPP", desc: "A fresh, NEET-grade Daily Practice Problem every day. Streaks reward consistency." },
-  { icon: Brain, title: "AI quiz generator", desc: "Personalised, chapter-wise quizzes built around your real performance data." },
+  { icon: Brain, title: "Custom test builder", desc: "Build chapter-wise tests by syllabus, difficulty and your weak areas, in quiz or NTA CBT mode." },
   { icon: Target, title: "Full NEET mocks", desc: "Pattern-accurate full-length mocks with detailed solutions and rank." },
   { icon: Layers, title: "Flashcards", desc: "High-yield concept cards with Easy / Medium / Hard recall tracking." },
   { icon: Highlighter, title: "NCERT highlights", desc: "The most-repeated NCERT lines NEET loves to ask, chapter-wise." },
-  { icon: RouteIcon, title: "AI study path", desc: "A 7-day plan generated from your strengths, gaps and recent attempts." },
-  { icon: Target, title: "Score predictor", desc: "AI forecasts your NEET marks and rank band from your attempt history." },
+  { icon: RouteIcon, title: "Personal study plan", desc: "A 7-day plan built from your strengths, gaps and recent attempts." },
+  { icon: Target, title: "Score predictor", desc: "Forecasts your NEET marks and rank band from your attempt history." },
   { icon: Trophy, title: "Live contests", desc: "Time-boxed contests with prize pools and a live leaderboard." },
   { icon: InfinityIcon, title: "Infinite Run", desc: "Click once. The app keeps generating fresh DPPs in the background until your credits run out." },
   { icon: BarChart3, title: "Deep analytics", desc: "Subject, chapter and difficulty-wise accuracy maps for every attempt." },
@@ -85,15 +85,16 @@ function LandingPage() {
           <div className="mx-auto max-w-3xl text-center animate-fade-in-up">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
               <GraduationCap className="h-3.5 w-3.5 text-primary" />
-              Built for NEET-UG aspirants
+              NEET Track · Built for NEET-UG aspirants
             </span>
             <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-6xl">
+              <span className="sr-only">NEET Track — NEET preparation platform. </span>
               Practise sharper. Track deeper.{" "}
               <span className="text-gradient-primary">Crack NEET.</span>
             </h1>
             <p className="mt-5 text-base text-muted-foreground sm:text-lg">
-              Daily DPPs, AI-generated quizzes, full mocks, flashcards, NCERT highlights, an AI study path,
-              a score predictor and live contests — all in one focused app.
+              Daily DPPs, chapter-wise NEET-level questions, PYQs, full NTA-style mocks, short notes, flashcards,
+              a personal study plan, a score predictor and live contests — all in one focused app.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="bg-gradient-primary shadow-elegant hover:opacity-95">
@@ -108,7 +109,7 @@ function LandingPage() {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> Free Daily DPP</span>
               <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-success" /> Secure payments</span>
-              <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-primary" /> AI-powered</span>
+              <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-primary" /> NCERT-aligned</span>
             </div>
           </div>
 
@@ -132,7 +133,7 @@ function LandingPage() {
             One app. Every part of your prep.
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Daily practice, full mocks, AI quizzes, flashcards, highlights, analytics and contests — without juggling five apps.
+            Daily practice, full mocks, custom tests, short notes, flashcards, analytics and contests — without juggling five apps.
           </p>
         </div>
 
@@ -158,13 +159,13 @@ function LandingPage() {
         <div className="rounded-3xl border border-border bg-gradient-surface p-8 sm:p-12 shadow-soft">
           <div className="max-w-2xl">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">How it works</div>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Practise daily. Let the AI fill the gaps.</h2>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Practise daily. Close every gap.</h2>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {[
-              { step: "01", title: "Solve the Daily DPP", desc: "Hand-picked or AI-generated NEET-grade questions, one per day. Build a streak." },
+              { step: "01", title: "Solve the Daily DPP", desc: "A fresh set of NEET-level questions every day. Build a streak." },
               { step: "02", title: "Track every attempt", desc: "Every answer is scored, tagged and rolled into subject and chapter analytics." },
-              { step: "03", title: "Let the AI plan ahead", desc: "AI Path turns your weak areas into a 7-day study plan. Score Predictor projects your rank." },
+              { step: "03", title: "Plan ahead", desc: "Study Path turns your weak areas into a 7-day plan. Score Predictor projects your rank." },
             ].map((s) => (
               <div key={s.step} className="rounded-2xl border border-border/60 bg-card p-5 shadow-soft">
                 <div className="text-xs font-bold text-primary">{s.step}</div>
@@ -250,7 +251,7 @@ function LandingPage() {
             <Sparkles className="mx-auto h-10 w-10 text-white" />
             <h2 className="mt-4 text-3xl font-bold sm:text-4xl">Start your NEET prep today.</h2>
             <p className="mx-auto mt-3 max-w-xl text-primary-foreground/90">
-              Free Daily DPP for everyone. Premium AI features unlock with bonus credits.
+              Free Daily DPP for everyone. Premium tools unlock with bonus credits.
             </p>
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90">

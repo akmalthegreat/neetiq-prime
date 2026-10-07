@@ -21,7 +21,7 @@ export const Route = createFileRoute("/infinite-run")({
 type Status = Awaited<ReturnType<typeof getInfiniteRunStatus>>;
 
 const MODE_LABEL: Record<string, string> = {
-  dpp: "AI DPP",
+  dpp: "Smart DPP",
   diagram: "Diagram DPP",
 };
 
@@ -111,7 +111,7 @@ function InfiniteRunPage() {
   const isExhausted = run?.status === "exhausted";
 
   return (
-    <PageShell eyebrow="Beta · Auto-Generator" title="Infinite Run" description="Click Start and the app keeps generating fresh AI DPPs in the background — until your bonus credits run out. The server keeps going even after you close this tab.">
+    <PageShell eyebrow="Beta · Auto-Generator" title="Infinite Run" description="Click Start and the app keeps generating fresh DPPs in the background — until your bonus credits run out. The server keeps going even after you close this tab.">
       {/* Hero card */}
       <Card className="mb-4 border-2 border-primary/30 bg-gradient-to-br from-primary via-primary to-blue-700 text-primary-foreground shadow-elegant">
         <CardContent className="p-5">
@@ -176,7 +176,7 @@ function InfiniteRunPage() {
           <ul className="space-y-1.5 text-foreground/80">
             <li className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> Client ticks every 30s while this tab is open.</li>
             <li className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> Server cron keeps generating in the background even after you close it.</li>
-            <li className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> Each tick rotates: AI DPP ({state.costs.dpp} bonus) → Diagram DPP ({state.costs.diagram} bonus).</li>
+            <li className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /> Each tick rotates: Smart DPP ({state.costs.dpp} bonus) → Diagram DPP ({state.costs.diagram} bonus).</li>
             <li className="flex gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" /> Auto-stops the moment your bonus balance drops below the next tick cost.</li>
           </ul>
         </CardContent>

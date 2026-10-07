@@ -141,14 +141,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
                   "@id": "https://neettrack.com/#website",
                   "url": "https://neettrack.com/",
                   "name": "NEET Track",
-                  "alternateName": ["NeetTrack", "NEETTrack"],
+                  "alternateName": ["Neet Track", "NeetTrack", "NEETTrack", "neettrack", "NEET Track App"],
                   "description": "Complete NEET preparation platform with mock tests, PYQs, practice questions, flashcards, short notes, NCERT study tools, and progress tracking."
                 },
                 {
                   "@type": "Organization",
                   "@id": "https://neettrack.com/#organization",
                   "name": "NEET Track",
-                  "alternateName": ["NeetTrack", "NEETTrack"],
+                  "alternateName": ["Neet Track", "NeetTrack", "NEETTrack", "neettrack", "NEET Track App"],
                   "url": "https://neettrack.com/",
                   "logo": "https://neettrack.com/logo.jpg"
                 }

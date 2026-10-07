@@ -14,7 +14,7 @@ export function SiteFooter() {
               <div className="text-base font-bold">NEET <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent font-bold">Track</span></div>
             </Link>
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-              Premium NEET preparation — daily DPPs, AI quizzes, mock tests, live contests, and analytics that actually move your score.
+              Premium NEET preparation — daily DPPs, chapter-wise practice, mock tests, short notes, live contests and analytics that actually move your score.
             </p>
           </div>
 

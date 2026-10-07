@@ -1017,14 +1017,14 @@ export function LegacyDashboard() {
                   className="h-12 w-12 sm:h-14 sm:w-14 object-contain drop-shadow-[0_4px_12px_rgba(16,185,129,0.35)]"
                 />
                 <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white shadow-xs">
-                  AI
+                  ✓
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <Sparkles className="h-3 w-3 text-amber-400 fill-amber-400" />
                   <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-400">
-                    Dr. Azka • AI NEET Mentor
+                    Dr. Azka • NEET Mentor
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs sm:text-sm font-semibold text-slate-100 truncate">

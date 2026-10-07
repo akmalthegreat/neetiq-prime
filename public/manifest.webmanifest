@@ -1,7 +1,7 @@
 {
   "name": "NEET Track",
   "short_name": "NEET Track",
-  "description": "Crack NEET smarter — daily DPP, AI quizzes, full mocks, PYQs and live contests with prize money.",
+  "description": "Crack NEET smarter — daily DPP, chapter-wise practice, full mocks, PYQs, short notes and live contests.",
   "id": "/?v=2",
   "start_url": "/",
   "scope": "/",

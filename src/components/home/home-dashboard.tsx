@@ -237,9 +237,9 @@ function AzkaStrip({ tips }: { tips: string[] }) {
   }, [list.join("|")]);
   return (
     <Link to="/consult" className="azka rv">
-      <img src={AZKA_IMG} alt="Dr. Azka" /><span className="ai">AI</span>
+      <img src={AZKA_IMG} alt="Dr. Azka" /><span className="ai">LIVE</span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <small>DR. AZKA · AI MENTOR</small>
+        <small>DR. AZKA · NEET MENTOR</small>
         <div className="typing"><span>{text}</span><span className="caret" /></div>
       </div>
       <span className="btn-g">Consult →</span>
@@ -268,7 +268,7 @@ function Banner({ banners, nextContest }: { banners: HomeExtras["banners"]; next
         art: b.imageUrl ? <img className="azka-art" src={b.imageUrl} alt="" style={{ width: 140, borderRadius: 16 }} /> : <div className="ray" />,
       }))
     : [
-        { id: "consult", tag: "NEW · AI MENTOR", title: "Dr. Azka Consult is live", sub: "Predicted score, 12-hour study plan and your full report.", cta: "Consult now", href: "/consult", mesh: meshes[0], art: <img className="azka-art" src={AZKA_IMG} alt="" /> },
+        { id: "consult", tag: "NEW · NEET MENTOR", title: "Dr. Azka Consult is live", sub: "Predicted score, 12-hour study plan and your full report.", cta: "Consult now", href: "/consult", mesh: meshes[0], art: <img className="azka-art" src={AZKA_IMG} alt="" /> },
         { id: "mocks", tag: "MOCK SERIES", title: "Target 700 Full Mocks", sub: "NTA-style CBT, 720 marks and an all-India rank after every paper.", cta: "Start a mock", href: "/mocks", mesh: meshes[1], art: <><div className="ray" /><div className="badge3d"><b>700</b><small>TARGET</small></div></> },
         { id: "neetlab", tag: "3D STUDY TOOLS", title: "See biology in 3D", sub: "Explore models and simulations in NEETLab.", cta: "Open NEETLab", href: "/neetlab", mesh: meshes[2], art: <div className="helix">{Array.from({ length: 11 }, (_, i) => <span key={i} style={{ top: i * 17 + 4, animationDelay: `${-i * 0.27}s`, background: "linear-gradient(90deg,rgba(165,243,252,.75),rgba(253,230,138,.75))" }} />)}</div> },
         { id: "contest", tag: nextContest && contestIn > 0 ? `LIVE · ${fmtTime(nextContest.startsAt)}` : "DAILY CONTESTS", title: nextContest?.title ?? "Daily Mega Contest",

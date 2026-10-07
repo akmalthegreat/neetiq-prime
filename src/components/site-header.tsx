@@ -53,11 +53,11 @@ const GROUPS: Group[] = [
     ],
   },
   {
-    label: "AI Tools",
+    label: "Smart Tools",
     icon: Sparkles,
     items: [
       { to: "/generate", label: "Custom Test" },
-      { to: "/ai-path", label: "AI Path" },
+      { to: "/ai-path", label: "Study Path" },
       { to: "/score-predictor", label: "Score Predictor" },
     ],
   },
