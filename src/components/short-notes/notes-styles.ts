@@ -44,7 +44,7 @@ export const NOTES_DOC_CSS = `
 .sn-doc b,.sn-doc strong{color:var(--ink);font-weight:800}
 .sn-doc i,.sn-doc em{font-style:italic}
 .sn-doc .sn-sci{font-style:italic;font-weight:700;color:var(--acc2)}
-.sn-doc mark{background:linear-gradient(transparent 52%,#FDE68A 52%);color:inherit;padding:0 1px}
+.sn-doc mark{background:#E6F9B0;color:var(--ink);padding:1px 3px;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
 /* bullet lists */
 .sn-doc ul,.sn-doc ol{margin:6px 0 12px;padding-left:20px}
@@ -139,7 +139,7 @@ export const NOTES_CHROME_CSS = `
 .snr .hero .sheet:nth-child(3)::before{content:"";display:block;height:4px;margin:-12px -11px 10px;background:linear-gradient(90deg,#6D28D9,#059669)}
 .snr .hero .sheet i{display:block;height:5px;border-radius:3px;background:#D9DCEA;margin:6px 0}
 .snr .hero .sheet i.t{height:8px;width:70%;background:#6D28D9}
-.snr .hero .sheet i.m{background:linear-gradient(transparent 30%,#FDE68A 30%)}
+.snr .hero .sheet i.m{background:#D9F99D}
 .snr .hero .sheet i.s{width:60%}
 .snr .hero .feats{margin-top:16px;display:flex;flex-wrap:wrap;gap:6px}
 .snr .hero .feats span{font:600 11px var(--display);padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#EDE9FE}

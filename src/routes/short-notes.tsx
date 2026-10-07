@@ -82,13 +82,13 @@ function ShortNotesHub() {
                   {g.items.map((c, k) => c.ready ? (
                     <Link key={c.slug} to="/notes/$subject/$slug" params={{ subject, slug: c.slug }} className="nc" style={{ animationDelay: `${Math.min(0.5, k * 0.03)}s` }}>
                       <span className="no">{c.no}</span>
-                      <span className="mid"><span className="t">{c.title}</span><span className="u">{c.unit}</span></span>
-                      <span className="go">Read</span>
+                      <span className="mid"><span className="t">{c.title}</span><span className="u">Chapter {c.no} Short Notes · {c.unit}</span></span>
+                      <span className="go">Open notes</span>
                     </Link>
                   ) : (
                     <div key={c.slug} className="nc soon" style={{ animationDelay: `${Math.min(0.5, k * 0.03)}s` }}>
                       <span className="no">{c.no}</span>
-                      <span className="mid"><span className="t">{c.title}</span><span className="u">{c.unit}</span></span>
+                      <span className="mid"><span className="t">{c.title}</span><span className="u">Chapter {c.no} · {c.unit}</span></span>
                       <span className="lock">SOON</span>
                     </div>
                   ))}
