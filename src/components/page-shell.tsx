@@ -57,3 +57,15 @@ export function ComingSoonCard({ note }: { note?: string }) {
 }
 
 export { SiteFooter };
+
+/** Same header and sidebar as PageShell, but the content runs edge to edge (for full-width heroes). */
+export function FullBleedShell({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex min-h-screen flex-col lg:flex-row bg-background page-enter">
+      <SiteHeader />
+      <div className="flex-1 min-w-0 lg:pl-64 flex flex-col">
+        <main className="flex-1">{children}</main>
+      </div>
+    </div>
+  );
+}

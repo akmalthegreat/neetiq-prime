@@ -16,6 +16,8 @@ import { Route as AiPathRouteImport } from './routes/ai-path'
 import { Route as ConsultRouteImport } from './routes/consult'
 import { Route as ShortNotesRouteImport } from './routes/short-notes'
 import { Route as MegaQuizRouteImport } from './routes/mega-quiz'
+import { Route as Target700RouteImport } from './routes/target-700'
+import { Route as Target700TestTestIdRouteImport } from './routes/target-700-test.$testId'
 import { Route as NotesSubjectSlugRouteImport } from './routes/notes.$subject.$slug'
 import { Route as ConsultPlanRouteImport } from './routes/consult-plan'
 import { Route as ConsultReportRouteImport } from './routes/consult-report'
@@ -116,6 +118,16 @@ const ShortNotesRoute = ShortNotesRouteImport.update({
 const MegaQuizRoute = MegaQuizRouteImport.update({
   id: '/mega-quiz',
   path: '/mega-quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Target700Route = Target700RouteImport.update({
+  id: '/target-700',
+  path: '/target-700',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Target700TestTestIdRoute = Target700TestTestIdRouteImport.update({
+  id: '/target-700-test/$testId',
+  path: '/target-700-test/$testId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotesSubjectSlugRoute = NotesSubjectSlugRouteImport.update({
@@ -466,6 +478,8 @@ export interface FileRoutesByFullPath {
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
   '/mega-quiz': typeof MegaQuizRoute
+  '/target-700': typeof Target700Route
+  '/target-700-test/$testId': typeof Target700TestTestIdRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
@@ -541,6 +555,8 @@ export interface FileRoutesByTo {
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
   '/mega-quiz': typeof MegaQuizRoute
+  '/target-700': typeof Target700Route
+  '/target-700-test/$testId': typeof Target700TestTestIdRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
@@ -617,6 +633,8 @@ export interface FileRoutesById {
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
   '/mega-quiz': typeof MegaQuizRoute
+  '/target-700': typeof Target700Route
+  '/target-700-test/$testId': typeof Target700TestTestIdRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
@@ -694,6 +712,8 @@ export interface FileRouteTypes {
     | '/consult'
     | '/short-notes'
     | '/mega-quiz'
+    | '/target-700'
+    | '/target-700-test/$testId'
     | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
@@ -769,6 +789,8 @@ export interface FileRouteTypes {
     | '/consult'
     | '/short-notes'
     | '/mega-quiz'
+    | '/target-700'
+    | '/target-700-test/$testId'
     | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
@@ -844,6 +866,8 @@ export interface FileRouteTypes {
     | '/consult'
     | '/short-notes'
     | '/mega-quiz'
+    | '/target-700'
+    | '/target-700-test/$testId'
     | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
@@ -920,6 +944,8 @@ export interface RootRouteChildren {
   ConsultRoute: typeof ConsultRoute
   ShortNotesRoute: typeof ShortNotesRoute
   MegaQuizRoute: typeof MegaQuizRoute
+  Target700Route: typeof Target700Route
+  Target700TestTestIdRoute: typeof Target700TestTestIdRoute
   NotesSubjectSlugRoute: typeof NotesSubjectSlugRoute
   ConsultPlanRoute: typeof ConsultPlanRoute
   ConsultReportRoute: typeof ConsultReportRoute
@@ -1030,6 +1056,20 @@ declare module '@tanstack/react-router' {
       path: '/mega-quiz'
       fullPath: '/mega-quiz'
       preLoaderRoute: typeof MegaQuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/target-700': {
+      id: '/target-700'
+      path: '/target-700'
+      fullPath: '/target-700'
+      preLoaderRoute: typeof Target700RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/target-700-test/$testId': {
+      id: '/target-700-test/$testId'
+      path: '/target-700-test/$testId'
+      fullPath: '/target-700-test/$testId'
+      preLoaderRoute: typeof Target700TestTestIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notes/$subject/$slug': {
@@ -1546,6 +1586,8 @@ const rootRouteChildren: RootRouteChildren = {
   ConsultRoute: ConsultRoute,
   ShortNotesRoute: ShortNotesRoute,
   MegaQuizRoute: MegaQuizRoute,
+  Target700Route: Target700Route,
+  Target700TestTestIdRoute: Target700TestTestIdRoute,
   NotesSubjectSlugRoute: NotesSubjectSlugRoute,
   ConsultPlanRoute: ConsultPlanRoute,
   ConsultReportRoute: ConsultReportRoute,
