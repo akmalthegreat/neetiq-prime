@@ -114,6 +114,9 @@ function QuizPlayer() {
   const [subjects, setSubjects] = useState<Lookup>({});
   const [chapters, setChapters] = useState<Lookup>({});
   const [idx, setIdx] = useState(0);
+  // Time spent on each question (ms), for the Improvement Zone analytics.
+  const qTimes = useRef<Record<string, number>>({});
+  const qMark = useRef<{ id: string; at: number } | null>(null);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [wrongMarks, setWrongMarks] = useState<Set<string>>(new Set());
@@ -377,7 +380,8 @@ function QuizPlayer() {
     let correct = 0,
       wrong = 0,
       score = 0;
-    const wrongRows: { user_id: string; question_id: string; chapter_id: string | null }[] = [];
+    const wrongRows: { user_id: string; question_id: string; chapter_id: string | null; fixed_at: null }[] = [];
+    const correctIds: string[] = [];
     for (const q of questions) {
       const ans = answers[q.id];
       if (ans === undefined) continue;
@@ -385,19 +389,30 @@ function QuizPlayer() {
       if (ans === q.correct_index) {
         correct++;
         score += marks.correct;
+        correctIds.push(q.id);
       } else {
         wrong++;
         score += marks.wrong;
         if (user)
-          wrongRows.push({ user_id: user.id, question_id: q.id, chapter_id: q.chapter_id ?? null });
+          wrongRows.push({ user_id: user.id, question_id: q.id, chapter_id: q.chapter_id ?? null, fixed_at: null });
       }
     }
     const unattempted = questions.length - correct - wrong;
     if (user && wrongRows.length) {
       await supabase
         .from("wrong_questions")
-        .upsert(wrongRows, { onConflict: "user_id,question_id" });
+        .upsert(wrongRows as any, { onConflict: "user_id,question_id" });
     }
+    // Old mistakes answered correctly now count as fixed.
+    if (user && correctIds.length) {
+      for (let i = 0; i < correctIds.length; i += 150) {
+        await (supabase as any).from("wrong_questions").update({ fixed_at: new Date().toISOString() })
+          .eq("user_id", user.id).in("question_id", correctIds.slice(i, i + 150)).is("fixed_at", null);
+      }
+    }
+    flushQuestionTime();
+    const questionTimes: Record<string, number> = {};
+    for (const [qid, ms] of Object.entries(qTimes.current)) if (ms >= 1000) questionTimes[qid] = Math.round(ms / 1000);
     const result = { score, correct, wrong, unattempted };
     if (user) {
       const { data: ins } = await supabase
@@ -412,6 +427,7 @@ function QuizPlayer() {
           wrong_count: wrong,
           unattempted_count: unattempted,
           time_taken_sec: Math.floor((Date.now() - startedAt.current) / 1000),
+          question_times: questionTimes,
           status: "completed",
           submitted_at: new Date().toISOString(),
         })
@@ -658,6 +674,26 @@ function QuizPlayer() {
 
   const activeGroupIndex = subjectGroups.findIndex((g) => g.indices.includes(idx));
 
+  // Add the time spent on the question we are leaving; start timing the new one.
+  const flushQuestionTime = useCallback(() => {
+    const m = qMark.current;
+    if (m) qTimes.current[m.id] = (qTimes.current[m.id] ?? 0) + Math.min(Date.now() - m.at, 15 * 60_000);
+    qMark.current = null;
+  }, []);
+  useEffect(() => {
+    const cur = questions[idx];
+    flushQuestionTime();
+    if (cur && !document.hidden) qMark.current = { id: cur.id, at: Date.now() };
+  }, [idx, questions, flushQuestionTime]);
+  useEffect(() => {
+    const onVis = () => {
+      if (document.hidden) flushQuestionTime();
+      else { const cur = questions[idx]; if (cur) qMark.current = { id: cur.id, at: Date.now() }; }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [idx, questions, flushQuestionTime]);
+
   const cbtSaveAndNext = () => setIdx((i) => Math.min(total - 1, i + 1));
   const cbtClearResponse = () => {
     if (!q) return;
@@ -702,16 +738,17 @@ function QuizPlayer() {
           void supabase
             .from("wrong_questions")
             .upsert(
-              { user_id: user.id, question_id: q.id, chapter_id: q.chapter_id ?? null },
+              { user_id: user.id, question_id: q.id, chapter_id: q.chapter_id ?? null, fixed_at: null } as any,
               { onConflict: "user_id,question_id" },
             );
         } else {
-          // Remove from persistent wrong list when corrected.
-          void supabase
+          // Answered correctly: an old mistake counts as fixed.
+          void (supabase as any)
             .from("wrong_questions")
-            .delete()
+            .update({ fixed_at: new Date().toISOString() })
             .eq("user_id", user.id)
-            .eq("question_id", q.id);
+            .eq("question_id", q.id)
+            .is("fixed_at", null);
         }
       }
     }

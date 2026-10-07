@@ -56,8 +56,7 @@ const SECTIONS: Section[] = [
     tone: "amber",
     items: [
       { to: "/todo", label: "My To-Do & Targets", icon: ListChecks },
-      { to: "/mistakes", label: "My Mistakes", icon: RotateCcw },
-      { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+      { to: "/improve", label: "Improvement Zone", icon: RotateCcw },
       { to: "/ai-path", label: "Study Path", icon: RouteIcon },
       { to: "/score-predictor", label: "Score Predictor", icon: Gauge },
     ],

@@ -51,6 +51,9 @@ function SecHead({ icon, iconBg, title, right }: { icon: ReactNode; iconBg: stri
 }
 
 const Ico = {
+  bookmark: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>,
+  xmark: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>,
+  bars: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M6 20V12M12 20V4M18 20v-6" /></svg>,
   bolt: <svg width="16" height="16" viewBox="0 0 24 24" fill="#FACC15"><path d="M13 2 3 14h9l-1 8 10-12h-9z" /></svg>,
   trend: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth="2" strokeLinecap="round"><path d="M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6" /></svg>,
   trophy: (c: string) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" /></svg>,
@@ -432,7 +435,7 @@ function Improvement({ snapshot, prediction, wrongThisWeek, bookmarks }: { snaps
   const recover = prediction?.ready ? prediction.levers.reduce((t, l) => t + l.gain, 0) : 0;
   return (
     <section className="panel imp rv" aria-label="Improvement zone">
-      <SecHead icon={Ico.trend} iconBg="rgba(16,185,129,.16)" title="Improvement Zone" right={<Link to="/analytics" style={{ color: "#34D399" }}>Analytics →</Link>} />
+      <SecHead icon={Ico.trend} iconBg="rgba(16,185,129,.16)" title="Improvement Zone" right={<Link to="/improve" style={{ color: "#34D399" }}>Open →</Link>} />
       <p className="lead">Turn mistakes into marks. Every wrong answer you fix here is a mark you won't lose in NEET.</p>
       {recover > 0 ? (
         <div className="recover">
@@ -446,23 +449,22 @@ function Improvement({ snapshot, prediction, wrongThisWeek, bookmarks }: { snaps
         </div>
       )}
       <div className="flow">
-        <Link to="/mistakes" className="fs" style={{ background: "linear-gradient(160deg,#3B0D1A,#1C0910)", borderColor: "rgba(244,63,94,.4)", color: "#FFE4EA" }}>
-          <span className="n" style={{ background: "#FB7185" }}>1</span><b>Review</b><small>Wrong answers saved in your Mistake Book</small>
-          <span className="num" style={{ color: "#FB7185" }}><CountUp to={mistakes} /></span></Link>
-        <Link to="/mistakes" className="fs" style={{ background: "linear-gradient(160deg,#3A2406,#1C1306)", borderColor: "rgba(245,158,11,.4)", color: "#FFF4DB" }}>
-          <span className="n" style={{ background: "#FBBF24" }}>2</span><b>Re-solve</b><small>Answer them again without hints</small>
-          <span className="num" style={{ color: "#FBBF24" }}>{last7}<span style={{ fontSize: 12, opacity: 0.75 }}> new</span></span></Link>
-        <Link to="/analytics" className="fs" style={{ background: "linear-gradient(160deg,#06302E,#071A1C)", borderColor: "rgba(20,184,166,.4)", color: "#E6FFFB" }}>
-          <span className="n" style={{ background: "#5EEAD4" }}>3</span><b>Track</b><small>Watch weak chapters turn green</small>
+        <Link to="/improve" search={{ tab: "saved" }} className="fs" style={{ background: "linear-gradient(160deg,#2E2206,#151006)", borderColor: "rgba(232,199,123,.45)", color: "#FFF4DB" }}>
+          <span className="n" style={{ background: "#E8C77B" }}>{Ico.bookmark}</span><b>Saved Questions</b><small>The ones you weren't sure about. Reattempt them.</small>
+          <span className="num" style={{ color: "#E8C77B" }}><CountUp to={bookmarks} /></span></Link>
+        <Link to="/improve" search={{ tab: "mistakes" }} className="fs" style={{ background: "linear-gradient(160deg,#3B0D1A,#1C0910)", borderColor: "rgba(244,63,94,.4)", color: "#FFE4EA" }}>
+          <span className="n" style={{ background: "#FB7185" }}>{Ico.xmark}</span><b>My Mistakes</b><small>Tag why you got it wrong, then fix it</small>
+          <span className="num" style={{ color: "#FB7185" }}><CountUp to={mistakes} />{last7 > 0 && <span style={{ fontSize: 12, opacity: 0.75 }}> +{last7}</span>}</span></Link>
+        <Link to="/improve" search={{ tab: "analytics" }} className="fs" style={{ background: "linear-gradient(160deg,#06302E,#071A1C)", borderColor: "rgba(20,184,166,.4)", color: "#E6FFFB" }}>
+          <span className="n" style={{ background: "#5EEAD4" }}>{Ico.bars}</span><b>Analytics</b><small>Time per question and mistake patterns</small>
           <span className="num" style={{ color: "#5EEAD4" }}>{weak}<span style={{ fontSize: 12, opacity: 0.75 }}> weak</span></span></Link>
-        <span className="arrow" style={{ left: "calc(33.3% - 8px)" }} /><span className="arrow" style={{ left: "calc(66.6% - 8px)" }} />
       </div>
       <div className="neg">
         <span className="nv">−{wrongThisWeek}</span>
         <span style={{ flex: 1 }}>Marks lost to wrong answers this week<small>Skip when you can't rule out two options.</small></span>
-        <Link to="/bookmarks" style={{ font: "600 12px var(--display)", color: "#FDA4AF", whiteSpace: "nowrap" }}>Bookmarks · {bookmarks}</Link>
+        <Link to="/improve" search={{ tab: "analytics" }} style={{ font: "600 12px var(--display)", color: "#FDA4AF", whiteSpace: "nowrap" }}>See why →</Link>
       </div>
-      <Link to="/mistakes" className="btn-fix">{Ico.redo}Start fixing · 10 minutes</Link>
+      <Link to="/improve" search={{ tab: "mistakes" }} className="btn-fix">{Ico.redo}Start fixing · 10 minutes</Link>
     </section>
   );
 }

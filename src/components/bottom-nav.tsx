@@ -3,6 +3,7 @@
 
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ComponentType } from "react";
+import { createPortal } from "react-dom";
 import {
   Home, ClipboardCheck, BookOpen, Sparkles, GraduationCap, X, Trophy, Target, SlidersHorizontal, Zap, LayoutList,
   History, Layers, NotebookPen, Gauge, ListChecks, Route as RouteIcon, RotateCcw, Atom,
@@ -37,7 +38,7 @@ const GROUPS: Group[] = [
       { to: "/todo", label: "To-Do & Targets", sub: "Plan and track your day", icon: ListChecks, tint: "#10B981" },
       { to: "/score-predictor", label: "Score Predictor", sub: "Where you stand today", icon: Gauge, tint: "#F97316" },
       { to: "/consult", label: "Dr. Azka Consult", sub: "Your personal analysis", icon: Sparkles, tint: "#14B8A6", match: ["/consult"] },
-      { to: "/mistakes", label: "My Mistakes", sub: "Fix every wrong answer", icon: RotateCcw, tint: "#EF4444" },
+      { to: "/improve", label: "Improvement Zone", sub: "Saved · Mistakes · Analytics", icon: RotateCcw, tint: "#EF4444", match: ["/improve", "/mistakes", "/bookmarks", "/analytics"] },
       { to: "/ai-path", label: "Study Path", sub: "What to study next", icon: RouteIcon, tint: "#6366F1" },
       { to: "/neetlab", label: "NEETLab 3D", sub: "See concepts in 3D", icon: Atom, tint: "#0EA5E9" },
     ],
@@ -49,7 +50,18 @@ const HIDE_ON = ["/quiz/", "/battle/", "/login", "/signup", "/onboarding", "/tar
 
 const isIn = (path: string, item: Item) => path === item.to || path.startsWith(item.to + "/") || (item.match ?? []).some((m) => path.startsWith(m));
 
+/**
+ * Rendered into <body> so it stays pinned to the screen. (Pages fade in with a
+ * transform, which would otherwise pin "fixed" elements to the page instead.)
+ */
 export function BottomNav() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return createPortal(<BottomNavInner />, document.body);
+}
+
+function BottomNavInner() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState<Group["key"] | null>(null);
   useEffect(() => { setOpen(null); }, [path]);

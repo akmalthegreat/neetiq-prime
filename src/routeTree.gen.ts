@@ -16,6 +16,7 @@ import { Route as AiPathRouteImport } from './routes/ai-path'
 import { Route as ConsultRouteImport } from './routes/consult'
 import { Route as ShortNotesRouteImport } from './routes/short-notes'
 import { Route as MegaQuizRouteImport } from './routes/mega-quiz'
+import { Route as ImproveRouteImport } from './routes/improve'
 import { Route as Target700RouteImport } from './routes/target-700'
 import { Route as Target700TestTestIdRouteImport } from './routes/target-700-test.$testId'
 import { Route as NotesSubjectSlugRouteImport } from './routes/notes.$subject.$slug'
@@ -113,6 +114,11 @@ const ConsultRoute = ConsultRouteImport.update({
 const ShortNotesRoute = ShortNotesRouteImport.update({
   id: '/short-notes',
   path: '/short-notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImproveRoute = ImproveRouteImport.update({
+  id: '/improve',
+  path: '/improve',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MegaQuizRoute = MegaQuizRouteImport.update({
@@ -478,6 +484,7 @@ export interface FileRoutesByFullPath {
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
   '/mega-quiz': typeof MegaQuizRoute
+  '/improve': typeof ImproveRoute
   '/target-700': typeof Target700Route
   '/target-700-test/$testId': typeof Target700TestTestIdRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
@@ -555,6 +562,7 @@ export interface FileRoutesByTo {
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
   '/mega-quiz': typeof MegaQuizRoute
+  '/improve': typeof ImproveRoute
   '/target-700': typeof Target700Route
   '/target-700-test/$testId': typeof Target700TestTestIdRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
@@ -633,6 +641,7 @@ export interface FileRoutesById {
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
   '/mega-quiz': typeof MegaQuizRoute
+  '/improve': typeof ImproveRoute
   '/target-700': typeof Target700Route
   '/target-700-test/$testId': typeof Target700TestTestIdRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
@@ -712,6 +721,7 @@ export interface FileRouteTypes {
     | '/consult'
     | '/short-notes'
     | '/mega-quiz'
+    | '/improve'
     | '/target-700'
     | '/target-700-test/$testId'
     | '/notes/$subject/$slug'
@@ -789,6 +799,7 @@ export interface FileRouteTypes {
     | '/consult'
     | '/short-notes'
     | '/mega-quiz'
+    | '/improve'
     | '/target-700'
     | '/target-700-test/$testId'
     | '/notes/$subject/$slug'
@@ -866,6 +877,7 @@ export interface FileRouteTypes {
     | '/consult'
     | '/short-notes'
     | '/mega-quiz'
+    | '/improve'
     | '/target-700'
     | '/target-700-test/$testId'
     | '/notes/$subject/$slug'
@@ -944,6 +956,7 @@ export interface RootRouteChildren {
   ConsultRoute: typeof ConsultRoute
   ShortNotesRoute: typeof ShortNotesRoute
   MegaQuizRoute: typeof MegaQuizRoute
+  ImproveRoute: typeof ImproveRoute
   Target700Route: typeof Target700Route
   Target700TestTestIdRoute: typeof Target700TestTestIdRoute
   NotesSubjectSlugRoute: typeof NotesSubjectSlugRoute
@@ -1049,6 +1062,13 @@ declare module '@tanstack/react-router' {
       path: '/short-notes'
       fullPath: '/short-notes'
       preLoaderRoute: typeof ShortNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/improve': {
+      id: '/improve'
+      path: '/improve'
+      fullPath: '/improve'
+      preLoaderRoute: typeof ImproveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mega-quiz': {
@@ -1586,6 +1606,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConsultRoute: ConsultRoute,
   ShortNotesRoute: ShortNotesRoute,
   MegaQuizRoute: MegaQuizRoute,
+  ImproveRoute: ImproveRoute,
   Target700Route: Target700Route,
   Target700TestTestIdRoute: Target700TestTestIdRoute,
   NotesSubjectSlugRoute: NotesSubjectSlugRoute,
