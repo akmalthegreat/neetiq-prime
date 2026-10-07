@@ -229,6 +229,23 @@ export const HOME_CSS = `
 .nth .seg button.on{background:linear-gradient(180deg,#1E3A6E,#162B52);color:#fff}
 .nth .toggle{margin-top:10px;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:12px;background:#0C1529;border:1px solid var(--line);font-size:13px;font-weight:600}
 .nth .toggle small{display:block;font-size:11px;color:var(--mute);font-weight:600}
+.nth .sq-list{display:flex;flex-direction:column;gap:8px}
+.nth .sq{padding:12px 12px 4px;border-radius:14px;background:#0C1529;border:1px solid var(--line);border-left:3px solid var(--c)}
+.nth .sq-top{display:flex;align-items:center;gap:9px}
+.nth .sq-top b{font:700 15px var(--display);flex:1}
+.nth .sq .range{margin:8px 0 2px}
+.nth .sq-total{margin-top:10px;text-align:right;font-size:13px;color:var(--mute);font-weight:600}
+.nth .sq-total b{font:800 20px var(--display);color:#fff;margin:0 3px}
+.nth .stepper{display:flex;align-items:center;border-radius:11px;background:#070E1F;border:1px solid var(--line2);overflow:hidden}
+.nth .stepper button{width:36px;height:36px;font:600 19px var(--display);color:#C7D6F5}
+.nth .stepper button:disabled{opacity:.3}
+.nth .stepper input{width:46px;height:36px;text-align:center;background:transparent;border:0;color:#fff;font:800 16px var(--display);outline:none}
+.nth .tm{margin-top:12px;padding:12px;border-radius:14px;background:#0C1529;border:1px solid var(--line)}
+.nth .tm-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:700}
+.nth .tm-head small{display:block;font-size:11.5px;color:var(--mute);font-weight:600;margin-top:2px}
+.nth .tm-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.nth .tm-chips button{height:34px;padding:0 6px;border-radius:9px;font:600 12.5px var(--display);color:#C7D6F5;background:#111B33;border:1px solid var(--line2);transition:all .2s var(--ease)}
+.nth .tm-chips button.on{color:#fff;background:linear-gradient(180deg,#1E3A6E,#162B52);border-color:#3B82F6}
 .nth .sw{width:42px;height:24px;border-radius:12px;background:#24314F;position:relative;transition:background .25s}
 .nth .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s var(--ease)}
 .nth .sw.on{background:var(--green)}

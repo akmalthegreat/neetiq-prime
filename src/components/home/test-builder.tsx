@@ -28,6 +28,11 @@ const MODES: { id: Mode; t: string; d: string; c: string; ic: string; best?: boo
   { id: "revival", t: "Mistake Revival", d: "Only questions you got wrong before", c: "#A78BFA", ic: "M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" },
 ];
 const STEP_NAMES = ["Subjects", "Chapters", "Questions", "Mode"];
+const SUBJECT_ORDER = ["physics", "chemistry", "biology"];
+/** Questions per subject in the real NEET paper. */
+const NEET_SPLIT: Record<string, number> = { physics: 45, chemistry: 45, biology: 90 };
+const TIMER_PRESETS = [30, 60, 90, 120, 180];
+const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 function shuffle<T>(a: T[]): T[] { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 const Tick = () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg>;
@@ -43,6 +48,8 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
   const [chs, setChs] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
   const [count, setCount] = useState(45);
+  const [split, setSplit] = useState<Record<string, number>>({});
+  const [timer, setTimer] = useState<number | null>(null); // null = automatic
   const [lvl, setLvl] = useState<"Mixed" | "Easy" | "Medium" | "Hard">("Mixed");
   const [pyq, setPyq] = useState(false);
   const [neg, setNeg] = useState(true);
@@ -89,38 +96,58 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
     if (!user || busy) return;
     setBusy(true);
     try {
+      const subjOf = new Map(chapters.map((c) => [c.id, c.subject_id]));
+      // How many questions from which chapters: one bucket per subject, or one bucket for everything.
+      const buckets = perSubject
+        ? activeSubs.map((id) => ({ id, n: split[id] ?? 0, chapters: chs.filter((c) => subjOf.get(c) === id) })).filter((b) => b.n > 0)
+        : [{ id: "all", n: count, chapters: chs }];
+      const want = buckets.reduce((n, b) => n + b.n, 0);
       let ids: string[] = [];
+      const short: string[] = [];
+
       if (mode === "revival") {
         let q = supabase.from("wrong_questions").select("question_id,chapter_id").eq("user_id", user.id).limit(2000);
         if (chs.length) q = q.in("chapter_id", chs);
         const { data, error } = await q;
         if (error) throw new Error(error.message);
-        ids = shuffle(Array.from(new Set<string>((data ?? []).map((r: { question_id: string }) => r.question_id)))).slice(0, count);
+        const rows = (data ?? []) as { question_id: string; chapter_id: string }[];
+        for (const b of buckets) {
+          const inB = new Set(b.chapters);
+          const got = shuffle(Array.from(new Set(rows.filter((r) => inB.has(r.chapter_id)).map((r) => r.question_id)))).slice(0, b.n);
+          if (perSubject && got.length < b.n) short.push(`${subjName(b.id)} ${got.length}/${b.n}`);
+          ids.push(...got);
+        }
         if (!ids.length) throw new Error("No saved mistakes in these chapters yet. Try another mode.");
       } else {
         const cap = lvl === "Mixed" ? null : lvl;
-        const per = Math.max(1, Math.ceil(count / chs.length));
-        const pick = async (cid: string, strict: boolean) => {
+        const pick = async (cid: string, per: number, strict: boolean) => {
           let q = supabase.from("questions").select("id").eq("chapter_id", cid);
           if (strict && cap) q = q.eq("difficulty", cap);
           if (pyq) q = q.eq("is_pyq", true);
           const { data } = await q.limit(per * 3);
           return shuffle((data ?? []).map((r: { id: string }) => r.id)).slice(0, per);
         };
-        for (let i = 0; i < chs.length; i += 8) {
-          const got = await Promise.all(chs.slice(i, i + 8).map((c) => pick(c, true)));
-          got.forEach((g) => ids.push(...g));
+        for (const b of buckets) {
+          const per = Math.max(1, Math.ceil(b.n / b.chapters.length));
+          let got: string[] = [];
+          for (let i = 0; i < b.chapters.length; i += 8) {
+            const part = await Promise.all(b.chapters.slice(i, i + 8).map((c) => pick(c, per, true)));
+            part.forEach((g) => got.push(...g));
+          }
+          if (got.length < b.n && cap) {
+            const more = await Promise.all(b.chapters.slice(0, 8).map((c) => pick(c, per, false)));
+            got = Array.from(new Set([...got, ...more.flat()]));
+          }
+          got = shuffle(got).slice(0, b.n);
+          if (perSubject && got.length < b.n) short.push(`${subjName(b.id)} ${got.length}/${b.n}`);
+          ids.push(...got); // subject by subject, like the real paper
         }
-        if (ids.length < count && cap) {
-          const more = await Promise.all(chs.slice(0, 8).map((c) => pick(c, false)));
-          ids = Array.from(new Set([...ids, ...more.flat()]));
-        }
-        ids = shuffle(ids).slice(0, count);
         if (!ids.length) throw new Error(pyq ? "No PYQs found in these chapters. Turn off \"PYQs only\" or pick other chapters." : "No questions match. Pick other chapters or difficulty.");
       }
+      ids = Array.from(new Set(ids));
       const subjNames = subjects.filter((s) => subs.includes(s.id)).map((s) => s.name).join(" + ") || "Custom";
       const modeName = MODES.find((m) => m.id === mode)!.t;
-      const duration = mode === "speed" ? Math.max(5, Math.ceil(ids.length * 0.75)) : Math.max(5, ids.length);
+      const duration = timer ?? Math.max(5, mode === "speed" ? Math.ceil(ids.length * 0.75) : ids.length);
       const { data: t, error } = await supabase.from("tests").insert({
         title: `${subjNames} · ${modeName} (${ids.length} Qs)`,
         type: "custom",
@@ -134,7 +161,7 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
         marks_wrong: neg ? -1 : 0,
       }).select("id").maybeSingle();
       if (error || !t) throw new Error(error?.message ?? "Could not create the test");
-      if (ids.length < count) toast.message(`Found ${ids.length} matching questions`, { description: "Your test uses all of them." });
+      if (ids.length < want) toast.message(`Found ${ids.length} of ${want} questions`, { description: short.length ? `Not enough matching questions in ${short.join(", ")}.` : "Your test uses all of them." });
       toast.success("Your test is ready");
       await nav({ to: "/quiz/$testId", params: { testId: t.id }, search: { mode: mode === "practice" ? "quiz" : "cbt" } as never });
     } catch (e) {
@@ -144,7 +171,30 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
     }
   }
 
-  const canNext = step === 1 ? subs.length > 0 : step === 2 ? chs.length > 0 : true;
+  // Subjects that actually have chosen chapters, in NEET paper order.
+  const activeSubs = useMemo(() => {
+    const has = new Set(chapters.filter((c) => chs.includes(c.id)).map((c) => c.subject_id));
+    return subs.filter((id) => has.has(id)).sort((a, b) => SUBJECT_ORDER.indexOf(a.toLowerCase()) - SUBJECT_ORDER.indexOf(b.toLowerCase()));
+  }, [chapters, chs, subs]);
+  const perSubject = activeSubs.length > 1;
+  const total = perSubject ? activeSubs.reduce((n, id) => n + (split[id] ?? 0), 0) : count;
+  const autoMin = Math.max(5, mode === "speed" ? Math.ceil(total * 0.75) : total);
+  const minutes = timer ?? autoMin;
+
+  // Start every newly added subject at its NEET share.
+  useEffect(() => {
+    if (!perSubject) return;
+    setSplit((prev) => {
+      const next: Record<string, number> = {};
+      activeSubs.forEach((id) => { next[id] = prev[id] ?? NEET_SPLIT[id.toLowerCase()] ?? 45; });
+      return next;
+    });
+  }, [perSubject, activeSubs.join(",")]);
+
+  const setSub = (id: string, n: number) => setSplit((p) => ({ ...p, [id]: clamp(n, 0, 180) }));
+  const subjName = (id: string) => subjects.find((s) => s.id === id)?.name ?? id;
+
+  const canNext = step === 1 ? subs.length > 0 : step === 2 ? chs.length > 0 : step === 3 ? total > 0 : true;
   const visible = chapters.filter((c) => !filter || c.name.toLowerCase().includes(filter.toLowerCase()));
   const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
@@ -244,10 +294,63 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
 
             {step === 3 && (
               <div className="pane" key="s3">
-                <h4>How many questions?</h4><p className="hint">About {count} minutes at NEET pace (1 minute per question).</p>
-                <div className="qnum">{count}<small>questions</small></div>
-                <input id="nth-q-range" className="range" type="range" min={10} max={180} step={5} value={count} onChange={(e) => setCount(Number(e.target.value))} aria-label="Number of questions" />
-                <div className="ticks"><span>10</span><span>45</span><span>90</span><span>135</span><span>180</span></div>
+                {perSubject ? (
+                  <>
+                    <h4>Questions from each subject</h4><p className="hint">Set how many questions you want from each subject.</p>
+                    <div className="presets">
+                      <button type="button" onClick={() => setSplit(Object.fromEntries(activeSubs.map((id) => [id, NEET_SPLIT[id.toLowerCase()] ?? 45])))}>NEET pattern</button>
+                      <button type="button" onClick={() => setSplit(Object.fromEntries(activeSubs.map((id) => [id, 30])))}>30 each</button>
+                      <button type="button" onClick={() => setSplit(Object.fromEntries(activeSubs.map((id) => [id, 15])))}>Quick 15 each</button>
+                    </div>
+                    <div className="sq-list">
+                      {activeSubs.map((id) => {
+                        const st = styleFor(id), n = split[id] ?? 0;
+                        return (
+                          <div key={id} className="sq" style={{ ["--c" as string]: st.c }}>
+                            <div className="sq-top">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={st.c} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{st.icon}</svg>
+                              <b>{subjName(id)}</b>
+                              <div className="stepper">
+                                <button type="button" onClick={() => setSub(id, n - 5)} aria-label={`Fewer ${subjName(id)} questions`} disabled={n <= 0}>−</button>
+                                <input inputMode="numeric" value={n} aria-label={`${subjName(id)} questions`}
+                                  onChange={(e) => setSub(id, Number(e.target.value.replace(/\D/g, "")) || 0)} />
+                                <button type="button" onClick={() => setSub(id, n + 5)} aria-label={`More ${subjName(id)} questions`} disabled={n >= 180}>+</button>
+                              </div>
+                            </div>
+                            <input className="range" type="range" min={0} max={180} step={5} value={n} onChange={(e) => setSub(id, Number(e.target.value))} aria-label={`${subjName(id)} questions`} style={{ accentColor: st.c }} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="sq-total">Total <b>{total}</b> questions</div>
+                  </>
+                ) : (
+                  <>
+                    <h4>How many questions?</h4><p className="hint">{activeSubs[0] ? `All from ${subjName(activeSubs[0])}.` : "Pick a number."} Choose 2 or more subjects to set a count for each.</p>
+                    <div className="qnum">{count}<small>questions</small></div>
+                    <input id="nth-q-range" className="range" type="range" min={10} max={180} step={5} value={count} onChange={(e) => setCount(Number(e.target.value))} aria-label="Number of questions" />
+                    <div className="ticks"><span>10</span><span>45</span><span>90</span><span>135</span><span>180</span></div>
+                  </>
+                )}
+
+                <div className="tm">
+                  <div className="tm-head">
+                    <span>Test timer<small>{timer == null ? `Automatic: ${autoMin} min (${mode === "speed" ? "45 sec" : "1 min"} per question)` : "Your own time limit, in minutes"}</small></span>
+                    <div className="stepper">
+                      <button type="button" onClick={() => setTimer(clamp(minutes - 5, 5, 300))} aria-label="Less time" disabled={minutes <= 5}>−</button>
+                      <input inputMode="numeric" value={minutes} aria-label="Test time in minutes"
+                        onChange={(e) => setTimer(clamp(Number(e.target.value.replace(/\D/g, "")) || 5, 5, 300))} />
+                      <button type="button" onClick={() => setTimer(clamp(minutes + 5, 5, 300))} aria-label="More time" disabled={minutes >= 300}>+</button>
+                    </div>
+                  </div>
+                  <div className="tm-chips">
+                    <button type="button" className={timer == null ? "on" : ""} onClick={() => setTimer(null)}>Auto</button>
+                    {TIMER_PRESETS.map((m) => (
+                      <button type="button" key={m} className={timer === m ? "on" : ""} onClick={() => setTimer(m)}>{m >= 60 && m % 60 === 0 ? `${m / 60} hr` : m === 90 ? "1.5 hr" : `${m} min`}</button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="seg" style={{ gridTemplateColumns: "repeat(4,minmax(0,1fr))" }}>
                   {(["Mixed", "Easy", "Medium", "Hard"] as const).map((l) => <button type="button" key={l} className={lvl === l ? "on" : ""} onClick={() => setLvl(l)}>{l}</button>)}
                 </div>
@@ -271,7 +374,7 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
                   ))}
                 </div>
                 <div className="summary">
-                  Your test: <b>{count} questions</b> from <b>{chs.length} chapters</b> ({subjects.filter((s) => subs.includes(s.id)).map((s) => s.name).join(", ")}) · <b>{lvl}</b> level · <b>{MODES.find((m) => m.id === mode)!.t}</b> · {neg ? "−1 negative marking" : "no negative marking"}{pyq ? " · PYQs only" : ""} · about <b>{mode === "speed" ? Math.ceil(count * 0.75) : count} min</b>
+                  Your test: <b>{total} questions</b>{perSubject ? <> ({activeSubs.filter((id) => (split[id] ?? 0) > 0).map((id) => `${subjName(id)} ${split[id]}`).join(" · ")})</> : <> from {activeSubs.map(subjName).join(", ")}</>} · <b>{chs.length} chapters</b> · <b>{lvl}</b> level · <b>{MODES.find((m) => m.id === mode)!.t}</b> · {neg ? "−1 negative marking" : "no negative marking"}{pyq ? " · PYQs only" : ""} · <b>{minutes} min</b>{timer == null ? " (auto)" : ""}
                 </div>
               </div>
             )}
