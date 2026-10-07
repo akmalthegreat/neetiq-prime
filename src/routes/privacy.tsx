@@ -59,7 +59,8 @@ function PrivacyPage() {
         <h2>5. Data retention</h2>
         <p>
           We keep your account data as long as your account is active. You may request
-          deletion of your account at any time via the Feedback page or by emailing us.
+          deletion of your account at any time from the Profile page or at{" "}
+          <a href="/delete-account">neettrack.com/delete-account</a>, or by emailing us.
           Some records (payments, audit logs) may be retained as required by law.
         </p>
 

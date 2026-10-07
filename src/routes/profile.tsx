@@ -378,7 +378,12 @@ function ProfilePage() {
             </div>
           </div>
           <div className="flex items-center justify-between gap-2 pt-2">
-            <Button variant="outline" onClick={signOut} className="gap-2"><LogOut className="h-4 w-4" /> Sign out</Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={signOut} className="gap-2"><LogOut className="h-4 w-4" /> Sign out</Button>
+              <Button asChild variant="ghost" className="text-destructive hover:text-destructive">
+                <Link to="/delete-account">Delete account</Link>
+              </Button>
+            </div>
             <Button onClick={save} disabled={saving} className="gap-2 bg-gradient-primary">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save
             </Button>
