@@ -3,7 +3,7 @@
 // migration): this page only shows what the server says, on the server's clock.
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArrowRight, Check, ChevronDown, Clock, Lock, ShieldCheck, Trophy, Users, X } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
@@ -76,7 +76,7 @@ function useServerClock() {
     offset.current = new Date(serverIso).getTime() + rtt / 2 - Date.now();
   }, []);
   const now = useCallback(() => Date.now() + offset.current, []);
-  return { sync, now };
+  return useMemo(() => ({ sync, now }), [sync, now]);
 }
 
 /** Re-render every `ms` while `on`. */
@@ -125,11 +125,15 @@ function MegaQuizPage() {
 
   // After the quiz ends, fetch results (the server scores lazily if needed).
   const quizId = today?.quiz?.id;
-  const ended = !!today?.quiz && clock.now() >= new Date(today.quiz.ends_at).getTime();
+  const ended = !!today?.quiz && clock.now() >= new Date(today.quiz.ends_at).getTime() + 6000;
+  const [resultTry, setResultTry] = useState(0);
   useEffect(() => {
     if (!quizId || !ended || result) return;
-    rpc<Result>("mega_result", { _quiz: quizId }).then(setResult).catch(() => {});
-  }, [quizId, ended, result]);
+    let t: ReturnType<typeof setTimeout> | undefined;
+    rpc<Result>("mega_result", { _quiz: quizId }).then(setResult)
+      .catch(() => { t = setTimeout(() => setResultTry((n) => n + 1), 3000); });
+    return () => { if (t) clearTimeout(t); };
+  }, [quizId, ended, result, resultTry]);
 
   async function join() {
     if (!today?.quiz) return;
@@ -148,6 +152,7 @@ function MegaQuizPage() {
   }
 
   const live = !!state && (state.phase === "question" || state.phase === "break" || state.phase === "waiting");
+  useTick(!!today?.quiz && !result && !(live && state?.phase !== "waiting"), 1000);
 
   if (!today) {
     return <PageShell><div className="mx-auto max-w-xl py-20 text-center text-sm text-muted-foreground">Loading today's Mega Quiz…</div></PageShell>;
@@ -176,7 +181,7 @@ function MegaQuizPage() {
             state={state}
             now={clock.now}
             onJoin={() => setGate(true)}
-            onStart={() => today.quiz && loadState(today.quiz.id)}
+            onStart={() => { if (today.quiz) loadState(today.quiz.id).catch(() => {}); }}
           />
         )}
       </div>
@@ -197,11 +202,16 @@ function Lobby({ today, state, now, onJoin, onStart }: {
   const joined = !!today.me;
   const entryOpen = !!q && now() <= new Date(q.entry_closes_at).getTime();
   const running = !!q && now() >= startsAt && now() < new Date(q.ends_at).getTime();
-  const firedStart = useRef(false);
+  const lastStart = useRef(0);
 
-  // When the clock reaches 6:00 PM for a joined player, switch into the live screen.
+  // When the clock reaches 6:00 PM for a joined player, switch into the live screen
+  // (asking again each second until the server agrees the quiz has started).
   useEffect(() => {
-    if (joined && running && !firedStart.current) { firedStart.current = true; onStart(); }
+    if (!joined || !running || today.me?.status === "left") return;
+    if (state && state.phase !== "waiting" && state.phase !== "not_joined") return;
+    if (Date.now() - lastStart.current < 1000) return;
+    lastStart.current = Date.now();
+    onStart();
   });
 
   const totalMin = today.sections.reduce((n, s) => n + s.count * s.secs, 0) / 60;
@@ -369,6 +379,8 @@ function LivePlay({ quizId, state, now, reload, onEnded }: {
   const [sending, setSending] = useState(false);
   const [warn, setWarn] = useState<string | null>(null);
   const reloading = useRef(false);
+  const strikePending = useRef(false);
+  const strikeInflight = useRef(false);
 
   const key = state.phase === "question" ? `q${state.idx}` : state.phase === "break" ? `b${state.next_idx}` : state.phase;
   useEffect(() => { setSel(state.phase === "question" ? state.my_choice : null); }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -397,14 +409,22 @@ function LivePlay({ quizId, state, now, reload, onEnded }: {
 
   // Leaving the screen: first a warning, then the attempt ends (decided by the server).
   useEffect(() => {
-    const onVis = async () => {
-      if (document.visibilityState !== "hidden") return;
+    const strike = async () => {
+      if (strikeInflight.current) return;
+      strikeInflight.current = true;
       try {
         const r = await rpc<{ counted: boolean; strikes: number; status: string }>("mega_strike", { _quiz: quizId });
+        strikePending.current = false;
         if (!r.counted) return;
         if (r.status === "left") onEnded();
         else setWarn("You left the quiz screen. One more time and your attempt ends.");
-      } catch { /* ignore */ }
+      } catch { /* retried when the page is visible again */ } finally {
+        strikeInflight.current = false;
+      }
+    };
+    const onVis = () => {
+      if (document.visibilityState === "hidden") { strikePending.current = true; void strike(); }
+      else if (strikePending.current && !strikeInflight.current) void strike();
     };
     const block = (e: Event) => e.preventDefault();
     document.addEventListener("visibilitychange", onVis);

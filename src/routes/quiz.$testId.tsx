@@ -137,6 +137,14 @@ function QuizPlayer() {
   const [visitedIds, setVisitedIds] = useState<Set<number>>(new Set());
   const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
   const [cbtPick, setCbtPick] = useState<Record<string, number>>({});
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const explRef = useRef<HTMLDivElement>(null);
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const keyHandler = useRef<((e: KeyboardEvent) => void) | null>(null);
+  const endAt = useRef(0);          // real-clock deadline for the countdown
+  const limitSecs = useRef(0);      // time limit for this paper, set by the loader
+  const autoSubmitted = useRef(false);
+  const justAnswered = useRef<string | null>(null);
   const startedAt = useRef<number>(Date.now());
   const paletteRef = useRef<HTMLDivElement>(null);
   const isContest = test?.type === "contest";
@@ -224,6 +232,8 @@ function QuizPlayer() {
 
       const totalSeconds = battleActive ? 5 * 60 : (t.duration_min ?? 30) * 60;
       setSecondsLeft(totalSeconds);
+      limitSecs.current = totalSeconds;
+      endAt.current = 0;
       let ids = (t.question_ids as string[]) ?? [];
       if (battleActive) ids = ids.slice(0, 5);
       if (ids.length === 0) {
@@ -442,15 +452,33 @@ function QuizPlayer() {
     setSubmitting(false);
   }, [answers, bookmarks, nav, questions, submitted, submitting, testId, user, test, battleMatchId]);
 
+  // Countdown tied to the real clock, so it keeps running while the phone is in the
+  // background (a per-second setTimeout pauses there and would hand out extra time).
+  const showTimer = isCbt || test?.type === "custom";
+  const timerLive = !loading && !submitted && !contestDone && !alreadyAttempted && !!test && questions.length > 0;
   useEffect(() => {
-    if (loading || submitted || !isCbt) return;
-    if (secondsLeft <= 0) {
-      submit();
-      return;
+    if (!timerLive || !showTimer) return;
+    const tick = () => {
+      if (!endAt.current) endAt.current = Date.now() + limitSecs.current * 1000;
+      setSecondsLeft(Math.max(0, Math.ceil((endAt.current - Date.now()) / 1000)));
+    };
+    tick();
+    const t = setInterval(tick, 500);
+    return () => clearInterval(t);
+  }, [timerLive, showTimer]);
+
+  const warned5 = useRef(false);
+  const timeUpShown = useRef(false);
+  useEffect(() => {
+    if (!timerLive || !showTimer || !endAt.current) return;
+    if (secondsLeft <= 300 && secondsLeft > 0 && !warned5.current && (endAt.current - startedAt.current) > 10 * 60_000) {
+      warned5.current = true;
+      toast.warning("5 minutes left");
     }
-    const t = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [secondsLeft, loading, submitted, isCbt, submit]);
+    if (secondsLeft > 0) return;
+    if (isCbt) { if (!autoSubmitted.current) { autoSubmitted.current = true; submit(); } return; }
+    if (!timeUpShown.current) { timeUpShown.current = true; toast("Time's up. Submit when you're ready."); }
+  }, [secondsLeft, timerLive, showTimer, isCbt, submit]);
 
   // ===== Contest anti-cheat =====
   // Disable text copy / selection / context menu on the whole document while
@@ -488,7 +516,8 @@ function QuizPlayer() {
       pollId = setInterval(async () => {
         try {
           const status = await perms.query({ name: "display-capture" as any });
-          if (status?.state === "granted" && !submitted) {
+          if (status?.state === "granted" && !submitted && !autoSubmitted.current) {
+            autoSubmitted.current = true;
             toast.error("Screen sharing detected — contest auto-submitted.");
             submit();
           }
@@ -521,6 +550,8 @@ function QuizPlayer() {
         toast.warning("Don't leave the contest — auto-submitting in 10 seconds.");
       }
       timer = setTimeout(() => {
+        if (autoSubmitted.current) return;
+        autoSubmitted.current = true;
         toast.error("You left the app. Contest auto-submitted.");
         submit();
       }, 10_000);
@@ -565,6 +596,22 @@ function QuizPlayer() {
 
   const q = questions[idx];
   const total = questions.length;
+
+  // Quiz mode: bring the explanation into view right after answering.
+  const answeredNow = q ? answers[q.id] : undefined;
+  useEffect(() => {
+    if (isCbt || answeredNow === undefined || !q || justAnswered.current !== q.id) return;
+    justAnswered.current = null;
+    const t = setTimeout(() => explRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+    return () => clearTimeout(t);
+  }, [answeredNow, isCbt, q]);
+
+  // Desktop shortcuts: 1-4 or A-D pick, arrows move, Enter saves and moves on.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => keyHandler.current?.(e);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const progress = total ? ((idx + 1) / total) * 100 : 0;
   const hh = String(Math.floor(secondsLeft / 3600)).padStart(2, "0");
   const mm = String(Math.floor((secondsLeft % 3600) / 60)).padStart(2, "0");
@@ -624,6 +671,7 @@ function QuizPlayer() {
 
   const setAnswer = (i: number) => {
     if (!q) return;
+    justAnswered.current = q.id;
     const next = { ...answers, [q.id]: i };
     setAnswers(next);
     const isCorrectNow = i === q.correct_index;
@@ -680,6 +728,7 @@ function QuizPlayer() {
     }
   };
 
+  keyHandler.current = null; // re-armed below only while a question is on screen
   if (loading || authLoading)
     return (
       <DrAkzaLoader
@@ -812,7 +861,7 @@ function QuizPlayer() {
       <DialogContent className="sm:max-w-md p-0 overflow-hidden">
         <div className="bg-primary/10 px-5 py-4 border-b border-primary/20 flex items-center gap-3">
           <Laptop className="h-5 w-5 text-primary" />
-          <DialogTitle className="text-lg font-bold">NEET CBT — Exam Summary</DialogTitle>
+          <DialogTitle className="text-lg font-bold">{isCbt ? "NEET CBT — Exam Summary" : "Test summary"}</DialogTitle>
         </div>
         <div className="p-5 space-y-4">
           <div className="overflow-x-auto rounded-xl border border-border">
@@ -916,127 +965,32 @@ function QuizPlayer() {
     answered_marked: "bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-700 rounded-full shadow-sm",
   };
   const cbtBtn = "h-10 rounded-[3px] border px-4 text-sm font-bold uppercase tracking-wide shadow-sm transition active:translate-y-px disabled:opacity-50";
-
-  if (isCbt)
-    return (
-      <div className="light min-h-screen bg-white text-slate-800" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
-        {isContest && !hasAckedAntiCheat("contest", testId) && (
-          <AntiCheatGate mode="contest" scopeId={testId} onAccept={() => {}} onCancel={() => nav({ to: "/contests" })} />
-        )}
-        {/* Candidate info */}
-        <div className="flex items-start gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-8">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-500 sm:h-16 sm:w-16">
-            <User className="h-9 w-9" />
-          </div>
-          <table className="text-sm sm:text-[15px]">
-            <tbody>
-              <tr><td className="pr-4 text-slate-600">Candidate Name</td><td className="font-semibold text-[#e8590c]">: {cbtCandidate}</td></tr>
-              <tr><td className="pr-4 text-slate-600">Exam Name</td><td className="font-semibold text-[#e8590c]">: {test.title} ({total} Qs · {test.duration_min}m)</td></tr>
-              <tr><td className="pr-4 text-slate-600">Subject</td><td className="font-semibold text-[#e8590c]">: {subjectGroups.length > 1 ? "Mixed" : subjName || "Mixed"}</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:p-5 lg:flex-row">
-          {/* Left: question area */}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between bg-[#e8590c] px-4 py-2.5 text-white">
-              <span className="text-lg font-bold">Question {idx + 1}:</span>
-              <span className="flex items-center gap-2 text-sm font-semibold">
-                Time:
-                <span className="rounded-[3px] bg-white px-2.5 py-1 font-mono text-sm font-bold tabular-nums text-[#c2410c]">{hh}:{mm}:{ss}</span>
-              </span>
-            </div>
-            <div className="border border-t-0 border-slate-300 bg-white">
-              <div className="px-5 py-4">
-                <div className="text-[15px] leading-relaxed sm:text-base"><RichText>{q.text}</RichText></div>
-                {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
-                  <img
-                    src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
-                    alt="Question diagram"
-                    className="my-3 max-h-80 w-auto object-contain"
-                    loading="lazy"
-                    onError={(e) => handleImageFallback(e.currentTarget)}
-                  />
-                )}
-                <div className="mt-4 space-y-3">
-                  {safeOptions.map((opt, i) => {
-                    const optImg = resolveOptionImageUrl(q, i, opt);
-                    return (
-                      <div key={i} className="flex gap-3 text-[15px] items-center">
-                        <span className="shrink-0 font-bold">({i + 1})</span>
-                        <div className="min-w-0 flex-1">
-                          {optImg ? (
-                            <img
-                              src={optImg}
-                              alt={`Option ${i + 1}`}
-                              className="max-h-36 max-w-full rounded border border-slate-200 bg-white p-1 object-contain"
-                              loading="lazy"
-                              onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
-                            />
-                          ) : (
-                            <RichText>{opt || `Option ${i + 1}`}</RichText>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="grid grid-cols-4 border-t border-slate-200 px-5 py-3">
-                {safeOptions.map((_, i) => (
-                  <label key={i} className="flex cursor-pointer items-center gap-2 text-sm">
-                    <input
-                      type="radio"
-                      name={`cbt-${q.id}`}
-                      className="h-4 w-4 accent-[#1c7ed6]"
-                      checked={cbtSelected === i}
-                      onChange={() => setCbtPick((p) => ({ ...p, [q.id]: i }))}
-                    />
-                    {i + 1} )
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button className={cn(cbtBtn, "border-[#237a35] bg-[#2f9e44] text-white hover:bg-[#2b8a3e]")}
-                onClick={() => { cbtCommit(); setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; }); cbtGo(idx + 1); }}>
-                Save &amp; Next
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; }); cbtClearResponse(); }}>
-                Clear
-              </button>
-              <button className={cn(cbtBtn, "inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { if (cbtCommit()) toast.success("Response saved"); else toast("Select an option first"); }}>
-                <Bookmark className="h-4 w-4" /> Save
-              </button>
-              <button className={cn(cbtBtn, "border-[#e0a800] bg-[#fab005] text-white hover:bg-[#f59f00]")}
-                onClick={() => { if (!cbtCommit()) { toast("Select an option to Save & Mark"); return; } cbtSaveAndMark(false); }}>
-                Save &amp; Mark
-              </button>
-              <button className={cn(cbtBtn, "border-[#1864ab] bg-[#1c7ed6] text-white hover:bg-[#1971c2]")}
-                onClick={() => { cbtSaveAndMark(false); cbtGo(idx + 1); }}>
-                Mark &amp; Next
-              </button>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === 0} onClick={() => cbtGo(idx - 1)}>
-                &lt;&lt; Back
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === total - 1} onClick={() => cbtGo(idx + 1)}>
-                Next &gt;&gt;
-              </button>
-              <button className={cn(cbtBtn, "ml-auto border-[#237a35] bg-[#2f9e44] px-7 text-white hover:bg-[#2b8a3e]")} disabled={submitting} onClick={() => setConfirmSubmit(true)}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
-              </button>
-            </div>
-          </div>
-
-          {/* Right: status + palette */}
-          <aside className="w-full shrink-0 space-y-3 lg:w-[360px]">
+  const lowTime = secondsLeft <= 300;
+  keyHandler.current = (e: KeyboardEvent) => {
+    const el = e.target as HTMLElement | null;
+    if (e.ctrlKey || e.metaKey || e.altKey || confirmSubmit || paletteOpen) return;
+    const typing = el && ((el.tagName === "INPUT" && !["radio", "checkbox"].includes((el as HTMLInputElement).type)) || el.tagName === "TEXTAREA" || el.isContentEditable);
+    if (typing) return;
+    if (e.key === "Enter" && el?.tagName === "BUTTON") return; // let the focused button act alone
+    const k = e.key.toLowerCase();
+    const pick = ["1", "2", "3", "4"].indexOf(k) >= 0 ? Number(k) - 1 : ["a", "b", "c", "d"].indexOf(k);
+    if (pick >= 0 && pick < safeOptions.length) {
+      e.preventDefault();
+      if (isCbt) setCbtPick((p) => ({ ...p, [q.id]: pick }));
+      else if (!((isChapterPractice || isQuiz) && answers[q.id] !== undefined)) setAnswer(pick);
+      return;
+    }
+    if (k === "arrowright") { e.preventDefault(); if (isCbt) cbtGo(idx + 1); else setIdx((i) => Math.min(total - 1, i + 1)); }
+    else if (k === "arrowleft") { e.preventDefault(); if (isCbt) cbtGo(idx - 1); else setIdx((i) => Math.max(0, i - 1)); }
+    else if (k === "enter" && isCbt) {
+      e.preventDefault();
+      cbtCommit();
+      setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; });
+      if (idx >= total - 1) setConfirmSubmit(true); else cbtGo(idx + 1);
+    }
+  };
+  const cbtPanel = (
+    <>
             <div className="space-y-2.5 rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-sm">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-500">Question Status Legend</div>
               {([
@@ -1071,7 +1025,7 @@ function QuizPlayer() {
                   return (
                     <button
                       key={qq.id}
-                      onClick={() => cbtGo(i)}
+                      onClick={() => { cbtGo(i); setPaletteOpen(false); }}
                       aria-label={`Question ${i + 1}`}
                       className={cn(
                         "relative flex h-10 w-full items-center justify-center border text-xs font-bold transition-transform active:scale-95",
@@ -1100,9 +1054,167 @@ function QuizPlayer() {
                 })}
               </div>
             </div>
+    </>
+  );
+
+  if (isCbt)
+    return (
+      <div className="light min-h-screen bg-white text-slate-800" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+        {isContest && !hasAckedAntiCheat("contest", testId) && (
+          <AntiCheatGate mode="contest" scopeId={testId} onAccept={() => {}} onCancel={() => nav({ to: "/contests" })} />
+        )}
+        {/* Candidate info */}
+        <div className="flex items-start gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-8">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-500 sm:h-16 sm:w-16">
+            <User className="h-9 w-9" />
+          </div>
+          <table className="text-sm sm:text-[15px]">
+            <tbody>
+              <tr><td className="pr-4 text-slate-600">Candidate Name</td><td className="font-semibold text-[#e8590c]">: {cbtCandidate}</td></tr>
+              <tr><td className="pr-4 text-slate-600">Exam Name</td><td className="font-semibold text-[#e8590c]">: {test.title} ({total} Qs · {test.duration_min}m)</td></tr>
+              <tr><td className="pr-4 text-slate-600">Subject</td><td className="font-semibold text-[#e8590c]">: {subjectGroups.length > 1 ? "Mixed" : subjName || "Mixed"}</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:p-5 lg:flex-row">
+          {/* Left: question area */}
+          <div className="min-w-0 flex-1">
+            <div className="sticky top-0 z-30 bg-white pt-1">
+              {subjectGroups.length > 1 && (
+                <div className="mb-1 flex gap-1 overflow-x-auto" role="tablist" aria-label="Sections">
+                  {subjectGroups.map((g, gi) => {
+                    const done = g.indices.filter((i) => answers[questions[i]?.id] !== undefined).length;
+                    return (
+                      <button key={g.name + gi} type="button" role="tab" aria-selected={gi === activeGroupIndex}
+                        onClick={() => cbtGo(g.indices[0])}
+                        className={cn(
+                          "shrink-0 rounded-t-md border border-b-0 px-3 py-1.5 text-xs font-bold uppercase tracking-wide",
+                          gi === activeGroupIndex ? "border-[#1864ab] bg-[#1c7ed6] text-white" : "border-slate-300 bg-slate-100 text-slate-600",
+                        )}>
+                        {g.name} <span className="font-semibold opacity-80">{done}/{g.indices.length}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-2 bg-[#e8590c] px-4 py-2.5 text-white">
+                <span className="text-lg font-bold">Question {idx + 1}<span className="text-sm font-semibold opacity-80"> / {total}</span></span>
+                <span className="flex items-center gap-2 text-sm font-semibold">
+                  <span className="hidden sm:inline">Time:</span>
+                  <span className={cn("rounded-[3px] px-2.5 py-1 font-mono text-sm font-bold tabular-nums", lowTime ? "animate-pulse bg-[#c92a2a] text-white" : "bg-white text-[#c2410c]")}>{hh}:{mm}:{ss}</span>
+                  <button type="button" onClick={() => setPaletteOpen(true)} aria-label="Question palette"
+                    className="flex h-8 items-center gap-1 rounded-[3px] bg-white/15 px-2 text-xs font-bold uppercase lg:hidden">
+                    <LayoutGrid className="h-4 w-4" /> {Object.keys(answers).length}/{total}
+                  </button>
+                </span>
+              </div>
+            </div>
+            <div className="border border-t-0 border-slate-300 bg-white">
+              <div className="px-5 py-4">
+                <div className="text-[15px] leading-relaxed sm:text-base"><RichText>{q.text}</RichText></div>
+                {resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url) && (
+                  <img
+                    src={resolveImageUrl(q.question_image_url || q.image_url || q.diagram_url)!}
+                    alt="Question diagram"
+                    className="my-3 max-h-80 w-auto object-contain"
+                    loading="lazy"
+                    onError={(e) => handleImageFallback(e.currentTarget)}
+                  />
+                )}
+                <div className="mt-4 space-y-2" role="radiogroup" aria-label="Options">
+                  {safeOptions.map((opt, i) => {
+                    const optImg = resolveOptionImageUrl(q, i, opt);
+                    const on = cbtSelected === i;
+                    return (
+                      <label key={i} className={cn(
+                        "flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2.5 text-[15px] transition-colors",
+                        on ? "border-[#1c7ed6] bg-[#e7f1fb]" : "border-slate-200 hover:bg-slate-50",
+                      )}>
+                        <input
+                          type="radio"
+                          name={`cbt-${q.id}`}
+                          className="h-4 w-4 shrink-0 accent-[#1c7ed6]"
+                          checked={on}
+                          onChange={() => setCbtPick((p) => ({ ...p, [q.id]: i }))}
+                        />
+                        <span className="shrink-0 font-bold">({i + 1})</span>
+                        <div className="min-w-0 flex-1">
+                          {optImg ? (
+                            <img
+                              src={optImg}
+                              alt={`Option ${i + 1}`}
+                              className="max-h-36 max-w-full rounded border border-slate-200 bg-white p-1 object-contain"
+                              loading="lazy"
+                              onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
+                            />
+                          ) : (
+                            <RichText>{opt || `Option ${i + 1}`}</RichText>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button className={cn(cbtBtn, "border-[#237a35] bg-[#2f9e44] text-white hover:bg-[#2b8a3e]")}
+                onClick={() => {
+                  cbtCommit();
+                  setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; });
+                  if (idx >= total - 1) setConfirmSubmit(true); else cbtGo(idx + 1);
+                }}>
+                Save &amp; Next
+              </button>
+              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
+                onClick={() => { setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; }); cbtClearResponse(); }}>
+                Clear
+              </button>
+              <button className={cn(cbtBtn, "inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
+                onClick={() => { if (cbtCommit()) toast.success("Response saved"); else toast("Select an option first"); }}>
+                <Bookmark className="h-4 w-4" /> Save
+              </button>
+              <button className={cn(cbtBtn, "border-[#e0a800] bg-[#fab005] text-white hover:bg-[#f59f00]")}
+                onClick={() => { if (!cbtCommit()) { toast("Select an option to Save & Mark"); return; } cbtSaveAndMark(false); }}>
+                Save &amp; Mark
+              </button>
+              <button className={cn(cbtBtn, "border-[#1864ab] bg-[#1c7ed6] text-white hover:bg-[#1971c2]")}
+                onClick={() => { cbtSaveAndMark(false); cbtGo(idx + 1); }}>
+                Mark &amp; Next
+              </button>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === 0} onClick={() => cbtGo(idx - 1)}>
+                &lt;&lt; Back
+              </button>
+              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === total - 1} onClick={() => cbtGo(idx + 1)}>
+                Next &gt;&gt;
+              </button>
+              <button className={cn(cbtBtn, "ml-auto border-[#237a35] bg-[#2f9e44] px-7 text-white hover:bg-[#2b8a3e]")} disabled={submitting} onClick={() => { cbtCommit(); setConfirmSubmit(true); }}>
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
+              </button>
+            </div>
+          </div>
+
+          {/* Right: status + palette */}
+          <aside className="hidden w-full shrink-0 space-y-3 lg:block lg:w-[360px]">
+            {cbtPanel}
             <Link to="/dashboard" className="block text-right text-xs font-medium text-slate-500 hover:text-slate-800 hover:underline">Exit test</Link>
           </aside>
         </div>
+        <Sheet open={paletteOpen} onOpenChange={setPaletteOpen}>
+          <SheetContent side="bottom" className="light max-h-[85vh] overflow-y-auto bg-white text-slate-800">
+            <SheetHeader><SheetTitle>Question palette</SheetTitle></SheetHeader>
+            <div className="mt-3 space-y-3">{cbtPanel}</div>
+            <div className="mt-4 flex gap-2">
+              <button className={cn(cbtBtn, "flex-1 border-[#237a35] bg-[#2f9e44] text-white")} onClick={() => { setPaletteOpen(false); cbtCommit(); setConfirmSubmit(true); }}>Submit</button>
+              <Link to="/dashboard" className={cn(cbtBtn, "flex flex-1 items-center justify-center border-slate-300 bg-white text-slate-600")}>Exit test</Link>
+            </div>
+          </SheetContent>
+        </Sheet>
         {cbtSubmitDialog}
       </div>
     );
@@ -1137,7 +1249,7 @@ function QuizPlayer() {
                     {test.title}
                   </span>
 
-                  {isCbt && (
+                  {showTimer && (
                     <span className="shrink-0 rounded-md border border-rose-300 bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-rose-700 dark:text-rose-300 dark:border-rose-500/40">
                       {hh}:{mm}:{ss}
                     </span>
@@ -1187,11 +1299,9 @@ function QuizPlayer() {
                   : "bg-emerald-600 hover:bg-emerald-700 text-white"
               )}
               onClick={() => {
-                if (isChapterPractice || isQuiz) {
-                  submit();
-                } else {
-                  setConfirmSubmit(true);
-                }
+                const unanswered = questions.length - Object.keys(answers).length;
+                if ((isChapterPractice || isQuiz) && unanswered === 0) submit();
+                else setConfirmSubmit(true);
               }}
               disabled={submitting}
             >
@@ -1324,7 +1434,18 @@ function QuizPlayer() {
       </header>
 
       {/* Question */}
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-4">
+      <main
+        className="mx-auto w-full max-w-3xl flex-1 px-4 py-4"
+        onTouchStart={(e) => { const t = e.touches[0]; touch.current = { x: t.clientX, y: t.clientY }; }}
+        onTouchEnd={(e) => {
+          const st = touch.current; touch.current = null;
+          if (!st) return;
+          const t = e.changedTouches[0];
+          const dx = t.clientX - st.x, dy = t.clientY - st.y;
+          if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8) return;
+          if (dx < 0) setIdx((i) => Math.min(total - 1, i + 1)); else setIdx((i) => Math.max(0, i - 1));
+        }}
+      >
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold", isQuiz ? "bg-blue-600 text-white" : "bg-foreground text-background")}>
             {idx + 1}
@@ -1440,7 +1561,7 @@ function QuizPlayer() {
         </div>
 
         {(isChapterPractice || isQuiz) && answers[q.id] !== undefined && (
-          <div className="mt-6">
+          <div className="mt-6 scroll-mt-28" ref={explRef}>
             <h3 className="text-lg font-bold">Explanation</h3>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <span
@@ -1514,6 +1635,16 @@ function QuizPlayer() {
             ) : (
               <div className="mt-3 text-xs text-muted-foreground">No explanation provided.</div>
             )}
+            <Button
+              className="mt-5 h-12 w-full rounded-xl bg-blue-600 text-[15px] font-bold text-white hover:bg-blue-700"
+              onClick={() => {
+                if (idx < total - 1) { setIdx(idx + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }
+                else if (questions.length - Object.keys(answers).length === 0) submit();
+                else setConfirmSubmit(true);
+              }}
+            >
+              {idx < total - 1 ? <>Next question <ChevronRight className="ml-1 h-4 w-4" /></> : "Finish and submit"}
+            </Button>
           </div>
         )}
       </main>

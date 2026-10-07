@@ -67,9 +67,11 @@ CREATE TABLE IF NOT EXISTS public.mega_entries (
   time_ms    bigint,
   rank       int,
   flagged    boolean NOT NULL DEFAULT false,
+  last_strike_at timestamptz,
   prize      numeric NOT NULL DEFAULT 0,
   PRIMARY KEY (quiz_id, user_id)
 );
+ALTER TABLE public.mega_entries ADD COLUMN IF NOT EXISTS last_strike_at timestamptz;
 ALTER TABLE public.mega_entries ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "mega_entries own" ON public.mega_entries;
 CREATE POLICY "mega_entries own" ON public.mega_entries FOR SELECT TO authenticated USING (user_id = auth.uid());
@@ -302,6 +304,9 @@ DECLARE _e public.mega_entries; _it public.mega_items; _orig smallint;
 BEGIN
   SELECT * INTO _e FROM public.mega_entries WHERE quiz_id = _quiz AND user_id = auth.uid();
   IF _e.user_id IS NULL OR _e.status <> 'playing' THEN RAISE EXCEPTION 'Your attempt is not active'; END IF;
+  IF EXISTS (SELECT 1 FROM public.mega_quizzes WHERE id = _quiz AND status = 'finalized') THEN
+    RAISE EXCEPTION 'This quiz has ended';
+  END IF;
   SELECT * INTO _it FROM public.mega_items WHERE quiz_id = _quiz AND idx = _idx;
   IF _it.quiz_id IS NULL THEN RAISE EXCEPTION 'Question not found'; END IF;
   IF now() < _it.opens_at OR now() > _it.closes_at + interval '2 seconds' THEN
@@ -322,9 +327,11 @@ DECLARE _m public.mega_quizzes; _e public.mega_entries;
 BEGIN
   SELECT * INTO _m FROM public.mega_quizzes WHERE id = _quiz;
   IF _m.id IS NULL OR now() < _m.starts_at OR now() >= _m.ends_at THEN RETURN jsonb_build_object('counted', false); END IF;
+  -- One exit can reach us twice (sent on hide, resent on return): ignore repeats within 3 s.
   UPDATE public.mega_entries
-     SET strikes = strikes + 1, status = CASE WHEN strikes + 1 >= 2 THEN 'left' ELSE status END
+     SET strikes = strikes + 1, status = CASE WHEN strikes + 1 >= 2 THEN 'left' ELSE status END, last_strike_at = now()
    WHERE quiz_id = _quiz AND user_id = auth.uid() AND status = 'playing'
+     AND (last_strike_at IS NULL OR last_strike_at < now() - interval '3 seconds')
   RETURNING * INTO _e;
   RETURN jsonb_build_object('counted', _e.user_id IS NOT NULL, 'strikes', _e.strikes, 'status', _e.status);
 END $$;
@@ -337,7 +344,8 @@ BEGIN
   SELECT * INTO _m FROM public.mega_quizzes WHERE id = _quiz FOR UPDATE;
   IF _m.id IS NULL THEN RAISE EXCEPTION 'Quiz not found'; END IF;
   IF _m.status = 'finalized' THEN RETURN jsonb_build_object('ok', true, 'already', true); END IF;
-  IF now() < _m.ends_at THEN RAISE EXCEPTION 'Quiz has not ended'; END IF;
+  -- 5 s grace so answers sent in the last moments (accepted up to closes_at + 2 s) are counted.
+  IF now() < _m.ends_at + interval '5 seconds' THEN RAISE EXCEPTION 'Quiz has not ended'; END IF;
   SELECT count(*) INTO _total FROM public.mega_items WHERE quiz_id = _quiz;
 
   WITH s AS (
@@ -384,7 +392,7 @@ CREATE OR REPLACE FUNCTION public.mega_finalize_due()
 RETURNS int LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE _r record; _n int := 0;
 BEGIN
-  FOR _r IN SELECT id FROM public.mega_quizzes WHERE status = 'scheduled' AND ends_at <= now() LOOP
+  FOR _r IN SELECT id FROM public.mega_quizzes WHERE status = 'scheduled' AND ends_at + interval '5 seconds' <= now() LOOP
     PERFORM public.mega_finalize(_r.id); _n := _n + 1;
   END LOOP;
   RETURN _n;
@@ -397,7 +405,7 @@ DECLARE _m public.mega_quizzes; _e public.mega_entries; _board jsonb; _sol jsonb
 BEGIN
   SELECT * INTO _m FROM public.mega_quizzes WHERE id = _quiz;
   IF _m.id IS NULL THEN RAISE EXCEPTION 'Quiz not found'; END IF;
-  IF now() < _m.ends_at THEN RAISE EXCEPTION 'Results appear when the quiz ends'; END IF;
+  IF now() < _m.ends_at + interval '5 seconds' THEN RAISE EXCEPTION 'Results appear when the quiz ends'; END IF;
   IF _m.status <> 'finalized' THEN PERFORM public.mega_finalize(_quiz); SELECT * INTO _m FROM public.mega_quizzes WHERE id = _quiz; END IF;
 
   SELECT * INTO _e FROM public.mega_entries WHERE quiz_id = _quiz AND user_id = auth.uid();

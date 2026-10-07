@@ -5,7 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
  * during the evening quiz window by pg_cron. The first call for a job also adds
  * the in-app bell notifications.
  */
-const BATCH = 45; // stays under the Workers sub-request limit
+const BATCH = 40; // with the database calls, stays under the Workers sub-request limit of 50
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });

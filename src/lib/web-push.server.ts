@@ -28,7 +28,8 @@ export async function sendEmptyPush(endpoint: string, authHeader: string): Promi
   try {
     const res = await fetch(endpoint, {
       method: "POST",
-      headers: { Authorization: authHeader, TTL: "3600", Urgency: "high", "Content-Length": "0" },
+      headers: { Authorization: authHeader, TTL: "3600", Urgency: "high" },
+      body: new Uint8Array(0),
     });
     return { ok: res.status >= 200 && res.status < 300, gone: res.status === 404 || res.status === 410, status: res.status };
   } catch {
