@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { OnboardingTour } from "@/components/onboarding-tour";
 import { SupportWidget } from "@/components/support-widget";
 import { AppVersionGate } from "@/components/app-version-gate";
+import { SplashIntro, INTRO_HEAD_SCRIPT } from "@/components/splash-intro";
 import { getPublicSupabaseConfig } from "@/integrations/supabase/config";
 
 const THEME_INIT = `(function(){try{var t=localStorage.getItem('neetiq-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){}})();`;
@@ -102,7 +103,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "canonical", href: "https://neettrack.com/" },
-      { rel: "manifest", href: "/manifest.webmanifest?v=2" },
+      { rel: "manifest", href: "/manifest.webmanifest?v=3" },
+      { rel: "preload", href: "/brand/nt-mark.webp", as: "image", type: "image/webp" },
       { rel: "icon", href: "/favicon.ico?v=2", sizes: "any" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png?v=2" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/icons/icon-192.png?v=2" },
@@ -123,6 +125,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: INTRO_HEAD_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <script
           type="application/ld+json"
@@ -165,6 +168,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <SplashIntro />
       <ThemeProvider>
         <AuthProvider>
                       <Outlet />
