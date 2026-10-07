@@ -436,6 +436,10 @@ function SubjectPage() {
       return;
     }
     const availableCount = counts[chapter.id] ?? chapter.q_count;
+    if (availableCount == null) {
+      toast.info("Question count is still loading. Please tap again in a moment.");
+      return;
+    }
     if (availableCount === 0) {
       toast.error("No questions match the selected filters in this chapter.");
       return;
