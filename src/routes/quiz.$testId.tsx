@@ -1220,7 +1220,7 @@ function QuizPlayer() {
     );
 
   return (
-    <div className={cn("flex min-h-screen flex-col", isQuiz ? "bg-slate-50 text-slate-900 light" : "bg-background")}>
+    <div className={cn("quiz-page-light flex min-h-screen flex-col", isQuiz ? "bg-slate-50 text-slate-900 light" : "bg-background")}>
       {isContest && !submitted && !contestDone && !alreadyAttempted && !hasAckedAntiCheat("contest", testId) && (
         <AntiCheatGate
           mode="contest"
