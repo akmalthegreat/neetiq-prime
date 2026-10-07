@@ -1,4 +1,4 @@
-// Daily Mega Quiz — live every day at 6:00 PM IST.
+// Daily Mega Quiz — live every day at 8:30 PM IST.
 // Everything that decides the result runs in the database (see the daily_mega_quiz
 // migration): this page only shows what the server says, on the server's clock.
 
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/mega-quiz")({
   head: () => ({
     meta: [
       { title: "Daily Mega Quiz — NEET Track" },
-      { name: "description", content: "80 NEET-level questions live every day at 6 PM. Top score wins ₹21." },
+      { name: "description", content: "80 NEET-level questions live every day at 8:30 PM. Top score wins ₹21." },
     ],
   }),
   component: MegaQuizPage,
@@ -204,7 +204,7 @@ function Lobby({ today, state, now, onJoin, onStart }: {
   const running = !!q && now() >= startsAt && now() < new Date(q.ends_at).getTime();
   const lastStart = useRef(0);
 
-  // When the clock reaches 6:00 PM for a joined player, switch into the live screen
+  // When the clock reaches 8:30 PM for a joined player, switch into the live screen
   // (asking again each second until the server agrees the quiz has started).
   useEffect(() => {
     if (!joined || !running || today.me?.status === "left") return;
@@ -222,7 +222,7 @@ function Lobby({ today, state, now, onJoin, onStart }: {
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-amber-400/20 blur-3xl" aria-hidden="true" />
         <div className="relative">
           <div className="text-xs font-bold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-400">Daily Mega Quiz</div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Live every day at 6:00 PM</h1>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Live every day at 8:30 PM</h1>
           <p className="mt-2 max-w-md text-muted-foreground">
             80 NEET-level questions from this week's syllabus. One attempt, the same questions for everyone at the same time.
           </p>
@@ -245,12 +245,12 @@ function Lobby({ today, state, now, onJoin, onStart }: {
           <div className="mt-5">
             {!q ? (
               <div className="rounded-2xl border border-border bg-background/60 px-4 py-3 text-sm">
-                Entry opens at <b>5:30 PM</b>. Come back then to join.
+                Entry opens at <b>8:00 PM</b>. Come back then to join.
               </div>
             ) : joined ? (
               <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                 <Check className="h-4 w-4" />
-                {today.me?.status === "left" ? "Your attempt ended because you left the quiz screen twice." : running ? "The quiz is live. Opening…" : "You're in. Keep this page open at 6:00 PM."}
+                {today.me?.status === "left" ? "Your attempt ended because you left the quiz screen twice." : running ? "The quiz is live. Opening…" : "You're in. Keep this page open at 8:30 PM."}
               </div>
             ) : entryOpen ? (
               <button type="button" onClick={onJoin} className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-amber-400 text-base font-bold text-amber-950 transition hover:bg-amber-300">
@@ -258,7 +258,7 @@ function Lobby({ today, state, now, onJoin, onStart }: {
               </button>
             ) : (
               <div className="rounded-2xl border border-border bg-background/60 px-4 py-3 text-sm">
-                Entry for today closed at {fmtTime(q.entry_closes_at)}. Results at {fmtTime(q.ends_at)}. See you tomorrow at 6 PM.
+                Entry for today closed at {fmtTime(q.entry_closes_at)}. Results at {fmtTime(q.ends_at)}. See you tomorrow at 8:30 PM.
               </div>
             )}
           </div>
@@ -287,8 +287,8 @@ function Lobby({ today, state, now, onJoin, onStart }: {
           ))}
         </div>
         <div className="mt-3 flex flex-wrap justify-between gap-2 text-sm text-muted-foreground">
-          <span>Starts <b className="text-foreground">6:00 PM</b></span>
-          <span>Entry closes <b className="text-foreground">6:05 PM</b></span>
+          <span>Starts <b className="text-foreground">8:30 PM</b></span>
+          <span>Entry closes <b className="text-foreground">8:35 PM</b></span>
           <span>About <b className="text-foreground">{Math.round(totalMin)} min</b></span>
         </div>
       </section>
@@ -322,6 +322,15 @@ function Lobby({ today, state, now, onJoin, onStart }: {
             <li key={i} className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-xs font-bold text-amber-700 dark:text-amber-400">{i + 1}</span>{r}</li>
           ))}
         </ul>
+        <details className="mt-5 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
+          <summary className="cursor-pointer select-none font-semibold">Terms &amp; conditions</summary>
+          <ol className="mt-2 list-decimal space-y-1.5 pl-4">
+            <li>Entry is free. The daily prize goes only to the single top scorer of that day's quiz; other participants do not receive a cash prize.</li>
+            <li>The prize is credited to the winner's NEET Track wallet after the fair-play review. Results flagged for unfair play are excluded.</li>
+            <li>Wallet winnings accumulate across quizzes. On reaching total Mega Quiz winnings of ₹1,299, a player is awarded the NEET Track achiever badge.</li>
+            <li>Quiz timings, prize amount and these terms may be updated; changes apply from the next quiz.</li>
+          </ol>
+        </details>
       </section>
     </>
   );
@@ -353,7 +362,7 @@ function FairPlayGate({ busy, onAgree, onCancel }: { busy: boolean; onAgree: () 
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400"><ShieldCheck className="h-6 w-6" /></div>
         <h2 id="mq-gate-title" className="mt-4 text-xl font-bold">Play fair to win</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Stay on the quiz screen from 6:00 PM until it ends. Switching apps or tabs gives one warning, then ends your attempt.
+          Stay on the quiz screen from 8:30 PM until it ends. Switching apps or tabs gives one warning, then ends your attempt.
         </p>
         <label className="mt-4 flex cursor-pointer items-start gap-3 text-[15px] leading-snug">
           <input type="checkbox" className="mt-0.5 h-5 w-5 accent-amber-500" checked={ok} onChange={(e) => setOk(e.target.checked)} />
@@ -593,7 +602,7 @@ function Results({ result }: { result: Result }) {
             </div>
           </>
         ) : (
-          <p className="mt-3 text-muted-foreground">You didn't play today. Join tomorrow at 6 PM.</p>
+          <p className="mt-3 text-muted-foreground">You didn't play today. Join tomorrow at 8:30 PM.</p>
         )}
       </section>
 
@@ -651,7 +660,7 @@ function Results({ result }: { result: Result }) {
       )}
 
       <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <Clock className="h-4 w-4" /> Next Mega Quiz: tomorrow at 6:00 PM · <Link to="/wallet" className="font-semibold text-primary">Wallet</Link>
+        <Clock className="h-4 w-4" /> Next Mega Quiz: tomorrow at 8:30 PM · <Link to="/wallet" className="font-semibold text-primary">Wallet</Link>
       </div>
     </>
   );

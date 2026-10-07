@@ -44,9 +44,9 @@ export function MegaQuizCard() {
 
   const line = live ? (t.me ? "You're in. The quiz is live now." : "The quiz is live now.")
     : done ? "Today's results are out."
-    : t.me ? "You're in for 6:00 PM."
-    : t.quiz ? "Entry is open. Join before 6:05 PM."
-    : "Entry opens at 5:30 PM.";
+    : t.me ? "You're in for 8:30 PM."
+    : t.quiz ? "Entry is open. Join before 8:35 PM."
+    : "Entry opens at 8:00 PM.";
 
   return (
     <div className="full" style={{ display: "grid", gap: 10 }}>
@@ -57,7 +57,7 @@ export function MegaQuizCard() {
             <Trophy className="h-5 w-5" />
           </span>
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: "#F5B841" }}>Daily Mega Quiz · 6 PM</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: "#F5B841" }}>Daily Mega Quiz · 8:30 PM</div>
             <div className="mt-0.5 text-[17px] font-bold leading-tight">Win ₹{t.prize} today</div>
             <div className="mt-0.5 text-[13px]" style={{ color: "#D9CFB8" }}>{line}</div>
           </div>

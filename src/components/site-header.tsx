@@ -136,7 +136,7 @@ function MegaQuizLink({ path, onNavigate }: { path: string; onNavigate?: () => v
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[15px] font-bold leading-tight">Daily Mega Quiz</span>
-        <span className="block text-xs text-muted-foreground">Live at 6 PM · win ₹21</span>
+        <span className="block text-xs text-muted-foreground">Live at 8:30 PM · win ₹21</span>
       </span>
       <ChevronRight className="h-4 w-4 text-muted-foreground" />
     </Link>

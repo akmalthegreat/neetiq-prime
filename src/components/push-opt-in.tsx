@@ -1,5 +1,5 @@
 // "Turn on notifications" card. Subscribes this device to Web Push so the student
-// gets the 5:45 PM Mega Quiz reminder and their result, even with the app closed.
+// gets the 8:15 PM Mega Quiz reminder and their result, even with the app closed.
 
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -110,14 +110,14 @@ export function PushOptIn({ compact = false, dismissible = false }: { compact?: 
         </span>
         <div className="min-w-0 flex-1">
           <div className="font-semibold">
-            {status === "denied" ? "Notifications are blocked" : status === "ios-install" ? "Get Mega Quiz reminders" : "Never miss the 6 PM Mega Quiz"}
+            {status === "denied" ? "Notifications are blocked" : status === "ios-install" ? "Get Mega Quiz reminders" : "Never miss the 8:30 PM Mega Quiz"}
           </div>
           <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
             {status === "denied"
               ? "Allow notifications for neettrack.com in your browser's site settings, then come back here."
               : status === "ios-install"
                 ? "On iPhone, first add NEET Track to your Home Screen (Share, then Add to Home Screen). Open it from there to turn on notifications."
-                : "Get a reminder at 5:45 PM and your result after the quiz, even when the app is closed."}
+                : "Get a reminder at 8:15 PM and your result after the quiz, even when the app is closed."}
           </p>
           {status === "off" && (
             <button type="button" onClick={turnOn} disabled={busy}
