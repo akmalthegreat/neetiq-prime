@@ -42,6 +42,7 @@ const GROUPS: Group[] = [
     label: "Study Tools",
     icon: Wrench,
     items: [
+      { to: "/short-notes", label: "Short Notes" },
       { to: "/flashcards", label: "Flashcards" },
       { to: "/ncert-highlights", label: "NCERT Highlights" },
       { to: "/highlighted-ncert", label: "Highlighted NCERT" },

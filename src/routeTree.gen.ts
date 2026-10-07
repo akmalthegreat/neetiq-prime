@@ -14,6 +14,8 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminCollaboratorsRouteImport } from './routes/admin-collaborators'
 import { Route as AiPathRouteImport } from './routes/ai-path'
 import { Route as ConsultRouteImport } from './routes/consult'
+import { Route as ShortNotesRouteImport } from './routes/short-notes'
+import { Route as NotesSubjectSlugRouteImport } from './routes/notes.$subject.$slug'
 import { Route as ConsultPlanRouteImport } from './routes/consult-plan'
 import { Route as ConsultReportRouteImport } from './routes/consult-report'
 import { Route as ConsultScoreRouteImport } from './routes/consult-score'
@@ -101,6 +103,16 @@ const AiPathRoute = AiPathRouteImport.update({
 const ConsultRoute = ConsultRouteImport.update({
   id: '/consult',
   path: '/consult',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShortNotesRoute = ShortNotesRouteImport.update({
+  id: '/short-notes',
+  path: '/short-notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesSubjectSlugRoute = NotesSubjectSlugRouteImport.update({
+  id: '/notes/$subject/$slug',
+  path: '/notes/$subject/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsultPlanRoute = ConsultPlanRouteImport.update({
@@ -434,6 +446,8 @@ export interface FileRoutesByFullPath {
   '/admin-collaborators': typeof AdminCollaboratorsRoute
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
+  '/short-notes': typeof ShortNotesRoute
+  '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
   '/consult-score': typeof ConsultScoreRoute
@@ -504,6 +518,8 @@ export interface FileRoutesByTo {
   '/admin-collaborators': typeof AdminCollaboratorsRoute
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
+  '/short-notes': typeof ShortNotesRoute
+  '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
   '/consult-score': typeof ConsultScoreRoute
@@ -575,6 +591,8 @@ export interface FileRoutesById {
   '/admin-collaborators': typeof AdminCollaboratorsRoute
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
+  '/short-notes': typeof ShortNotesRoute
+  '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
   '/consult-score': typeof ConsultScoreRoute
@@ -647,6 +665,8 @@ export interface FileRouteTypes {
     | '/admin-collaborators'
     | '/ai-path'
     | '/consult'
+    | '/short-notes'
+    | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
     | '/consult-score'
@@ -717,6 +737,8 @@ export interface FileRouteTypes {
     | '/admin-collaborators'
     | '/ai-path'
     | '/consult'
+    | '/short-notes'
+    | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
     | '/consult-score'
@@ -787,6 +809,8 @@ export interface FileRouteTypes {
     | '/admin-collaborators'
     | '/ai-path'
     | '/consult'
+    | '/short-notes'
+    | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
     | '/consult-score'
@@ -858,6 +882,8 @@ export interface RootRouteChildren {
   AdminCollaboratorsRoute: typeof AdminCollaboratorsRoute
   AiPathRoute: typeof AiPathRoute
   ConsultRoute: typeof ConsultRoute
+  ShortNotesRoute: typeof ShortNotesRoute
+  NotesSubjectSlugRoute: typeof NotesSubjectSlugRoute
   ConsultPlanRoute: typeof ConsultPlanRoute
   ConsultReportRoute: typeof ConsultReportRoute
   ConsultScoreRoute: typeof ConsultScoreRoute
@@ -951,6 +977,20 @@ declare module '@tanstack/react-router' {
       path: '/consult'
       fullPath: '/consult'
       preLoaderRoute: typeof ConsultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/short-notes': {
+      id: '/short-notes'
+      path: '/short-notes'
+      fullPath: '/short-notes'
+      preLoaderRoute: typeof ShortNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes/$subject/$slug': {
+      id: '/notes/$subject/$slug'
+      path: '/notes/$subject/$slug'
+      fullPath: '/notes/$subject/$slug'
+      preLoaderRoute: typeof NotesSubjectSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/consult-plan': {
@@ -1444,6 +1484,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCollaboratorsRoute: AdminCollaboratorsRoute,
   AiPathRoute: AiPathRoute,
   ConsultRoute: ConsultRoute,
+  ShortNotesRoute: ShortNotesRoute,
+  NotesSubjectSlugRoute: NotesSubjectSlugRoute,
   ConsultPlanRoute: ConsultPlanRoute,
   ConsultReportRoute: ConsultReportRoute,
   ConsultScoreRoute: ConsultScoreRoute,

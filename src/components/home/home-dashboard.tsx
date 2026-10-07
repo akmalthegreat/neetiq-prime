@@ -531,9 +531,9 @@ function Tools() {
         <Link to="/flashcards" className="tl" style={{ background: "linear-gradient(160deg,#2E1065,#160A33)", borderColor: "rgba(167,139,250,.4)", color: "#F3EEFF" }}>
           <span className="glowc" style={{ background: "#8B5CF6" }} /><span className="art"><span className="fan"><span /><span /><span /></span></span>
           <b>Flashcards</b><small>Spaced recall that sticks</small><span className="pill2" style={{ color: "#DDD6FE" }}>Revise fast</span></Link>
-        <Link to="/ncert-highlights" className="tl" style={{ background: "linear-gradient(160deg,#3B3205,#1C1806)", borderColor: "rgba(250,204,21,.38)", color: "#FFFBE6" }}>
+        <Link to="/short-notes" className="tl" style={{ background: "linear-gradient(160deg,#3B3205,#1C1806)", borderColor: "rgba(250,204,21,.38)", color: "#FFFBE6" }}>
           <span className="glowc" style={{ background: "#FACC15" }} /><span className="art"><span className="hl"><i /><i className="m" /><i style={{ width: "70%" }} /><i className="m" style={{ width: "85%" }} /></span></span>
-          <b>Short Notes</b><small>NCERT highlights, line by line</small><span className="pill2" style={{ color: "#FDE68A" }}>Chapter-wise</span></Link>
+          <b>Short Notes</b><small>NCERT notes with diagrams</small><span className="pill2" style={{ color: "#FDE68A" }}>New · Biology</span></Link>
         <Link to="/neetlab" className="tl" style={{ background: "linear-gradient(160deg,#083344,#061A26)", borderColor: "rgba(34,211,238,.4)", color: "#E6FBFF" }}>
           <span className="glowc" style={{ background: "#22D3EE" }} /><span className="art"><span className="scene"><span className="cube"><i /><i /><i /><i /><i /><i /></span></span></span>
           <b>3D Models</b><small>Models and simulations</small><span className="pill2" style={{ color: "#A5F3FC" }}>NEETLab</span></Link>
