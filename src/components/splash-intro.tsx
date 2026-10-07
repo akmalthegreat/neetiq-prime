@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AKMAL_SIGNATURE_PATH } from "@/components/splash-signature";
+import { CREDIT_NAME, CREDIT_DEGREE } from "@/components/splash-signature";
 
 /**
  * Cinematic opening intro, shown once per browser session when the site/app is opened.
@@ -15,6 +15,8 @@ export const INTRO_HEAD_SCRIPT = `try{if(sessionStorage.getItem('nt-intro')){doc
 export const INTRO_FONTS_HREF = "https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap";
 
 const TOTAL_MS = 5250;
+const NAME_X = +((280 - CREDIT_NAME.width) / 2).toFixed(1);
+const DEG_X = +((280 - CREDIT_DEGREE.width) / 2).toFixed(1);
 
 /** Runs inline right after the intro markup (before hydration). In the installed app, skip the first ~0.95 s. */
 const APP_HANDOFF_SCRIPT = `try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone){var s=document.getElementById('nt-splash');if(s&&s.getAnimations){s.getAnimations({subtree:true}).forEach(function(a){a.currentTime=(Number(a.currentTime)||0)+950})}}}catch(e){}`;
@@ -112,22 +114,39 @@ export function SplashIntro() {
 
         <div className="credit">
           <div className="cby"><em /><span>Created by</span><em /></div>
-          <svg className="sig" viewBox="-8 -6 225 112">
+          <svg className="sig" viewBox="0 0 280 92" aria-hidden="true">
             <defs>
-              <linearGradient id="ntx-gold" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stopColor="#FFF1C1" />
-                <stop offset=".45" stopColor="#F5C451" />
-                <stop offset="1" stopColor="#C8892B" />
+              <linearGradient id="ntx-gold" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stopColor="#FFF7DA" />
+                <stop offset=".38" stopColor="#F8D57E" />
+                <stop offset=".62" stopColor="#E0A93F" />
+                <stop offset="1" stopColor="#A86E1E" />
               </linearGradient>
+              <linearGradient id="ntx-glint" x1="0" x2="1">
+                <stop offset="0" stopColor="#fff" stopOpacity="0" />
+                <stop offset=".5" stopColor="#fff" stopOpacity=".95" />
+                <stop offset="1" stopColor="#fff" stopOpacity="0" />
+              </linearGradient>
+              <mask id="ntx-name-mask">
+                <g transform={`translate(${NAME_X} 6)`}>{CREDIT_NAME.letters.map((l, i) => <path key={i} d={l.d} fill="#fff" />)}</g>
+              </mask>
             </defs>
-            <path className="name-stroke" pathLength={1} d={AKMAL_SIGNATURE_PATH} />
-            <path className="name-fill" d={AKMAL_SIGNATURE_PATH} />
-            <path className="swash" pathLength={1} d="M38 100 C 80 108, 150 107, 196 94 C 202 92, 206 90, 209 86" />
+            <g className="name" transform={`translate(${NAME_X} 6)`}>
+              {CREDIT_NAME.letters.map((l, i) => (
+                <path key={i} className="nl" d={l.d} fill="url(#ntx-gold)"
+                  style={{ ["--dx" as string]: `${((l.cx - CREDIT_NAME.width / 2) * 0.55).toFixed(1)}px`, animationDelay: `${2.78 + i * 0.07}s` }} />
+              ))}
+            </g>
+            <g mask="url(#ntx-name-mask)"><rect className="glint" x="-70" y="0" width="56" height="52" fill="url(#ntx-glint)" /></g>
+            <g transform={`translate(${(NAME_X + CREDIT_NAME.width + 6).toFixed(1)} 8)`}><path className="spark4" d="M0 -9 L2 -2 L9 0 L2 2 L0 9 L-2 2 L-9 0 L-2 -2 Z" /></g>
+            <line className="rule rl" x1="98" y1="74" x2="34" y2="74" />
+            <line className="rule rr" x1="182" y1="74" x2="246" y2="74" />
+            <g transform={`translate(${DEG_X} ${(74 - CREDIT_DEGREE.cap / 2).toFixed(1)})`}>
+              {CREDIT_DEGREE.letters.map((l, i) => (
+                <path key={i} className="dl" d={l.d} fill="url(#ntx-gold)" style={{ animationDelay: `${3.6 + i * 0.08}s` }} />
+              ))}
+            </g>
           </svg>
-          <div className="deg">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6" /></svg>
-            MBBS
-          </div>
         </div>
       </div>
       {/* Installed app: Android already showed the logo on its launch screen, so jump straight to the logo burst. */}
@@ -199,15 +218,15 @@ html[data-intro="seen"] #nt-splash{display:none!important}
   animation:ntx-fadeup .6s ease-out 2.6s both}
 #nt-splash .cby em{display:block;width:44px;height:1px;background:linear-gradient(90deg,transparent,#E9C46A);transform-origin:right;animation:ntx-line .6s cubic-bezier(.16,1,.3,1) 2.6s both}
 #nt-splash .cby em:last-child{background:linear-gradient(90deg,#E9C46A,transparent);transform-origin:left}
-#nt-splash .sig{width:206px;height:102px;margin-top:4px;overflow:visible}
-#nt-splash .sig .name-stroke{fill:none;stroke:#FCE3A0;stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(245,196,81,.6));
-  animation:ntx-write 1.2s cubic-bezier(.45,0,.3,1) 2.75s both,ntx-out .45s ease 3.8s both}
-#nt-splash .sig .name-fill{fill:url(#ntx-gold);opacity:0;filter:drop-shadow(0 2px 10px rgba(245,196,81,.45));animation:ntx-in .6s ease-out 3.35s both}
-#nt-splash .sig .swash{fill:none;stroke:url(#ntx-gold);stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:ntx-draw .55s ease-out 3.5s both}
-#nt-splash .deg{margin-top:6px;display:inline-flex;align-items:center;gap:7px;padding:6px 15px 6px 11px;border-radius:999px;font-size:14px;font-weight:800;letter-spacing:3px;color:#1B1404;
-  background:linear-gradient(135deg,#FFF1C1,#F5C451 45%,#D99A2B);box-shadow:0 6px 20px -6px rgba(245,196,81,.7),inset 0 1px 0 rgba(255,255,255,.6);
-  animation:ntx-pop .55s cubic-bezier(.34,1.56,.64,1) 3.55s both}
-#nt-splash .deg svg{width:17px;height:17px;fill:none;stroke:#1B1404;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#nt-splash .sig{width:272px;height:90px;margin-top:8px;overflow:visible}
+#nt-splash .sig .name{filter:drop-shadow(0 2px 12px rgba(245,196,81,.35))}
+#nt-splash .sig .nl{opacity:0;transform:translateX(var(--dx)) translateY(8px);filter:blur(5px);transform-box:fill-box;transform-origin:center;
+  animation:ntx-nl .9s cubic-bezier(.16,1,.3,1) both}
+#nt-splash .sig .glint{transform:skewX(-20deg);animation:ntx-glint 1.1s cubic-bezier(.4,0,.2,1) 3.55s both}
+#nt-splash .sig .spark4{fill:#FFF7DA;opacity:0;filter:drop-shadow(0 0 4px #F8D57E) drop-shadow(0 0 10px #F5C451);transform-box:fill-box;transform-origin:center;
+  animation:ntx-spark4 .9s ease-out 4.05s both}
+#nt-splash .sig .rule{stroke:#E0A93F;stroke-width:1;stroke-linecap:round;stroke-dasharray:64;stroke-dashoffset:64;animation:ntx-rule .7s cubic-bezier(.16,1,.3,1) 3.45s both}
+#nt-splash .sig .dl{opacity:0;transform:translateY(5px);transform-box:fill-box;animation:ntx-dl .5s ease-out both}
 
 @keyframes ntx-in{from{opacity:0}to{opacity:1}}
 @keyframes ntx-out{to{opacity:0}}
@@ -230,8 +249,11 @@ html[data-intro="seen"] #nt-splash{display:none!important}
 @keyframes ntx-track{from{opacity:0;letter-spacing:12px;filter:blur(4px)}to{opacity:1;letter-spacing:4px;filter:blur(0)}}
 @keyframes ntx-fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes ntx-line{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes ntx-write{to{stroke-dashoffset:0}}
-@keyframes ntx-pop{from{opacity:0;transform:scale(.4) translateY(6px)}to{opacity:1;transform:none}}
+@keyframes ntx-nl{to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes ntx-glint{from{transform:translateX(0) skewX(-20deg)}to{transform:translateX(360px) skewX(-20deg)}}
+@keyframes ntx-spark4{0%{opacity:0;transform:scale(.2) rotate(-45deg)}40%{opacity:1;transform:scale(1.15) rotate(0)}100%{opacity:0;transform:scale(.6) rotate(30deg)}}
+@keyframes ntx-rule{to{stroke-dashoffset:0}}
+@keyframes ntx-dl{to{opacity:1;transform:none}}
 @keyframes ntx-iris{0%{clip-path:circle(150% at 50% 42%)}100%{clip-path:circle(0% at 50% 42%);visibility:hidden;pointer-events:none}}
 
 @media (min-width:768px){
@@ -239,7 +261,7 @@ html[data-intro="seen"] #nt-splash{display:none!important}
   #nt-splash .word{font-size:54px}
   #nt-splash .tag{font-size:13px}
   #nt-splash .ecg{top:calc(50% - 190px)}
-  #nt-splash .sig{width:240px;height:119px}
+  #nt-splash .sig{width:320px;height:106px}
 }
 @media (max-height:640px){#nt-splash .credit{margin-top:18px}#nt-splash .logo,#nt-splash .mark3d,#nt-splash .mark{width:136px;height:136px}}
 @media (prefers-reduced-motion:reduce){
