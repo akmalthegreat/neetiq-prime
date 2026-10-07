@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -103,7 +104,7 @@ function InfiniteRunPage() {
   };
 
   if (loading || !user || !state) {
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+    return <DrAkzaLoader fullScreen message="Warming up Infinite Run" />;
   }
 
   const run = state.run;

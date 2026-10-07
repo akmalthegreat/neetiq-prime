@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/page-shell";
@@ -61,7 +62,7 @@ function AdminPanel() {
   const nav = useNavigate();
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+  if (loading) return <DrAkzaLoader fullScreen message="Opening the admin panel" />;
   if (!user) return null;
   if (!isAdmin) {
     return (

@@ -105,6 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "canonical", href: "https://neettrack.com/" },
       { rel: "manifest", href: "/manifest.webmanifest?v=5" },
       { rel: "preload", href: "/brand/nt-mark.webp", as: "image", type: "image/webp" },
+      { rel: "preload", href: "/brand/dr-azka-loader.webp", as: "image", type: "image/webp" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: INTRO_FONTS_HREF },
@@ -118,7 +119,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
-  pendingComponent: () => <DrAkzaLoader message="Dr. Azka is preparing the page..." fullScreen />,
+  pendingComponent: () => <DrAkzaLoader message="Preparing the page" fullScreen />,
   errorComponent: ErrorComponent,
 });
 

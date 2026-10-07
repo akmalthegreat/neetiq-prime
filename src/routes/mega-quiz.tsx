@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 // Daily Mega Quiz — live every day at 8:30 PM IST.
 // Everything that decides the result runs in the database (see the daily_mega_quiz
 // migration): this page only shows what the server says, on the server's clock.
@@ -155,7 +156,7 @@ function MegaQuizPage() {
   useTick(!!today?.quiz && !result && !(live && state?.phase !== "waiting"), 1000);
 
   if (!today) {
-    return <PageShell><div className="mx-auto max-w-xl py-20 text-center text-sm text-muted-foreground">Loading today's Mega Quiz…</div></PageShell>;
+    return <PageShell><DrAkzaLoader message="Loading today's Mega Quiz" /></PageShell>;
   }
 
   if (live && today.quiz && state && state.phase !== "waiting") {

@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -58,7 +59,7 @@ function AiPathPage() {
   }
 
   if (loading || !user || plan === undefined) {
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+    return <DrAkzaLoader fullScreen message="Preparing your study path" />;
   }
 
   return (

@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -621,7 +622,7 @@ function BattlePlayPage() {
 
 
   if (authLoading || !user || (!match && !err)) {
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+    return <DrAkzaLoader fullScreen message="Setting up your battle" />;
   }
   if (err) {
     return (
@@ -660,7 +661,7 @@ function BattlePlayPage() {
 
 
   if (!current) {
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+    return <DrAkzaLoader fullScreen message="Setting up your battle" />;
   }
 
   const isRevealed = !!revealed[current.id];

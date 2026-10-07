@@ -1,3 +1,4 @@
+import { DrAkzaLoader } from "@/components/dr-akza-loader";
 // Target 700 Batch: one test. Syllabus, paper pattern and NTA-style
 // instructions; the student confirms they have read them, then starts the CBT.
 
@@ -86,7 +87,7 @@ function Target700TestPage() {
     }
   }
 
-  if (t === undefined) return <FullBleedShell><div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div></FullBleedShell>;
+  if (t === undefined) return <DrAkzaLoader fullScreen message="Opening your test" subMessage="Loading syllabus and instructions" />;
   if (t === null) {
     return (
       <FullBleedShell>
