@@ -368,45 +368,60 @@ function SubjectPage() {
   useEffect(() => {
     if (!chapters || chapters.length === 0) {
       setCounts({});
+      setCounting(false);
       return;
     }
 
     let active = true;
     const timer = window.setTimeout(() => {
       setCounting(true);
+      // Do not wait for every chapter before painting the first results.
+      // The old Promise.all made one slow query keep every chapter in a
+      // loading state. A small worker pool also avoids flooding PostgREST
+      // with 28+ simultaneous count requests on mobile.
       (async () => {
-        const ids = chapters.map((c) => c.id);
-        const newCounts: Record<string, number> = {};
+        const ids = chapters.map((c) => c.id).slice(0, 100);
+        let cursor = 0;
+        const workerCount = Math.min(6, ids.length);
 
-        await Promise.all(
-          ids.slice(0, 100).map(async (cid) => {
-            let q = supabase
-              .from("questions")
-              .select("id", { count: "exact", head: true })
-              .eq("chapter_id", cid);
+        const countOne = async (cid: string) => {
+          let q = supabase
+            .from("questions")
+            .select("id", { count: "exact", head: true })
+            .eq("chapter_id", cid);
 
-            if (difficulty !== "any") {
-              const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-              q = (q as any).ilike("difficulty", cap);
-            }
-            if (qtype === "graph_figure") {
-              q = (q as any).or(
-                "question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%",
-              );
-            } else if (qtype !== "any") {
-              const dbType = QTYPE_MAP[qtype];
-              if (dbType) q = (q as any).eq("qtype", dbType);
-            }
+          if (difficulty !== "any") {
+            const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+            q = (q as any).ilike("difficulty", cap);
+          }
+          if (qtype === "graph_figure") {
+            q = (q as any).or(
+              "question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%",
+            );
+          } else if (qtype !== "any") {
+            const dbType = QTYPE_MAP[qtype];
+            if (dbType) q = (q as any).eq("qtype", dbType);
+          }
 
-            const { count } = await q;
-            newCounts[cid] = count ?? 0;
-          }),
-        );
+          const { count, error } = await q;
+          if (error) {
+            console.error("Could not count chapter questions", error);
+          }
+          if (active) {
+            setCounts((prev) => ({ ...prev, [cid]: count ?? 0 }));
+          }
+        };
 
-        if (active) {
-          setCounts(newCounts);
-          setCounting(false);
-        }
+        const worker = async () => {
+          while (active) {
+            const i = cursor++;
+            if (i >= ids.length) return;
+            await countOne(ids[i]);
+          }
+        };
+
+        await Promise.all(Array.from({ length: workerCount }, worker));
+        if (active) setCounting(false);
       })();
     }, 120);
 
@@ -691,7 +706,7 @@ function SubjectPage() {
                         <span className="mid">
                           <span className="nm">{c.name}</span>
                           <span className="meta">
-                            {counting || n === undefined
+                            {n === undefined
                               ? <span className="skel" />
                               : <span>{fmt(n)} questions</span>}
                             {c.class ? <span className="tagc">Class {c.class}</span> : null}
