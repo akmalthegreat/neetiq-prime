@@ -9,6 +9,7 @@ import { ArrowLeft, BarChart3, BookOpen, CheckCircle2, ChevronDown, Clock, Crown
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { startMockAttempt } from "@/lib/mock-gate.functions";
+import { getFreeAccess, LOCKED_PREFIX } from "@/lib/premium-gate.functions";
 import { T700, T700_INSTRUCTIONS, T700_SECTIONS, testKind, type T700Test } from "@/lib/target700";
 import { cn } from "@/lib/utils";
 import { FullBleedShell } from "@/components/page-shell";
@@ -31,6 +32,19 @@ function Target700TestPage() {
   const [starting, setStarting] = useState(false);
   const [locked, setLocked] = useState(false);
   const [openSec, setOpenSec] = useState<number>(0);
+  const accessFn = useServerFn(getFreeAccess);
+  const [freeLeft, setFreeLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    accessFn().then((a) => {
+      if (a.premium) { setFreeLeft(null); return; }
+      if (a.t700.includes(testId)) { setFreeLeft(null); return; }
+      const left = Math.max(0, a.t700Limit - a.t700.length);
+      setFreeLeft(left);
+      if (left === 0) setLocked(true);
+    }).catch(() => {});
+  }, [user, testId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
 
@@ -65,7 +79,7 @@ function Target700TestPage() {
       nav({ to: "/quiz/$testId", params: { testId }, search: { mode: "cbt" } as never });
     } catch (e: any) {
       const msg = String(e?.message ?? "");
-      if (/feature|premium|plan|access|upgrade|trial/i.test(msg)) setLocked(true);
+      if (msg.includes(LOCKED_PREFIX) || /upgrade required/i.test(msg)) setLocked(true);
       else toast.error(msg || "Could not start this test");
     } finally {
       setStarting(false);
@@ -184,11 +198,18 @@ function Target700TestPage() {
           </div>
         </section>
 
+        {!locked && freeLeft !== null && (
+          <div className="rounded-2xl border border-amber-400/40 bg-amber-400/10 p-4 text-sm">
+            <span className="font-semibold">Free plan:</span> starting this test uses 1 of your {freeLeft} remaining free Target 700 test{freeLeft === 1 ? "" : "s"}.{" "}
+            <Link to="/premium" className="font-semibold text-amber-700 underline dark:text-amber-300">Get Premium</Link> for all 46.
+          </div>
+        )}
+
         {locked && (
           <div className="rounded-2xl border border-amber-400/40 bg-amber-400/10 p-4 text-sm">
-            <div className="flex items-center gap-2 font-bold"><Crown className="h-4 w-4 text-amber-500" /> Target 700 Batch is part of NEET Track Premium</div>
-            <p className="mt-1 text-muted-foreground">Unlock all 46 tests with detailed solutions and analysis.</p>
-            <Link to="/premium" className="mt-3 inline-flex h-10 items-center rounded-xl bg-amber-400 px-4 text-sm font-bold text-amber-950">See plans</Link>
+            <div className="flex items-center gap-2 font-bold"><Crown className="h-4 w-4 text-amber-500" /> Your free Target 700 tests are used</div>
+            <p className="mt-1 text-muted-foreground">Get Premium to unlock all 46 tests with detailed solutions and analysis.</p>
+            <Link to="/premium" className="mt-3 inline-flex h-10 items-center rounded-xl bg-amber-400 px-4 text-sm font-bold text-amber-950">Get Premium</Link>
           </div>
         )}
       </div>
@@ -200,11 +221,17 @@ function Target700TestPage() {
             <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 h-4 w-4 accent-amber-500" />
             I have read and understood the instructions. I will attempt this test honestly, in one sitting.
           </label>
+          {locked ? (
+            <Link to="/premium" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 px-6 text-sm font-extrabold text-slate-950">
+              <Crown className="h-4 w-4" /> Unlock with Premium
+            </Link>
+          ) : (
           <button type="button" onClick={start} disabled={starting || !agreed}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 px-6 text-sm font-extrabold text-slate-950 disabled:opacity-50">
             {starting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             {attempts.length ? "Reattempt test" : `Start Test ${num}`}
           </button>
+          )}
         </div>
       </div>
     </div>

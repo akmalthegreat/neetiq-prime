@@ -3,7 +3,9 @@
 
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, BookOpen, CheckCircle2, ChevronDown, Clock, Download, FileText, Flame, Layers, Target, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, ChevronDown, Clock, Crown, Download, FileText, Flame, Layers, Lock, Target, Trophy } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { getFreeAccess } from "@/lib/premium-gate.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { T700, T700_HIGHLIGHTS, T700_PHASES, testKind, type T700Test } from "@/lib/target700";
@@ -41,8 +43,13 @@ function Target700Hub() {
   const nav = useNavigate();
   const tests = useT700Tests();
   const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const accessFn = useServerFn(getFreeAccess);
+  const [access, setAccess] = useState<Awaited<ReturnType<typeof getFreeAccess>> | null>(null);
 
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
+  useEffect(() => { if (user) accessFn().then(setAccess).catch(() => {}); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+  const free = access && !access.premium ? access : null;
+  const isLocked = (id: string) => !!free && !free.t700.includes(id) && free.t700.length >= free.t700Limit;
 
   useEffect(() => {
     if (!user || !tests?.length) return;
@@ -111,6 +118,19 @@ function Target700Hub() {
             </a>
           </div>
 
+          {free && (
+            <div className="mt-5 flex max-w-xl flex-wrap items-center gap-3 rounded-2xl border border-amber-300/30 bg-amber-300/10 px-4 py-3">
+              <Crown className="h-5 w-5 shrink-0 text-amber-300" />
+              <div className="min-w-0 flex-1 text-sm">
+                <div className="font-bold text-amber-100">
+                  {free.t700.length >= free.t700Limit ? "Your free tests are used" : `Free plan: ${free.t700Limit - free.t700.length} of ${free.t700Limit} free tests left`}
+                </div>
+                <div className="text-xs text-white/70">Premium unlocks all {T700.totalTests} tests with solutions and analysis.</div>
+              </div>
+              <Link to="/premium" className="inline-flex h-10 items-center rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 px-4 text-xs font-extrabold text-slate-950">Get Premium</Link>
+            </div>
+          )}
+
           {tests && tests.length > 0 && (
             <div className="mt-6 max-w-md">
               <div className="flex justify-between text-xs text-white/70"><span>Your progress</span><span className="font-bold text-white">{done} / {tests.length}</span></div>
@@ -163,7 +183,7 @@ function Target700Hub() {
                   <span className="text-xs text-muted-foreground">{list.filter((t) => best.has(t.id)).length} / {list.length} done</span>
                 </div>
                 <ul className="space-y-2.5">
-                  {list.map((t) => <TestRow key={t.id} t={t} score={best.get(t.id)} isNext={next?.id === t.id} />)}
+                  {list.map((t) => <TestRow key={t.id} t={t} score={best.get(t.id)} isNext={next?.id === t.id} locked={isLocked(t.id)} />)}
                 </ul>
               </section>
             );
@@ -179,7 +199,7 @@ function Target700Hub() {
   );
 }
 
-function TestRow({ t, score, isNext }: { t: T700Test; score: number | undefined; isNext: boolean }) {
+function TestRow({ t, score, isNext, locked }: { t: T700Test; score: number | undefined; isNext: boolean; locked: boolean }) {
   const [open, setOpen] = useState(false);
   const kind = testKind(t.series_label);
   const syl = t.syllabus ?? [];
@@ -197,7 +217,8 @@ function TestRow({ t, score, isNext }: { t: T700Test; score: number | undefined;
         <Link to="/target-700-test/$testId" params={{ testId: t.id }} className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="font-semibold">{t.series_label}</span>
-            {isNext && <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700 dark:text-amber-300">Up next</span>}
+            {isNext && !locked && <span className="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700 dark:text-amber-300">Up next</span>}
+            {locked && <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700 dark:text-amber-300"><Lock className="h-3 w-3" />Premium</span>}
           </div>
           <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
             <span>{kind}</span>

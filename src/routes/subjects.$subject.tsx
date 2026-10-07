@@ -4,6 +4,8 @@ import { PageShell } from "@/components/page-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { getFreeAccess, unlockPracticeChapter, LOCKED_PREFIX } from "@/lib/premium-gate.functions";
 import { useConsultData } from "@/components/consult/consult-ui";
 import { SUBJECT_CSS } from "@/components/subjects/subject-styles";
 
@@ -466,7 +468,17 @@ function SubjectPage() {
     return a === null || a === undefined ? null : Math.round(a);
   };
 
+  // Free plan: a limited number of chapters, then Premium.
+  const accessFn = useServerFn(getFreeAccess);
+  const unlockFn = useServerFn(unlockPracticeChapter);
+  const [access, setAccess] = useState<Awaited<ReturnType<typeof getFreeAccess>> | null>(null);
+  const [premiumPrompt, setPremiumPrompt] = useState(false);
+  useEffect(() => { if (user) accessFn().then(setAccess).catch(() => {}); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+  const freePlan = access && !access.premium ? access : null;
+  const chapterLocked = (id: string) => !!freePlan && !freePlan.chapters.includes(id) && freePlan.chapters.length >= freePlan.chapterLimit;
+
   const startChapter = async (chapter: Chapter) => {
+    if (chapterLocked(chapter.id)) { setPremiumPrompt(true); return; }
     if (!user) {
       toast.info("Please log in to start chapter practice.");
       nav({ to: "/login" });
@@ -505,6 +517,18 @@ function SubjectPage() {
     const { chapter } = picked;
     const offset = setIdx * BATCH;
     setLaunching(chapter.id);
+    if (freePlan && !freePlan.chapters.includes(chapter.id)) {
+      try {
+        await unlockFn({ data: { chapter_id: chapter.id } });
+        setAccess((a) => (a ? { ...a, chapters: [...a.chapters, chapter.id] } : a));
+      } catch (e: any) {
+        setLaunching(null);
+        setLaunchMode(null);
+        if (String(e?.message ?? "").includes(LOCKED_PREFIX)) { setSetIdx(null); setPremiumPrompt(true); }
+        else toast.error(e?.message ?? "Could not start this chapter");
+        return;
+      }
+    }
     setLaunchMode(mode);
 
     const qids = await getChapterQuestionIdPage(
@@ -712,6 +736,18 @@ function SubjectPage() {
                 </div>
               </div>
 
+              {freePlan && (
+                <div className="mb-3 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm">
+                  <span className="flex-1 min-w-[200px]">
+                    <b>Free plan:</b>{" "}
+                    {freePlan.chapters.length >= freePlan.chapterLimit
+                      ? `you have used all ${freePlan.chapterLimit} free chapters. You can keep practising them.`
+                      : `${Math.min(freePlan.chapters.length, freePlan.chapterLimit)} of ${freePlan.chapterLimit} free chapters used.`}
+                  </span>
+                  <Link to="/premium" className="inline-flex h-9 items-center rounded-xl bg-amber-400 px-4 text-xs font-extrabold text-amber-950">Get Premium</Link>
+                </div>
+              )}
+
               <div className="listhead"><h3>Chapters</h3><span>Tap a chapter to see its tests</span></div>
 
               {chapters === null ? (
@@ -749,7 +785,10 @@ function SubjectPage() {
                           </span>
                           <span className="mbar"><i style={{ width: `${acc ?? 0}%` }} /></span>
                         </span>
-                        {busy ? <span className="spin" aria-label="Loading" /> : <AccuracyChip acc={acc} />}
+                        {busy ? <span className="spin" aria-label="Loading" />
+                          : chapterLocked(c.id)
+                            ? <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:text-amber-300">🔒 Premium</span>
+                            : <AccuracyChip acc={acc} />}
                       </button>
                     );
                   })}
@@ -797,6 +836,19 @@ function SubjectPage() {
           </>
         )}
       </div>
+      {premiumPrompt && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={() => setPremiumPrompt(false)}>
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-center text-slate-900 shadow-2xl dark:bg-slate-900 dark:text-white" onClick={(e) => e.stopPropagation()}>
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-200 to-yellow-500 text-2xl">👑</div>
+            <h2 className="mt-3 text-xl font-bold">Unlock every chapter</h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Your free plan includes {freePlan?.chapterLimit ?? 6} chapters, and you have used them. Get Premium to practise all chapters of Physics, Chemistry and Biology.
+            </p>
+            <Link to="/premium" className="mt-5 flex h-12 items-center justify-center rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 text-sm font-extrabold text-slate-950">Get Premium</Link>
+            <button type="button" onClick={() => setPremiumPrompt(false)} className="mt-2 h-10 w-full text-sm font-medium text-slate-500">Not now</button>
+          </div>
+        </div>
+      )}
     </PageShell>
   );
 }

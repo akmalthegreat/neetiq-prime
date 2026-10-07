@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 import { RichText, resolveAnyImageUrl, handleImageFallback } from "@/components/rich-text";
 import { ReportQuestionButton } from "@/components/report-question-button";
 import { AntiCheatGate, hasAckedAntiCheat } from "@/components/anti-cheat-gate";
+import { useServerFn } from "@tanstack/react-start";
+import { checkSeriesTestAccess } from "@/lib/premium-gate.functions";
 
 export const Route = createFileRoute("/quiz/$testId")({
   head: () => ({ meta: [{ title: "Quiz — NEET Track" }] }),
@@ -132,6 +134,8 @@ function QuizPlayer() {
   const [battleMatchId, setBattleMatchId] = useState<string | null>(null);
   const [contestDone, setContestDone] = useState<null | { score: number; correct: number; wrong: number; attempted: number }>(null);
   const [alreadyAttempted, setAlreadyAttempted] = useState<null | { contestId: string | null; score: number | null }>(null);
+  const [seriesLocked, setSeriesLocked] = useState(false);
+  const checkSeries = useServerFn(checkSeriesTestAccess);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
   // NTA CBT state: visited questions + marked-for-review set
   const [visitedIds, setVisitedIds] = useState<Set<number>>(new Set());
@@ -178,6 +182,15 @@ function QuizPlayer() {
         return;
       }
       setTest(t as Test);
+
+      // Target 700 Batch: free students get a limited number of tests.
+      if ((t as any).series) {
+        if (!user) return; // wait for sign-in; this effect re-runs when the user loads
+        try {
+          const r = await checkSeries({ data: { test_id: testId } });
+          if (r.locked) { setSeriesLocked(true); setLoading(false); return; }
+        } catch { /* network hiccup: the start screen already checked access */ }
+      }
 
       // Contest re-attempt guard: contests are one-shot per user.
       // If a completed attempt already exists for this user/contest test, block.
@@ -747,6 +760,25 @@ function QuizPlayer() {
             <Link to="/dashboard">Back to dashboard</Link>
           </Button>
         </div>
+      </div>
+    );
+
+  if (seriesLocked)
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md border-amber-500/40 shadow-elegant">
+          <CardContent className="space-y-4 p-6 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-200 to-yellow-500 text-slate-950"><Trophy className="h-7 w-7" /></div>
+            <div>
+              <h1 className="text-xl font-bold">Unlock Target 700 Batch</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Your free Target 700 tests are used. Get Premium to take all 46 tests with full solutions and analysis.</p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button asChild className="h-11 bg-gradient-to-r from-amber-300 to-yellow-500 font-bold text-slate-950"><Link to="/premium">Get Premium</Link></Button>
+              <Button asChild variant="ghost"><Link to="/target-700">Back to the series</Link></Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
 
