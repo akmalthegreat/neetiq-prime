@@ -375,14 +375,34 @@ function SubjectPage() {
     let active = true;
     const timer = window.setTimeout(() => {
       setCounting(true);
-      // Do not wait for every chapter before painting the first results.
-      // The old Promise.all made one slow query keep every chapter in a
-      // loading state. A small worker pool also avoids flooding PostgREST
-      // with 28+ simultaneous count requests on mobile.
       (async () => {
         const ids = chapters.map((c) => c.id).slice(0, 100);
+
+        // One request counts every chapter at once. Retry before giving up so a
+        // brief network blip never shows "0 questions".
+        const diff = difficulty !== "any" ? difficulty.charAt(0).toUpperCase() + difficulty.slice(1) : null;
+        const dbType = qtype !== "any" && qtype !== "graph_figure" ? QTYPE_MAP[qtype] ?? null : null;
+        for (let attempt = 0; attempt < 3 && active; attempt++) {
+          const { data, error } = await (supabase as any).rpc("chapter_question_counts", {
+            _chapter_ids: ids, _difficulty: diff, _qtype: dbType, _figure: qtype === "graph_figure",
+          });
+          if (!error && Array.isArray(data)) {
+            if (!active) return;
+            const next: Record<string, number> = {};
+            for (const id of ids) next[id] = 0;
+            for (const row of data as { chapter_id: string; n: number }[]) next[row.chapter_id] = Number(row.n);
+            setCounts(next);
+            setCounting(false);
+            return;
+          }
+          console.error("Could not count questions", error);
+          await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
+        }
+        if (!active) return;
+
+        // Fallback: count chapter by chapter with a small worker pool.
         let cursor = 0;
-        const workerCount = Math.min(6, ids.length);
+        const workerCount = Math.min(4, ids.length);
 
         const countOne = async (cid: string) => {
           let q = supabase
@@ -405,7 +425,9 @@ function SubjectPage() {
 
           const { count, error } = await q;
           if (error) {
+            // Leave it unknown rather than showing a misleading 0.
             console.error("Could not count chapter questions", error);
+            return;
           }
           if (active) {
             setCounts((prev) => ({ ...prev, [cid]: count ?? 0 }));
@@ -450,7 +472,20 @@ function SubjectPage() {
       nav({ to: "/login" });
       return;
     }
-    const availableCount = counts[chapter.id] ?? chapter.q_count;
+    let availableCount = counts[chapter.id] ?? chapter.q_count;
+    if (availableCount == null && !counting) {
+      // Its count failed earlier: ask again now instead of making the student wait.
+      const { data } = await (supabase as any).rpc("chapter_question_counts", {
+        _chapter_ids: [chapter.id],
+        _difficulty: difficulty !== "any" ? difficulty.charAt(0).toUpperCase() + difficulty.slice(1) : null,
+        _qtype: qtype !== "any" && qtype !== "graph_figure" ? QTYPE_MAP[qtype] ?? null : null,
+        _figure: qtype === "graph_figure",
+      });
+      if (Array.isArray(data)) {
+        availableCount = Number(data[0]?.n ?? 0);
+        setCounts((prev) => ({ ...prev, [chapter.id]: availableCount as number }));
+      }
+    }
     if (availableCount == null) {
       toast.info("Question count is still loading. Please tap again in a moment.");
       return;
@@ -556,7 +591,7 @@ function SubjectPage() {
   const title = META[normalizedSubject]?.title ?? normalizedSubject;
 
   /* ---------- derived numbers for the hero and list */
-  const countsReady = !!chapters && !counting && chapters.every((c) => counts[c.id] !== undefined);
+  const countsReady = !!chapters && !counting;
   const totalQuestions = chapters ? chapters.reduce((t, c) => t + (counts[c.id] ?? 0), 0) : 0;
   const tried = (chapters ?? []).map((c) => accOf(c.id)).filter((a): a is number => a !== null);
   const mastery = tried.length ? Math.round(tried.reduce((t, a) => t + a, 0) / tried.length) : null;
