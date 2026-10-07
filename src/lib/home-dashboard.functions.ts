@@ -30,7 +30,8 @@ export type HomeExtras = {
   mocksTaken: number;
   wrongThisWeek: number;
   nextContest: null | { id: string; title: string; startsAt: string; endsAt: string; totalQuestions: number; durationMin: number; status: string };
-  banners: { id: string; title: string; subtitle: string; tag: string; cta: string; href: string; imageUrl: string | null }[];
+  banners: { id: string; title: string; subtitle: string; tag: string; cta: string; href: string; imageUrl: string | null; theme: string }[];
+  showBuiltInSlides: boolean;
 };
 
 function rankRows(rows: { user_id: string; correct_count: number | null; wrong_count: number | null }[]) {
@@ -65,8 +66,9 @@ export const getHomeExtras = createServerFn({ method: "GET" })
         .eq("user_id", uid).eq("status", "completed").eq("tests.type", "mock"),
       db.from("contests").select("id,title,starts_at,ends_at,total_questions,duration_min,status")
         .gt("ends_at", now.toISOString()).order("starts_at", { ascending: true }).limit(1),
-      db.from("dashboard_banners").select("*").limit(12),
+      db.from("dashboard_banners").select("*").limit(30),
     ]);
+    const { data: builtInSetting } = await db.from("app_settings").select("value").eq("key", "home_builtin_slides").maybeSingle();
 
     const all = (weekRes.data ?? []) as any[];
     const thisRows = all.filter((r) => r.submitted_at && new Date(r.submitted_at) >= thisWeek);
@@ -92,8 +94,10 @@ export const getHomeExtras = createServerFn({ method: "GET" })
     const wrongThisWeek = thisRows.filter((r) => r.user_id === uid).reduce((t, r) => t + Number(r.wrong_count ?? 0), 0);
 
     // Banners: accept whatever columns the admin table uses; fall back to built-in slides on the page.
+    const nowMs = now.getTime();
     const banners = ((bannerRes.data ?? []) as any[])
       .filter((b) => b && (b.is_active ?? b.active ?? true) !== false && (b.title ?? b.heading))
+      .filter((b) => (!b.starts_at || new Date(b.starts_at).getTime() <= nowMs) && (!b.ends_at || new Date(b.ends_at).getTime() > nowMs))
       .sort((a, b) => Number(a.sort_order ?? a.position ?? a.order_index ?? 0) - Number(b.sort_order ?? b.position ?? b.order_index ?? 0))
       .map((b) => ({
         id: String(b.id),
@@ -101,8 +105,9 @@ export const getHomeExtras = createServerFn({ method: "GET" })
         subtitle: String(b.subtitle ?? b.description ?? b.body ?? ""),
         tag: String(b.tag ?? b.badge ?? b.label ?? "NEW"),
         cta: String(b.cta_label ?? b.button_text ?? b.cta ?? "Open"),
-        href: String(b.link ?? b.href ?? b.url ?? b.cta_url ?? "/dashboard"),
+        href: String(b.link_url ?? b.link_path ?? b.link ?? b.href ?? b.url ?? b.cta_url ?? "/dashboard"),
         imageUrl: (b.image_url ?? b.image ?? null) as string | null,
+        theme: String(b.theme ?? "blue"),
       }));
 
     const c = (contestRes.data ?? [])[0];
@@ -126,5 +131,6 @@ export const getHomeExtras = createServerFn({ method: "GET" })
         totalQuestions: Number(c.total_questions ?? 0), durationMin: Number(c.duration_min ?? 0), status: String(c.status ?? ""),
       } : null,
       banners,
+      showBuiltInSlides: builtInSetting?.value === false ? false : true,
     };
   });

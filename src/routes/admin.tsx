@@ -36,7 +36,10 @@ import { MockTestWizard } from "@/components/mock-test-wizard";
 import { AiMockBatch } from "@/components/ai-mock-batch";
 import { AdminBatchesTab } from "@/components/admin-batches";
 import { AdminCouponsTab } from "@/components/admin-coupons";
-import { AdminGrantPremium } from "@/components/admin-grant-premium";
+import { PremiumMembers } from "@/components/admin/premium-members";
+import { BannerManager } from "@/components/admin/banner-manager";
+import { Announcements } from "@/components/admin/announcements";
+import { ALL_TOOLS, AdminMobilePicker, AdminSidebar, AdminQuickStats } from "@/components/admin/admin-nav";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — NEET Track" }] }),
@@ -76,84 +79,73 @@ function AdminPanel() {
     );
   }
 
-  const TABS: { value: string; label: string }[] = [
-    { value: "overview", label: "Overview" },
-    { value: "userReport", label: "User Report" },
-    { value: "payments", label: "Payments" },
-    { value: "batches", label: "Batches" },
-    { value: "coupons", label: "Coupons" },
-    { value: "grantPremium", label: "Grant Premium" },
-    { value: "topWallets", label: "Top Wallets" },
-    { value: "battleBots", label: "Battle Bots" },
-    { value: "contestAi", label: "AI Contest" },
-    { value: "create", label: "Create test" },
-    { value: "mock", label: "Mock test" },
-    { value: "ai", label: "AI quizzes" },
-    { value: "bulkDelete", label: "Bulk delete" },
-    { value: "pyq", label: "PYQ import" },
-    { value: "bulk", label: "Chapter quiz import" },
-    { value: "bulkChapters", label: "Bulk chapters" },
-    { value: "list", label: "All tests" },
-    { value: "chapters", label: "Chapters" },
-    { value: "questions", label: "Questions" },
-    { value: "duplicates", label: "Duplicates" },
-    { value: "flashcards", label: "Flashcards (AI)" },
-    { value: "highlights", label: "NCERT Highlights" },
-    { value: "infiniteRun", label: "Infinite Run" },
-    { value: "aiSettings", label: "AI Settings" },
-    { value: "aiKeys", label: "AI Keys" },
-  ];
+  return <AdminWorkspace />;
+}
+
+const TOOL_KEY = "nt-admin-tool";
+
+function AdminWorkspace() {
+  // Remember the open tool in the address (?tool=…) so refresh and back keep your place.
+  const [tool, setTool] = useState<string>(() => {
+    if (typeof window === "undefined") return "overview";
+    const fromUrl = new URLSearchParams(window.location.search).get("tool");
+    const saved = fromUrl ?? (() => { try { return sessionStorage.getItem(TOOL_KEY); } catch { return null; } })();
+    const v = saved === "grantPremium" ? "premium" : saved;
+    return v && ALL_TOOLS.some((t) => t.value === v) ? v : "overview";
+  });
+  const pick = (v: string) => {
+    setTool(v);
+    try { sessionStorage.setItem(TOOL_KEY, v); } catch { /* ignore */ }
+    const url = new URL(window.location.href);
+    if (v === "overview") url.searchParams.delete("tool"); else url.searchParams.set("tool", v);
+    window.history.replaceState(window.history.state, "", url.toString());
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const current = ALL_TOOLS.find((t) => t.value === tool) ?? ALL_TOOLS[0];
+
+  const panel = (() => {
+    switch (tool) {
+      case "overview": return <><AdminQuickStats onPick={pick} /><div className="mt-6"><Overview /></div></>;
+      case "premium": return <PremiumMembers />;
+      case "banners": return <BannerManager />;
+      case "announce": return <Announcements />;
+      case "userReport": return <UserReportPanel />;
+      case "payments": return <WithdrawalsPanel />;
+      case "batches": return <AdminBatchesTab />;
+      case "coupons": return <AdminCouponsTab />;
+      case "topWallets": return <TopWalletsPanel />;
+      case "battleBots": return <BattleBotsManager />;
+      case "contestAi": return <AiContestWizard />;
+      case "create": return <CreateTest />;
+      case "mock": return <><AiMockBatch /><MockTestWizard /></>;
+      case "ai": return <AiQuizGenerator />;
+      case "bulkDelete": return <BulkDelete />;
+      case "pyq": return <PyqImport />;
+      case "bulk": return <ChapterQuizBulkImport />;
+      case "bulkChapters": return <BulkChaptersImport />;
+      case "list": return <AllTests />;
+      case "chapters": return <ChaptersManager />;
+      case "questions": return <QuestionsManager />;
+      case "duplicates": return <DuplicateManager />;
+      case "flashcards": return <FlashcardsManager />;
+      case "highlights": return <HighlightsManager />;
+      case "infiniteRun": return <InfiniteRunPanel />;
+      case "aiSettings": return <AiSettingsManager />;
+      case "aiKeys": return <AiKeysManager />;
+      default: return <Overview />;
+    }
+  })();
 
   return (
-    <PageShell eyebrow="Admin" title="Admin panel" description="Create quizzes, mock tests, and contests with full control over questions and marking.">
-      <div className="mb-4 flex flex-wrap justify-end gap-2">
-        <Button asChild size="sm" variant="outline" className="gap-1.5">
-          <Link to="/admin-collaborators"><Sparkles className="h-4 w-4" /> Collaborators</Link>
-        </Button>
-        <Button asChild size="sm" className="gap-1.5 bg-gradient-primary">
-          <Link to="/admin/inbox"><MessageCircle className="h-4 w-4" /> Inbox (Support + Feedback)</Link>
-        </Button>
-      </div>
-      <Tabs defaultValue="overview" className="w-full">
-        <div className="-mx-1 mb-4 overflow-x-auto pb-1 [scrollbar-width:thin]">
-          <TabsList className="inline-flex h-auto w-max gap-1 rounded-xl bg-secondary/60 p-1">
-            {TABS.map((t) => (
-              <TabsTrigger
-                key={t.value}
-                value={t.value}
-                className="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm sm:text-sm"
-              >
-                {t.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+    <PageShell eyebrow="Admin" title="Admin panel" description="Members, money, website content and the question bank in one place.">
+      <div className="grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)]">
+        <AdminSidebar current={tool} onPick={pick} />
+        <div className="min-w-0 space-y-4">
+          <AdminMobilePicker current={tool} onPick={pick} />
+          <h2 className="hidden items-center gap-2 text-xl font-bold lg:flex"><current.icon className="h-5 w-5 text-primary" />{current.label}</h2>
+          <div key={tool}>{panel}</div>
         </div>
-        <TabsContent value="overview"><Overview /></TabsContent>
-        <TabsContent value="userReport"><UserReportPanel /></TabsContent>
-        <TabsContent value="payments"><WithdrawalsPanel /></TabsContent>
-        <TabsContent value="batches"><AdminBatchesTab /></TabsContent>
-        <TabsContent value="coupons"><AdminCouponsTab /></TabsContent>
-        <TabsContent value="grantPremium"><AdminGrantPremium /></TabsContent>
-        <TabsContent value="topWallets"><TopWalletsPanel /></TabsContent>
-        <TabsContent value="battleBots"><BattleBotsManager /></TabsContent>
-        <TabsContent value="contestAi"><AiContestWizard /></TabsContent>
-        <TabsContent value="create"><CreateTest /></TabsContent>
-        <TabsContent value="mock"><AiMockBatch /><MockTestWizard /></TabsContent>
-        <TabsContent value="ai"><AiQuizGenerator /></TabsContent>
-        <TabsContent value="bulkDelete"><BulkDelete /></TabsContent>
-        <TabsContent value="pyq"><PyqImport /></TabsContent>
-        <TabsContent value="bulk"><ChapterQuizBulkImport /></TabsContent>
-        <TabsContent value="bulkChapters"><BulkChaptersImport /></TabsContent>
-        <TabsContent value="list"><AllTests /></TabsContent>
-        <TabsContent value="chapters"><ChaptersManager /></TabsContent>
-        <TabsContent value="questions"><QuestionsManager /></TabsContent>
-        <TabsContent value="duplicates"><DuplicateManager /></TabsContent>
-        <TabsContent value="flashcards"><FlashcardsManager /></TabsContent>
-        <TabsContent value="highlights"><HighlightsManager /></TabsContent>
-        <TabsContent value="infiniteRun"><InfiniteRunPanel /></TabsContent>
-        <TabsContent value="aiSettings"><AiSettingsManager /></TabsContent>
-        <TabsContent value="aiKeys"><AiKeysManager /></TabsContent>
-      </Tabs>
+      </div>
     </PageShell>
   );
 }

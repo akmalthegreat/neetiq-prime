@@ -20,7 +20,7 @@ export const getAdminOverview = createServerFn({ method: "GET" })
 
     const [users, questions, subjects, paidTests, txns, paidOrders, subjectsList, recentActions, recentBugs, cronRuns] = await Promise.all([
       supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }),
-      supabaseAdmin.from("questions").select("id", { count: "exact", head: true }),
+      (supabaseAdmin as any).rpc("question_bank_counts"),
       supabaseAdmin.from("subjects").select("id", { count: "exact", head: true }),
       supabaseAdmin.from("tests").select("id", { count: "exact", head: true }).eq("is_paid", true),
       supabaseAdmin.from("wallet_transactions").select("amount,type,created_at").eq("type", "recharge").eq("status", "completed"),
@@ -52,21 +52,17 @@ export const getAdminOverview = createServerFn({ method: "GET" })
     accrue((paidOrders.data ?? []) as any);
 
 
-    // questions by subject
-    const subjectIds = (subjectsList.data ?? []).map((s) => s.id);
-    const bySubject: { name: string; color: string | null; count: number }[] = [];
-    for (const s of subjectsList.data ?? []) {
-      const { count } = await supabaseAdmin
-        .from("questions").select("id", { count: "exact", head: true }).eq("subject_id", s.id);
-      bySubject.push({ name: s.name, color: s.color, count: count ?? 0 });
-    }
-    void subjectIds;
+    // Questions by subject, from the hourly cached totals (fast).
+    const bank = ((questions as any).data ?? {}) as Record<string, number>;
+    const bySubject: { name: string; color: string | null; count: number }[] = (subjectsList.data ?? []).map((s: any) => ({
+      name: s.name, color: s.color, count: Number(bank[String(s.id)] ?? bank[String(s.name).toLowerCase()] ?? 0),
+    }));
 
     return {
       totals: {
         users: users.count ?? 0,
-        questions: questions.count ?? 0,
-        subjects: subjects.count ?? 0,
+        questions: Number(bank.total ?? 0),
+        subjects: subjects.count ?? (subjectsList.data ?? []).length,
         paidTests: paidTests.count ?? 0,
         revenue: totalRevenue,
       },

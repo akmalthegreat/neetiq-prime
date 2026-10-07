@@ -136,7 +136,7 @@ export function HomeDashboard({ top }: { top?: ReactNode }) {
         <Welcome firstName={firstName} targetYear={targetYear} today={today} dailyGoal={dailyGoal} streak={streak} weekly={ex?.weekly} />
         <MegaQuizCard />
         <AzkaStrip tips={(consult.data?.recommendations ?? []).map((r) => (r.detail.length <= 110 ? r.detail : r.title))} />
-        <Banner banners={ex?.banners ?? []} nextContest={ex?.nextContest ?? null} />
+        <Banner banners={ex?.banners ?? []} showBuiltIn={ex?.showBuiltInSlides ?? true} nextContest={ex?.nextContest ?? null} />
         <QuickPractice counts={counts} snapshot={snap} />
         <Improvement snapshot={snap} prediction={consult.data?.prediction} wrongThisWeek={ex?.wrongThisWeek ?? 0} bookmarks={ex?.bookmarks ?? 0} />
         <Leaderboard weekly={ex?.weekly} loading={extras.isLoading} />
@@ -260,7 +260,7 @@ function AzkaStrip({ tips }: { tips: string[] }) {
 
 type Slide = { id: string; tag: string; title: string; sub: ReactNode; cta: string; href: string; mesh: string; art: ReactNode };
 
-function Banner({ banners, nextContest }: { banners: HomeExtras["banners"]; nextContest: HomeExtras["nextContest"] }) {
+function Banner({ banners, showBuiltIn, nextContest }: { banners: HomeExtras["banners"]; showBuiltIn: boolean; nextContest: HomeExtras["nextContest"] }) {
   const now = useNow();
   const contestIn = nextContest ? new Date(nextContest.startsAt).getTime() - now : -1;
   const ct = splitDuration(contestIn);
@@ -271,12 +271,14 @@ function Banner({ banners, nextContest }: { banners: HomeExtras["banners"]; next
     "conic-gradient(from 270deg at 50% 40%,#9F1239,#7C3AED,#DB2777,#BE123C,#9F1239)",
     "conic-gradient(from 45deg at 50% 50%,#3730A3,#6D28D9,#2563EB,#4C1D95,#3730A3)",
   ];
-  const slides: Slide[] = banners.length
-    ? banners.map((b, i) => ({
-        id: b.id, tag: b.tag, title: b.title, sub: b.subtitle, cta: b.cta, href: b.href, mesh: meshes[i % meshes.length],
-        art: b.imageUrl ? <img className="azka-art" src={b.imageUrl} alt="" style={{ width: 140, borderRadius: 16 }} /> : <div className="ray" />,
-      }))
-    : [
+  const THEME_MESH: Record<string, number> = { blue: 0, amber: 1, green: 2, pink: 3, violet: 4 };
+  // Slides added in the admin panel come first, then the built-in ones (unless the admin hid them).
+  const custom: Slide[] = banners.map((b, i) => ({
+    id: b.id, tag: b.tag, title: b.title, sub: b.subtitle, cta: b.cta, href: b.href,
+    mesh: meshes[THEME_MESH[b.theme] ?? i % meshes.length],
+    art: b.imageUrl ? <img className="azka-art" src={b.imageUrl} alt="" style={{ width: 140, borderRadius: 16 }} /> : <div className="ray" />,
+  }));
+  const builtIn: Slide[] = [
         { id: "consult", tag: "NEW · NEET MENTOR", title: "Dr. Azka Consult is live", sub: "Predicted score, 12-hour study plan and your full report.", cta: "Consult now", href: "/consult", mesh: meshes[0], art: <img className="azka-art" src={AZKA_IMG} alt="" /> },
         { id: "mocks", tag: "MOCK SERIES", title: "Target 700 Full Mocks", sub: "NTA-style CBT, 720 marks and an all-India rank after every paper.", cta: "Start a mock", href: "/mocks", mesh: meshes[1], art: <><div className="ray" /><div className="badge3d"><b>700</b><small>TARGET</small></div></> },
         { id: "neetlab", tag: "3D STUDY TOOLS", title: "See biology in 3D", sub: "Explore models and simulations in NEETLab.", cta: "Open NEETLab", href: "/neetlab", mesh: meshes[2], art: <div className="helix">{Array.from({ length: 11 }, (_, i) => <span key={i} style={{ top: i * 17 + 4, animationDelay: `${-i * 0.27}s`, background: "linear-gradient(90deg,rgba(165,243,252,.75),rgba(253,230,138,.75))" }} />)}</div> },
@@ -289,6 +291,7 @@ function Banner({ banners, nextContest }: { banners: HomeExtras["banners"]; next
         { id: "weekly", tag: "EVERY WEEK", title: "Weekly Leaderboard", sub: "Earn NEET marks all week and climb the all-India board.", cta: "See rankings", href: "#weekly-leaderboard", mesh: meshes[4],
           art: <div className="podium"><svg className="c" width="26" height="22" viewBox="0 0 24 20" fill="#FDE68A"><path d="M2 18h20L19 6l-5 4-2-7-2 7-5-4z" /></svg><i style={{ height: 46, animationDelay: ".2s" }} /><i style={{ height: 74, background: "linear-gradient(180deg,#FDE68A,rgba(251,191,36,.25))" }} /><i style={{ height: 34, animationDelay: ".35s" }} /></div> },
       ];
+  const slides: Slide[] = custom.length && !showBuiltIn ? custom : [...custom, ...builtIn];
 
   const [cur, setCur] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
