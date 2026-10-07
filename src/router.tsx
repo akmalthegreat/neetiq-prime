@@ -12,6 +12,8 @@ export const getRouter = () => {
     // Preload a destination when the user intends to open it.
     defaultPreload: "intent",
     defaultPreloadDelay: 0,
+    // Do not keep the animated pending screen visible for an extra 500ms.
+    defaultPendingMinMs: 100,
     // Keep 0 because route data is coordinated with TanStack Query.
     defaultPreloadStaleTime: 0,
   });
