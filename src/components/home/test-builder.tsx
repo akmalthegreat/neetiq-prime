@@ -37,10 +37,14 @@ const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n
 function shuffle<T>(a: T[]): T[] { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 const Tick = () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg>;
 
-export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
+/**
+ * `page` renders the full-page version used on /generate: the builder opens straight away,
+ * the chapter list is taller and Back / Next stay above the phone navigation bar.
+ */
+export function TestBuilder({ snapshot, page = false, start }: { snapshot?: Snap; page?: boolean; start?: "weak" | "pyq" }) {
   const { user } = useAuth();
   const nav = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(page);
   const [step, setStep] = useState(1);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -82,6 +86,14 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
   useEffect(() => { if (open && step === 2) void loadChapters(subs); }, [open, step, subs.join(",")]);
 
   function openWith(fn?: () => Promise<void> | void) { setOpen(true); void fn?.(); }
+
+  // Shortcuts from links (/generate?start=weak|pyq). Weak chapters wait for the student's data.
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    if (!page || !start || started) return;
+    if (start === "pyq") { setStarted(true); setPyq(true); return; }
+    if (snapshot) { setStarted(true); void quickWeak(); }
+  }, [page, start, started, snapshot]);
 
   async function quickWeak() {
     const all = ["physics", "chemistry", "biology"];
@@ -199,7 +211,7 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
   const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   return (
-    <section className="panel tb rv full" aria-label="Create your own test">
+    <section className={`panel tb rv full ${page ? "pg" : ""}`} aria-label="Create your own test">
       <div className="tb-hero">
         <div style={{ flex: 1, minWidth: 0 }}>
           <span className="tag" style={{ background: "rgba(59,130,246,.16)", borderColor: "rgba(96,165,250,.4)", color: "#BFDBFE" }}><i style={{ background: "#60A5FA" }} />CREATE YOUR OWN TEST</span>
@@ -218,9 +230,18 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
           <div className="quick">
             <button type="button" onClick={() => void quickWeak()}>✦ My weak chapters</button>
             <button type="button" onClick={() => { setPyq(true); setOpen(true); }}>PYQs only</button>
-            <Link to="/mocks" className="quick-link">Full syllabus mock</Link>
+            <Link to="/target-700" className="quick-link">Full syllabus mock</Link>
           </div>
         </>
+      )}
+
+      {page && (
+        <div className="quick">
+          <button type="button" onClick={() => void quickWeak()}>✦ My weak chapters</button>
+          <button type="button" className={pyq ? "on" : ""} onClick={() => { setPyq(!pyq); setStep(1); }}>{pyq ? "✓ PYQs only" : "PYQs only"}</button>
+          <Link to="/improve" search={{ tab: "mistakes" } as never} className="quick-link">Fix my mistakes</Link>
+          <Link to="/target-700" className="quick-link">Target 700 mocks</Link>
+        </div>
       )}
 
       {open && (
@@ -381,7 +402,7 @@ export function TestBuilder({ snapshot }: { snapshot?: Snap }) {
           </div>
 
           <div className="wz-foot">
-            <button type="button" className="back" onClick={() => (step === 1 ? setOpen(false) : setStep(step - 1))}>{step === 1 ? "Close" : "Back"}</button>
+            {!(page && step === 1) && <button type="button" className="back" onClick={() => (step === 1 ? setOpen(false) : setStep(step - 1))}>{step === 1 ? "Close" : "Back"}</button>}
             <button type="button" className={`next ${step === 4 ? "gen" : ""}`} disabled={!canNext || busy}
               onClick={() => (step < 4 ? setStep(step + 1) : void generate())}>
               {step < 4 ? "Next" : busy ? "Generating…" : "✦ Generate my test"}
