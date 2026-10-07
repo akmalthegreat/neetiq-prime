@@ -1035,7 +1035,7 @@ function Dashboard() {
                 </p>
               </div>
               <Link
-                to="/ai-path"
+                to="/consult"
                 className="shrink-0 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 px-3 py-1.5 text-xs font-bold text-emerald-300 transition-colors shadow-2xs"
               >
                 Consult →

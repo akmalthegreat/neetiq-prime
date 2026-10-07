@@ -13,6 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminCollaboratorsRouteImport } from './routes/admin-collaborators'
 import { Route as AiPathRouteImport } from './routes/ai-path'
+import { Route as ConsultRouteImport } from './routes/consult'
+import { Route as ConsultPlanRouteImport } from './routes/consult-plan'
+import { Route as ConsultReportRouteImport } from './routes/consult-report'
+import { Route as ConsultScoreRouteImport } from './routes/consult-score'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as BattlegroundsRouteImport } from './routes/battlegrounds'
 import { Route as BonusRouteImport } from './routes/bonus'
@@ -92,6 +96,26 @@ const AdminCollaboratorsRoute = AdminCollaboratorsRouteImport.update({
 const AiPathRoute = AiPathRouteImport.update({
   id: '/ai-path',
   path: '/ai-path',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsultRoute = ConsultRouteImport.update({
+  id: '/consult',
+  path: '/consult',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsultPlanRoute = ConsultPlanRouteImport.update({
+  id: '/consult-plan',
+  path: '/consult-plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsultReportRoute = ConsultReportRouteImport.update({
+  id: '/consult-report',
+  path: '/consult-report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsultScoreRoute = ConsultScoreRouteImport.update({
+  id: '/consult-score',
+  path: '/consult-score',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
@@ -409,6 +433,10 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/admin-collaborators': typeof AdminCollaboratorsRoute
   '/ai-path': typeof AiPathRoute
+  '/consult': typeof ConsultRoute
+  '/consult-plan': typeof ConsultPlanRoute
+  '/consult-report': typeof ConsultReportRoute
+  '/consult-score': typeof ConsultScoreRoute
   '/analytics': typeof AnalyticsRoute
   '/battlegrounds': typeof BattlegroundsRouteWithChildren
   '/bonus': typeof BonusRoute
@@ -475,6 +503,10 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/admin-collaborators': typeof AdminCollaboratorsRoute
   '/ai-path': typeof AiPathRoute
+  '/consult': typeof ConsultRoute
+  '/consult-plan': typeof ConsultPlanRoute
+  '/consult-report': typeof ConsultReportRoute
+  '/consult-score': typeof ConsultScoreRoute
   '/analytics': typeof AnalyticsRoute
   '/battlegrounds': typeof BattlegroundsRouteWithChildren
   '/bonus': typeof BonusRoute
@@ -542,6 +574,10 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/admin-collaborators': typeof AdminCollaboratorsRoute
   '/ai-path': typeof AiPathRoute
+  '/consult': typeof ConsultRoute
+  '/consult-plan': typeof ConsultPlanRoute
+  '/consult-report': typeof ConsultReportRoute
+  '/consult-score': typeof ConsultScoreRoute
   '/analytics': typeof AnalyticsRoute
   '/battlegrounds': typeof BattlegroundsRouteWithChildren
   '/bonus': typeof BonusRoute
@@ -610,6 +646,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-collaborators'
     | '/ai-path'
+    | '/consult'
+    | '/consult-plan'
+    | '/consult-report'
+    | '/consult-score'
     | '/analytics'
     | '/battlegrounds'
     | '/bonus'
@@ -676,6 +716,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-collaborators'
     | '/ai-path'
+    | '/consult'
+    | '/consult-plan'
+    | '/consult-report'
+    | '/consult-score'
     | '/analytics'
     | '/battlegrounds'
     | '/bonus'
@@ -742,6 +786,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-collaborators'
     | '/ai-path'
+    | '/consult'
+    | '/consult-plan'
+    | '/consult-report'
+    | '/consult-score'
     | '/analytics'
     | '/battlegrounds'
     | '/bonus'
@@ -809,6 +857,10 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AdminCollaboratorsRoute: typeof AdminCollaboratorsRoute
   AiPathRoute: typeof AiPathRoute
+  ConsultRoute: typeof ConsultRoute
+  ConsultPlanRoute: typeof ConsultPlanRoute
+  ConsultReportRoute: typeof ConsultReportRoute
+  ConsultScoreRoute: typeof ConsultScoreRoute
   AnalyticsRoute: typeof AnalyticsRoute
   BattlegroundsRoute: typeof BattlegroundsRouteWithChildren
   BonusRoute: typeof BonusRoute
@@ -892,6 +944,34 @@ declare module '@tanstack/react-router' {
       path: '/ai-path'
       fullPath: '/ai-path'
       preLoaderRoute: typeof AiPathRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consult': {
+      id: '/consult'
+      path: '/consult'
+      fullPath: '/consult'
+      preLoaderRoute: typeof ConsultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consult-plan': {
+      id: '/consult-plan'
+      path: '/consult-plan'
+      fullPath: '/consult-plan'
+      preLoaderRoute: typeof ConsultPlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consult-report': {
+      id: '/consult-report'
+      path: '/consult-report'
+      fullPath: '/consult-report'
+      preLoaderRoute: typeof ConsultReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consult-score': {
+      id: '/consult-score'
+      path: '/consult-score'
+      fullPath: '/consult-score'
+      preLoaderRoute: typeof ConsultScoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analytics': {
@@ -1363,6 +1443,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AdminCollaboratorsRoute: AdminCollaboratorsRoute,
   AiPathRoute: AiPathRoute,
+  ConsultRoute: ConsultRoute,
+  ConsultPlanRoute: ConsultPlanRoute,
+  ConsultReportRoute: ConsultReportRoute,
+  ConsultScoreRoute: ConsultScoreRoute,
   AnalyticsRoute: AnalyticsRoute,
   BattlegroundsRoute: BattlegroundsRouteWithChildren,
   BonusRoute: BonusRoute,
