@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X, LogOut, Sun, Moon, User, Search, LayoutDashboard, Zap, Wrench, Sparkles, Trophy, Users, Crown, GraduationCap } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -132,7 +132,16 @@ function NavLinks({ path, onNavigate }: { path: string; onNavigate?: () => void 
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+
+  // While the mobile menu is open, freeze the page behind it; close it when the route changes.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
   const path = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => { setOpen(false); }, [path]);
   const { user, profile, isAdmin, signOut } = useAuth();
   const displayName = (profile?.full_name?.trim() || (user?.email ? user.email.split("@")[0] : "")) ?? "";
   const avatar = user ? avatarUrl(displayName || user.id, profile?.avatar_url ?? null) : null;
@@ -253,8 +262,8 @@ export function SiteHeader() {
 
         {/* Mobile Drawer */}
         {open && (
-          <div className="border-t border-border bg-background/95 backdrop-blur-xl animate-fade-in-up">
-            <div className="max-h-[75vh] overflow-y-auto px-4 py-3">
+          <div className="absolute inset-x-0 top-full h-[calc(100dvh-4rem)] border-t border-border bg-background animate-fade-in-up">
+            <div className="h-full overflow-y-auto overscroll-contain px-4 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
               {user && (
                 <Link
                   to="/profile"
