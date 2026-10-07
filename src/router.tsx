@@ -9,6 +9,10 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    // Preload a destination when the user intends to open it.
+    defaultPreload: "intent",
+    defaultPreloadDelay: 0,
+    // Keep 0 because route data is coordinated with TanStack Query.
     defaultPreloadStaleTime: 0,
   });
 
