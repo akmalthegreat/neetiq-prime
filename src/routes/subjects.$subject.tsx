@@ -65,42 +65,42 @@ const ZOOLOGY_CHAPTER_KEYWORDS = [
   "biomolecules",
 ];
 
-async function getChapterQuestionIds(
+async function getChapterQuestionIdPage(
   chapterId: string,
   difficulty: Difficulty,
   qtype: QType,
+  offset: number,
+  limit: number,
 ) {
-  const pageSize = 1000;
-  const ids: string[] = [];
-  for (let from = 0; ; from += pageSize) {
-    let query = supabase
-      .from("questions")
-      .select("id")
-      .eq("chapter_id", chapterId);
+  let query = supabase
+    .from("questions")
+    .select("id")
+    .eq("chapter_id", chapterId);
 
-    if (difficulty !== "any") {
-      const value = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-      query = (query as any).ilike("difficulty", value);
-    }
-    if (qtype === "graph_figure") {
-      query = (query as any).or("question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%");
-    } else if (qtype !== "any") {
-      const dbType = QTYPE_MAP[qtype];
-      if (dbType) query = (query as any).eq("qtype", dbType);
-    }
-
-    const { data, error } = await query
-      .order("created_at", { ascending: false })
-      .range(from, from + pageSize - 1);
-    if (error) {
-      console.error("Could not load filtered chapter questions", error);
-      return [];
-    }
-    const batch = data ?? [];
-    ids.push(...batch.map((question) => question.id));
-    if (batch.length < pageSize) break;
+  if (difficulty !== "any") {
+    const value = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+    query = (query as any).ilike("difficulty", value);
   }
-  return ids;
+
+  if (qtype === "graph_figure") {
+    query = (query as any).or(
+      "question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%",
+    );
+  } else if (qtype !== "any") {
+    const dbType = QTYPE_MAP[qtype];
+    if (dbType) query = (query as any).eq("qtype", dbType);
+  }
+
+  const { data, error } = await query
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error("Could not load chapter questions", error);
+    return [];
+  }
+
+  return (data ?? []).map((question) => question.id);
 }
 
 /* ------------------------------------------------------------------ subject look & copy */
@@ -281,7 +281,7 @@ function SubjectPage() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"syllabus" | "weak">("syllabus");
 
-  const [picked, setPicked] = useState<{ chapter: Chapter; qids: string[] } | null>(null);
+  const [picked, setPicked] = useState<{ chapter: Chapter; total: number } | null>(null);
   const [setIdx, setSetIdx] = useState<number | null>(null);
   const BATCH = 35;
 
@@ -370,40 +370,49 @@ function SubjectPage() {
       setCounts({});
       return;
     }
+
     let active = true;
-    setCounting(true);
-    (async () => {
-      const ids = chapters.map((c) => c.id);
-      const newCounts: Record<string, number> = {};
-      await Promise.all(
-        ids.slice(0, 100).map(async (cid) => {
-          let q = supabase
-            .from("questions")
-            .select("id", { count: "exact", head: true })
-            .eq("chapter_id", cid);
+    const timer = window.setTimeout(() => {
+      setCounting(true);
+      (async () => {
+        const ids = chapters.map((c) => c.id);
+        const newCounts: Record<string, number> = {};
 
-          if (difficulty !== "any") {
-            const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-            q = (q as any).ilike("difficulty", cap);
-          }
-          if (qtype === "graph_figure") {
-            q = (q as any).or("question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%");
-          } else if (qtype !== "any") {
-            const dbType = QTYPE_MAP[qtype];
-            if (dbType) q = (q as any).eq("qtype", dbType);
-          }
+        await Promise.all(
+          ids.slice(0, 100).map(async (cid) => {
+            let q = supabase
+              .from("questions")
+              .select("id", { count: "exact", head: true })
+              .eq("chapter_id", cid);
 
-          const { count } = await q;
-          newCounts[cid] = count ?? 0;
-        })
-      );
-      if (active) {
-        setCounts(newCounts);
-        setCounting(false);
-      }
-    })();
+            if (difficulty !== "any") {
+              const cap = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+              q = (q as any).ilike("difficulty", cap);
+            }
+            if (qtype === "graph_figure") {
+              q = (q as any).or(
+                "question_image_url.not.is.null,qtype.eq.MCQ type-3,text.ilike.%figure%,text.ilike.%diagram%,text.ilike.%graph%",
+              );
+            } else if (qtype !== "any") {
+              const dbType = QTYPE_MAP[qtype];
+              if (dbType) q = (q as any).eq("qtype", dbType);
+            }
+
+            const { count } = await q;
+            newCounts[cid] = count ?? 0;
+          }),
+        );
+
+        if (active) {
+          setCounts(newCounts);
+          setCounting(false);
+        }
+      })();
+    }, 120);
+
     return () => {
       active = false;
+      window.clearTimeout(timer);
     };
   }, [chapters, difficulty, qtype]);
 
@@ -431,28 +440,39 @@ function SubjectPage() {
       toast.error("No questions match the selected filters in this chapter.");
       return;
     }
-    setLaunching(chapter.id);
-    const qids = await getChapterQuestionIds(chapter.id, difficulty, qtype);
-    setLaunching(null);
-    if (qids.length === 0) {
-      toast.error("No questions match the selected filters.");
-      return;
-    }
-    setPicked({ chapter, qids });
+    // Open the chapter immediately. Fetch only the selected test's IDs later.
+    setPicked({ chapter, total: availableCount });
+    setSetIdx(null);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const launchSet = async (mode: "quiz" | "cbt") => {
     if (!user || !picked || setIdx === null) return;
     const { chapter } = picked;
-    const qids = picked.qids.slice(setIdx * BATCH, (setIdx + 1) * BATCH);
+    const offset = setIdx * BATCH;
+    setLaunching(chapter.id);
+    setLaunchMode(mode);
+
+    const qids = await getChapterQuestionIdPage(
+      chapter.id,
+      difficulty,
+      qtype,
+      offset,
+      BATCH,
+    );
+
+    if (qids.length === 0) {
+      setLaunching(null);
+      setLaunchMode(null);
+      toast.error("No questions are available for this test.");
+      return;
+    }
+
     const filterTag =
       difficulty === "any" && qtype === "any"
         ? ""
         : ` (${[difficulty !== "any" ? difficulty : null, qtype !== "any" ? qtype.replace(/_/g, " ") : null].filter(Boolean).join(", ")})`;
     const title = `${normalizedSubject} · ${chapter.name} · Set ${setIdx + 1}${filterTag}`;
-    setLaunching(chapter.id);
-    setLaunchMode(mode);
     const { data: existing } = await supabase
       .from("tests")
       .select("id")
@@ -548,7 +568,7 @@ function SubjectPage() {
             <ChapterDetail
               subject={title}
               chapter={picked.chapter}
-              total={picked.qids.length}
+              total={picked.total}
               batch={BATCH}
               acc={accOf(picked.chapter.id)}
               onBack={() => setPicked(null)}
