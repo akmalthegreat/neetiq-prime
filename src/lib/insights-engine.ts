@@ -3,6 +3,8 @@
 // mistake book). No randomness and no AI: the AI only ever writes text on top of
 // these numbers. Keep this file free of I/O so it can be unit-tested.
 
+import { attemptScore } from "@/lib/scoring";
+
 export type SectionKey = "Physics" | "Chemistry" | "Biology";
 
 /** NEET-UG pattern (2025 onwards): 180 compulsory questions, +4 / −1, 180 minutes. */
@@ -267,7 +269,7 @@ export function buildSnapshot(input: {
       if (day >= addDays(today, -29)) mocksLast30++;
       if (!lastMock || a.submitted_at > lastMock.date) {
         const outOf = Number(a.total_questions ?? seenIds.size) * 4;
-        lastMock = { date: a.submitted_at, title: a.test_title ?? "Mock test", score: Number(a.score ?? 0), outOf };
+        lastMock = { date: a.submitted_at, title: a.test_title ?? "Mock test", score: attemptScore(a), outOf };
       }
     }
   }

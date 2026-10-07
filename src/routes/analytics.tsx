@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { attemptScore } from "@/lib/scoring";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,7 +50,7 @@ function AnalyticsPage() {
   const totalU = attempts.reduce((s, a) => s + (a.unattempted_count ?? 0), 0);
   const totalQ = totalC + totalW + totalU;
   const accuracy = totalC + totalW > 0 ? Math.round((totalC / (totalC + totalW)) * 100) : 0;
-  const avgScore = attempts.length ? Math.round(attempts.reduce((s, a) => s + Number(a.score ?? 0), 0) / attempts.length) : 0;
+  const avgScore = attempts.length ? Math.round(attempts.reduce((s, a) => s + attemptScore(a), 0) / attempts.length) : 0;
 
   return (
     <PageShell eyebrow="Insights" title="Your analytics" description="Accuracy, scores, and trends across attempts.">
@@ -89,7 +90,7 @@ function AnalyticsPage() {
                           <span className="inline-flex items-center gap-1 text-destructive"><XCircle className="h-3.5 w-3.5" />{a.wrong_count ?? 0}</span>
                           <span className="inline-flex items-center gap-1 text-muted-foreground"><MinusCircle className="h-3.5 w-3.5" />{a.unattempted_count ?? 0}</span>
                           <Badge>{acc}%</Badge>
-                          <Badge variant="outline">Score {Number(a.score ?? 0)}</Badge>
+                          <Badge variant="outline">Score {attemptScore(a)}</Badge>
                         </div>
                       </CardContent>
                     </Card>

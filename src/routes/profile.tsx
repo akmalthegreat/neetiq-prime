@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { attemptScore } from "@/lib/scoring";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -144,7 +145,7 @@ function ProfilePage() {
         recent: attempts.slice(0, 5).map((a) => ({
           id: a.id,
           title: (a.tests as { title?: string } | null)?.title ?? "Test",
-          score: a.score ?? 0,
+          score: attemptScore(a),
           correct: a.correct_count ?? 0,
           wrong: a.wrong_count ?? 0,
           submitted_at: a.submitted_at as string,

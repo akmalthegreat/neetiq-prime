@@ -1,4 +1,5 @@
 import { DrAkzaLoader } from "@/components/dr-akza-loader";
+import { questionMarks, attemptScore } from "@/lib/scoring";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,8 +82,8 @@ function AnalysisPage() {
   );
 
   const total = (attempt.correct_count ?? 0) + (attempt.wrong_count ?? 0) + (attempt.unattempted_count ?? 0);
-  const max = questions.reduce((s, q) => s + q.marks_correct, 0) || (test.total_questions * (test.marks_correct ?? 4));
-  const score = Number(attempt.score ?? 0);
+  const max = questions.reduce((s, q) => s + questionMarks(q, test).correct, 0) || (test.total_questions * questionMarks(null, test).correct);
+  const score = attemptScore(attempt);
   const attempted = (attempt.correct_count ?? 0) + (attempt.wrong_count ?? 0);
   const accuracy = attempted ? Math.round(((attempt.correct_count ?? 0) / attempted) * 100) : 0;
   const completedPct = total ? Math.round((attempted / total) * 100) : 0;
@@ -323,7 +324,7 @@ function AnalysisPage() {
             {questions.map((q, i) => {
               const u = attempt.answers?.[q.id];
               const ok = u === q.correct_index;
-              const points = u === undefined ? 0 : ok ? q.marks_correct : q.marks_wrong;
+              const points = u === undefined ? 0 : ok ? questionMarks(q, test).correct : questionMarks(q, test).wrong;
               const statusKind: "correct" | "wrong" | "skipped" = u === undefined ? "skipped" : ok ? "correct" : "wrong";
               return <SolutionRow key={q.id} index={i + 1} q={q} userIdx={u} status={statusKind} points={points} />;
             })}

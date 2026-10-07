@@ -1,4 +1,5 @@
 import { DrAkzaLoader } from "@/components/dr-akza-loader";
+import { questionMarks } from "@/lib/scoring";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -357,12 +358,13 @@ function QuizPlayer() {
     for (const q of questions) {
       const ans = answers[q.id];
       if (ans === undefined) continue;
+      const marks = questionMarks(q, test);
       if (ans === q.correct_index) {
         correct++;
-        score += q.marks_correct;
+        score += marks.correct;
       } else {
         wrong++;
-        score += q.marks_wrong;
+        score += marks.wrong;
         if (user)
           wrongRows.push({ user_id: user.id, question_id: q.id, chapter_id: q.chapter_id ?? null });
       }
@@ -1723,7 +1725,7 @@ function ResultsView({
   subjects: Lookup;
   chapters: Lookup;
 }) {
-  const max = questions.reduce((s, q) => s + q.marks_correct, 0);
+  const max = questions.reduce((s, q) => s + questionMarks(q, test).correct, 0);
   const pct = Math.max(0, Math.round((result.score / Math.max(1, max)) * 100));
   return (
     <div className="min-h-screen bg-background">
