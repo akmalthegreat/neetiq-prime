@@ -29,3 +29,7 @@ SELECT cron.alter_job((SELECT jobid FROM cron.job WHERE jobname = 'mega_push_rem
 SELECT cron.alter_job((SELECT jobid FROM cron.job WHERE jobname = 'mega_quiz_finalize'), schedule := '52 15 * * *');
 SELECT cron.alter_job((SELECT jobid FROM cron.job WHERE jobname = 'mega_push_results'),  schedule := '53 15 * * *');
 SELECT cron.alter_job((SELECT jobid FROM cron.job WHERE jobname = 'push_runner'),        schedule := '* 14-16 * * *');
+
+-- Deliver in-app notifications from the database itself, so they never wait on the website.
+SELECT cron.schedule('push_in_app', '* 14-16 * * *',
+  $$ select public.push_job_in_app(id) from public.push_jobs where not in_app_done; $$);
