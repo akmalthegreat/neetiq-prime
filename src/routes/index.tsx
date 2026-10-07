@@ -1,271 +1,329 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ArrowRight, CheckCircle2, Atom, FlaskConical, Dna, Leaf, Brain, BookOpen, Target, Trophy,
-  Sparkles, Infinity as InfinityIcon, Highlighter, Route as RouteIcon, Layers, BarChart3,
-  ShieldCheck, GraduationCap, Award, Star, TrendingUp,
+  ArrowRight, ArrowUpRight, Check, Star, Target, Layers, RotateCcw, NotebookPen, Gauge, Trophy,
+  ShieldCheck, BookOpenCheck,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { getHomeStats, type HomeStats } from "@/lib/home-stats.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "NEET Track — NEET Preparation with Daily DPP, PYQs & Mock Tests" },
-      { name: "description", content: "NEET Track is a complete NEET-UG preparation platform: daily DPPs, chapter-wise NEET-level questions, PYQs, full-length NTA-style mock tests, short notes, flashcards, analytics and live contests." },
+      { name: "description", content: "NEET Track is a complete NEET-UG preparation platform: a large bank of NEET-level questions, custom tests, an Improvement Zone for your mistakes, NCERT short notes and a NEET score predictor." },
       { property: "og:title", content: "NEET Track — NEET Preparation with Daily DPP, PYQs & Mock Tests" },
-      { property: "og:description", content: "Daily DPPs, chapter-wise NEET-level questions, PYQs, NTA-style mock tests, short notes and live contests for NEET-UG aspirants." },
+      { property: "og:description", content: "NEET-level question practice, custom tests, an Improvement Zone for mistakes, NCERT short notes and a score predictor for NEET-UG aspirants." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loader: async (): Promise<HomeStats | null> => {
+    try { return await getHomeStats(); } catch { return null; }
+  },
+  staleTime: 10 * 60_000,
   component: LandingPage,
 });
 
-const SUBJECTS = [
-  { name: "Physics", icon: Atom, tint: "from-sky-500/15 to-blue-500/10", iconColor: "text-sky-600 dark:text-sky-300" },
-  { name: "Chemistry", icon: FlaskConical, tint: "from-orange-500/15 to-amber-500/10", iconColor: "text-orange-600 dark:text-orange-300" },
-  { name: "Zoology", icon: Leaf, tint: "from-emerald-500/15 to-green-500/10", iconColor: "text-emerald-600 dark:text-emerald-300" },
-  { name: "Botany", icon: Dna, tint: "from-lime-500/15 to-emerald-500/10", iconColor: "text-lime-700 dark:text-lime-300" },
-];
+/** Highest rank achieved by a NEET Track mentorship student. */
+const TOP_RANK = 125;
 
-const FEATURES = [
-  { icon: BookOpen, title: "Daily DPP", desc: "A fresh, NEET-grade Daily Practice Problem every day. Streaks reward consistency." },
-  { icon: Brain, title: "Custom test builder", desc: "Build chapter-wise tests by syllabus, difficulty and your weak areas, in quiz or NTA CBT mode." },
-  { icon: Target, title: "Full NEET mocks", desc: "Pattern-accurate full-length mocks with detailed solutions and rank." },
-  { icon: Layers, title: "Flashcards", desc: "High-yield concept cards with Easy / Medium / Hard recall tracking." },
-  { icon: Highlighter, title: "NCERT highlights", desc: "The most-repeated NCERT lines NEET loves to ask, chapter-wise." },
-  { icon: RouteIcon, title: "Personal study plan", desc: "A 7-day plan built from your strengths, gaps and recent attempts." },
-  { icon: Target, title: "Score predictor", desc: "Forecasts your NEET marks and rank band from your attempt history." },
-  { icon: Trophy, title: "Live contests", desc: "Time-boxed contests with prize pools and a live leaderboard." },
-  { icon: InfinityIcon, title: "Infinite Run", desc: "Click once. The app keeps generating fresh DPPs in the background until your credits run out." },
-  { icon: BarChart3, title: "Deep analytics", desc: "Subject, chapter and difficulty-wise accuracy maps for every attempt." },
-];
-
-
-const RESULTS_HIGHLIGHTS = [
-  { metric: "680+", label: "Top NEET Score", subtext: "Consistent 99.8th percentile scorers" },
-  { metric: "15,000+", label: "Daily DPP Questions", subtext: "Solved and analyzed every day" },
-  { metric: "94%", label: "Retention Rate", subtext: "In NCERT high-yield recurring concepts" },
-  { metric: "500+", label: "Medical Admissions", subtext: "Students in Govt Medical Colleges" },
-];
-
-const STUDENT_STORIES = [
-  {
-    name: "Dr. Aryan Sharma",
-    rank: "AIR 284 (695/720)",
-    college: "AIIMS New Delhi",
-    quote: "The chapter-wise NCERT highlights and daily time tickets helped me bridge my Physics problem-solving gaps.",
-  },
-  {
-    name: "Dr. Priya Patel",
-    rank: "AIR 612 (680/720)",
-    college: "GMC Mumbai",
-    quote: "The 1-on-1 mentorship strategy calls and error analytics turned my Botany weak topics into my highest scoring section.",
-  },
-  {
-    name: "Dr. Rohan Verma",
-    rank: "AIR 1,045 (672/720)",
-    college: "KGMU Lucknow",
-    quote: "The mock test score predictor projected my score within 6 marks of the actual exam. Unbeatable accuracy.",
-  },
-];
+const roundDown = (n: number, step: number) => Math.floor(n / step) * step;
+const fmt = (n: number) => n.toLocaleString("en-IN");
 
 function LandingPage() {
+  const stats = Route.useLoaderData();
+  const questions = stats?.questions ? `${fmt(roundDown(stats.questions, 5000))}+` : "45,000+";
+  const students = stats?.students && stats.students >= 100 ? `${fmt(roundDown(stats.students, 100))}+` : null;
+  const rated = stats && stats.ratingCount >= 5 ? stats : null;
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
 
-      {/* HERO */}
+      {/* ───────── HERO ───────── */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-hero opacity-[0.06]" />
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute -top-40 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:56px_56px] opacity-[0.25] [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]" />
+        </div>
 
-        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center animate-fade-in-up">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
-              <GraduationCap className="h-3.5 w-3.5 text-primary" />
-              NEET Track · Built for NEET-UG aspirants
-            </span>
-            <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-6xl">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-14 sm:px-6 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10 lg:pb-24">
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 py-1 pl-1 pr-3 text-xs font-medium text-muted-foreground backdrop-blur">
+              <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">AIR {TOP_RANK}</span>
+              Top rank from our mentorship
+            </div>
+
+            <h1 className="mt-6 text-[2.5rem] font-bold leading-[1.05] tracking-tight sm:text-6xl">
               <span className="sr-only">NEET Track — NEET preparation platform. </span>
-              Practise sharper. Track deeper.{" "}
+              Practise sharper.
+              <br />
               <span className="text-gradient-primary">Crack NEET.</span>
             </h1>
-            <p className="mt-5 text-base text-muted-foreground sm:text-lg">
-              Daily DPPs, chapter-wise NEET-level questions, PYQs, full NTA-style mocks, short notes, flashcards,
-              a personal study plan, a score predictor and live contests — all in one focused app.
+
+            <p className="mx-auto mt-5 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg lg:mx-0">
+              {questions} hand-picked NEET-level questions, tests built around your weak chapters, and every mistake
+              saved so you never repeat it.
             </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" className="bg-gradient-primary shadow-elegant hover:opacity-95">
-                <Link to="/login">
-                  Get started <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+              <Button asChild size="lg" className="h-12 w-full rounded-xl bg-gradient-primary px-7 text-[15px] shadow-elegant hover:opacity-95 sm:w-auto">
+                <Link to="/login">Start practising free <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/dashboard">Open the app</Link>
+              <Button asChild size="lg" variant="ghost" className="h-12 w-full rounded-xl px-6 text-[15px] sm:w-auto">
+                <Link to="/dashboard">I already have an account</Link>
               </Button>
             </div>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-success" /> Free Daily DPP</span>
-              <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-success" /> Secure payments</span>
-              <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-primary" /> NCERT-aligned</span>
+
+            {rated && (
+              <div className="mt-7 flex items-center justify-center gap-3 text-sm text-muted-foreground lg:justify-start">
+                <Stars value={rated.ratingAvg} />
+                <span><b className="font-semibold text-foreground">{rated.ratingAvg.toFixed(1)}</b> from student ratings</span>
+              </div>
+            )}
+          </div>
+
+          <HeroPreview />
+        </div>
+      </section>
+
+      {/* ───────── NUMBERS ───────── */}
+      <section className="border-y border-border/70 bg-card/40">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 divide-border/70 px-5 sm:px-6 lg:grid-cols-4 lg:divide-x">
+          <Stat value={`AIR ${TOP_RANK}`} label="Highest rank from our mentorship" />
+          <Stat value={questions} label="NEET-level questions" />
+          {students ? <Stat value={students} label="Students preparing" /> : <Stat value="4" label="Subjects, NCERT-aligned" />}
+          {rated ? <Stat value={`${rated.ratingAvg.toFixed(1)} ★`} label="Average student rating" /> : <Stat value="Daily" label="Fresh practice every day" />}
+        </div>
+      </section>
+
+      {/* ───────── FEATURES ───────── */}
+      <section className="mx-auto w-full max-w-6xl px-5 py-20 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">What you get</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Five tools. Nothing you don't need.</h2>
+        </div>
+
+        <div className="mt-12 grid gap-4 md:grid-cols-6">
+          <Feature
+            className="md:col-span-4"
+            icon={BookOpenCheck}
+            title="The question bank NEET deserves"
+            desc={`${questions} questions written to NEET's level, chapter by chapter across Physics, Chemistry, Botany and Zoology, each with a clear solution.`}
+            to="/dpp"
+            big
+          />
+          <Feature
+            className="md:col-span-2"
+            icon={Layers}
+            title="Custom tests"
+            desc="Pick chapters, difficulty and length. Take it as a quiz or in the real NTA screen."
+            to="/generate"
+          />
+          <Feature
+            className="md:col-span-2"
+            icon={RotateCcw}
+            title="Improvement Zone"
+            desc="Every question you get wrong is saved. Re-attempt until it's right."
+            to="/mistakes"
+          />
+          <Feature
+            className="md:col-span-2"
+            icon={NotebookPen}
+            title="Short notes"
+            desc="Strictly NCERT, with diagrams and highlights. Revise a chapter in minutes."
+            to="/short-notes"
+          />
+          <Feature
+            className="md:col-span-2"
+            icon={Gauge}
+            title="Score predictor"
+            desc="See where your marks and rank are heading, based on your own attempts."
+            to="/score-predictor"
+          />
+        </div>
+      </section>
+
+      {/* ───────── RESULTS + RATINGS ───────── */}
+      <section className="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6 sm:pb-24">
+        <div className="grid gap-4 lg:grid-cols-5">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-8 sm:p-10 lg:col-span-3">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-amber-400/10 blur-3xl" aria-hidden="true" />
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">
+                <Trophy className="h-4 w-4" /> Our results
+              </div>
+              <div className="mt-6 flex items-end gap-3">
+                <span className="text-7xl font-bold leading-none tracking-tight sm:text-8xl">{TOP_RANK}</span>
+                <span className="pb-2 text-lg font-semibold text-muted-foreground">AIR</span>
+              </div>
+              <p className="mt-4 max-w-md text-muted-foreground">
+                The highest All India Rank achieved by a student in NEET Track mentorship this year, built on the same
+                daily practice and mistake review you get in the app.
+              </p>
+              <Link to="/mentorship" className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                About mentorship <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
 
-          {/* Subject chips — real syllabus, no fake stats */}
-          <div className="mx-auto mt-14 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-            {SUBJECTS.map((s) => (
-              <div key={s.name} className={cn("flex items-center gap-2 rounded-2xl border border-border/60 bg-gradient-to-br p-3.5 shadow-soft backdrop-blur", s.tint)}>
-                <s.icon className={cn("h-5 w-5", s.iconColor)} strokeWidth={1.8} />
-                <div className="text-sm font-bold">{s.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Everything you need</div>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            One app. Every part of your prep.
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Daily practice, full mocks, custom tests, short notes, flashcards, analytics and contests — without juggling five apps.
-          </p>
-        </div>
-
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f, i) => (
-            <div
-              key={f.title}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-soft transition-transform hover:-translate-y-0.5"
-              style={{ animationDelay: `${i * 50}ms` }}
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground shadow-glow">
-                <f.icon className="h-5 w-5" />
-              </div>
-              <div className="mt-4 text-base font-semibold">{f.title}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-border bg-gradient-surface p-8 sm:p-12 shadow-soft">
-          <div className="max-w-2xl">
-            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">How it works</div>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Practise daily. Close every gap.</h2>
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {[
-              { step: "01", title: "Solve the Daily DPP", desc: "A fresh set of NEET-level questions every day. Build a streak." },
-              { step: "02", title: "Track every attempt", desc: "Every answer is scored, tagged and rolled into subject and chapter analytics." },
-              { step: "03", title: "Plan ahead", desc: "Study Path turns your weak areas into a 7-day plan. Score Predictor projects your rank." },
-            ].map((s) => (
-              <div key={s.step} className="rounded-2xl border border-border/60 bg-card p-5 shadow-soft">
-                <div className="text-xs font-bold text-primary">{s.step}</div>
-                <div className="mt-1 text-base font-semibold">{s.title}</div>
-                <div className="mt-2 text-sm text-muted-foreground">{s.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* OUR RESULTS */}
-      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-border bg-gradient-to-b from-card/90 to-card/50 p-8 sm:p-12 shadow-soft backdrop-blur-sm">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-              <Trophy className="h-3.5 w-3.5 text-primary" />
-              Proven Track Record
-            </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Our Results Speak For Themselves
-            </h2>
-            <p className="mt-2 text-sm sm:text-base text-muted-foreground">
-              Built on disciplined daily practice, high-yield NCERT retention, and data-driven mentorship.
-            </p>
-          </div>
-
-          {/* Metric Stats */}
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {RESULTS_HIGHLIGHTS.map((r) => (
-              <div
-                key={r.label}
-                className="rounded-2xl border border-border/70 bg-background/80 p-5 text-center shadow-xs"
-              >
-                <div className="text-2xl sm:text-3xl font-black text-gradient-primary">{r.metric}</div>
-                <div className="mt-1 text-xs sm:text-sm font-bold text-foreground">{r.label}</div>
-                <div className="mt-1 text-[11px] text-muted-foreground">{r.subtext}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Student Stories */}
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {STUDENT_STORIES.map((s) => (
-              <div
-                key={s.name}
-                className="flex flex-col justify-between rounded-2xl border border-border/80 bg-background/90 p-5 shadow-soft transition-transform hover:-translate-y-0.5"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                      {s.rank}
-                    </span>
-                    <div className="flex text-amber-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-amber-400" />
-                      ))}
-                    </div>
+          <div className="rounded-3xl border border-border bg-card p-8 sm:p-10 lg:col-span-2">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Student ratings</div>
+            {rated ? (
+              <>
+                <div className="mt-6 flex items-center gap-4">
+                  <span className="text-6xl font-bold leading-none tracking-tight">{rated.ratingAvg.toFixed(1)}</span>
+                  <div>
+                    <Stars value={rated.ratingAvg} size="h-5 w-5" />
+                    <div className="mt-1 text-sm text-muted-foreground">from {rated.ratingCount} in-app ratings</div>
                   </div>
-                  <p className="mt-3 text-xs sm:text-sm text-foreground/90 italic leading-relaxed">
-                    "{s.quote}"
-                  </p>
                 </div>
-
-                <div className="mt-4 pt-3 border-t border-border/60">
-                  <div className="text-xs font-bold text-foreground">{s.name}</div>
-                  <div className="text-[11px] font-semibold text-primary">{s.college}</div>
+                <div className="mt-6 space-y-2">
+                  {rated.ratingBars.map((n, i) => {
+                    const pct = rated.ratingCount ? (n / rated.ratingCount) * 100 : 0;
+                    return (
+                      <div key={i} className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span className="w-3 text-right tabular-nums">{5 - i}</span>
+                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                          <div className="h-full rounded-full bg-amber-400" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="w-6 tabular-nums">{n}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
-            ))}
+              </>
+            ) : (
+              <p className="mt-6 text-sm text-muted-foreground">Ratings from students appear here as they come in.</p>
+            )}
+            <p className="mt-6 text-xs text-muted-foreground">Ratings are submitted by signed-in students from inside the app.</p>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-hero p-10 text-center text-primary-foreground shadow-elegant sm:p-16">
-          <div className="absolute inset-0 opacity-25" style={{
-            backgroundImage: "radial-gradient(circle at 20% 30%, white 1px, transparent 1px), radial-gradient(circle at 80% 70%, white 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }} />
+      {/* ───────── CTA ───────── */}
+      <section className="mx-auto w-full max-w-6xl px-5 pb-24 sm:px-6">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-hero px-6 py-14 text-center text-primary-foreground shadow-elegant sm:px-16 sm:py-16">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.18),transparent_60%)]" aria-hidden="true" />
           <div className="relative">
-            <Sparkles className="mx-auto h-10 w-10 text-white" />
-            <h2 className="mt-4 text-3xl font-bold sm:text-4xl">Start your NEET prep today.</h2>
-            <p className="mx-auto mt-3 max-w-xl text-primary-foreground/90">
-              Free Daily DPP for everyone. Premium tools unlock with bonus credits.
-            </p>
-            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" className="bg-background text-foreground hover:bg-background/90">
-                <Link to="/login">Create free account <ArrowRight className="ml-1 h-4 w-4" /></Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10">
-                <Link to="/contests">See live contests</Link>
-              </Button>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Your next question is waiting.</h2>
+            <p className="mx-auto mt-3 max-w-md text-primary-foreground/85">Free to start. The Daily DPP is free for everyone, every day.</p>
+            <Button asChild size="lg" className="mt-8 h-12 rounded-xl bg-white px-8 text-[15px] text-slate-900 hover:bg-white/90">
+              <Link to="/login">Create free account <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+            </Button>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-xs text-primary-foreground/80">
+              <span className="inline-flex items-center gap-1.5"><Check className="h-3.5 w-3.5" /> No card needed</span>
+              <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Secure payments</span>
             </div>
           </div>
         </div>
       </section>
 
       <SiteFooter />
+    </div>
+  );
+}
+
+/* ───────── pieces ───────── */
+
+function Stars({ value, size = "h-4 w-4" }: { value: number; size?: string }) {
+  return (
+    <span className="inline-flex" aria-label={`${value.toFixed(1)} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((n) => {
+        const fill = Math.max(0, Math.min(1, value - (n - 1)));
+        return (
+          <span key={n} className={`relative ${size}`}>
+            <Star className={`absolute inset-0 ${size} text-amber-400/30`} fill="currentColor" strokeWidth={0} />
+            <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
+              <Star className={`${size} text-amber-400`} fill="currentColor" strokeWidth={0} />
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="px-2 py-7 text-center sm:py-9">
+      <div className="text-2xl font-bold tracking-tight sm:text-3xl">{value}</div>
+      <div className="mt-1 text-xs text-muted-foreground sm:text-sm">{label}</div>
+    </div>
+  );
+}
+
+function Feature({ icon: Icon, title, desc, to, big, className = "" }: {
+  icon: typeof Target; title: string; desc: string; to: string; big?: boolean; className?: string;
+}) {
+  return (
+    <Link
+      to={to as never}
+      className={`group relative overflow-hidden rounded-3xl border border-border bg-card transition-colors hover:border-primary/40 ${big ? "flex flex-col p-7" : "flex items-start gap-4 p-5 pr-12 md:flex-col md:gap-0 md:p-7"} ${className}`}
+    >
+      {big && <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />}
+      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-primary">
+        <Icon className="h-5 w-5" strokeWidth={1.8} />
+      </div>
+      <div className="relative">
+        <h3 className={`font-semibold tracking-tight ${big ? "mt-6 text-2xl sm:text-[1.7rem]" : "text-lg md:mt-6"}`}>{title}</h3>
+        <p className={`mt-1.5 leading-relaxed text-muted-foreground ${big ? "max-w-lg text-[15px]" : "text-sm"}`}>{desc}</p>
+      </div>
+      {big && (
+        <div className="relative mt-6 flex flex-wrap gap-2">
+          {["Physics", "Chemistry", "Botany", "Zoology"].map((s) => (
+            <span key={s} className="rounded-full border border-border bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">{s}</span>
+          ))}
+        </div>
+      )}
+      <ArrowUpRight className="absolute right-5 top-5 h-5 w-5 md:right-6 md:top-6 text-muted-foreground/50 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+    </Link>
+  );
+}
+
+/** A small, static glimpse of the practice screen. */
+function HeroPreview() {
+  const opts = [
+    { k: "A", t: "Mitochondria" },
+    { k: "B", t: "Ribosome", ok: true },
+    { k: "C", t: "Lysosome" },
+    { k: "D", t: "Golgi body" },
+  ];
+  return (
+    <div className="relative mx-auto w-full max-w-sm" aria-hidden="true">
+      <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-primary opacity-20 blur-2xl" />
+      <div className="relative rounded-3xl border border-border bg-card p-5 shadow-elegant">
+        <div className="flex items-center justify-between text-xs">
+          <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 font-semibold text-emerald-600 dark:text-emerald-400">Botany · Cell</span>
+          <span className="font-medium tabular-nums text-muted-foreground">Q 12 / 45</span>
+        </div>
+        <p className="mt-4 text-[15px] font-medium leading-snug">Which cell organelle is the site of protein synthesis?</p>
+        <div className="mt-4 space-y-2">
+          {opts.map((o) => (
+            <div
+              key={o.k}
+              className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm ${o.ok ? "border-emerald-500/50 bg-emerald-500/10 font-medium" : "border-border"}`}
+            >
+              <span className={`flex h-6 w-6 items-center justify-center rounded-md text-xs font-semibold ${o.ok ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                {o.ok ? <Check className="h-3.5 w-3.5" /> : o.k}
+              </span>
+              {o.t}
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted">
+          <div className="h-full w-[27%] rounded-full bg-gradient-primary" />
+        </div>
+      </div>
+
+      <div className="absolute -bottom-5 -left-3 flex items-center gap-2 rounded-2xl border border-border bg-card px-3.5 py-2.5 text-xs font-medium shadow-elegant sm:-left-8">
+        <RotateCcw className="h-4 w-4 text-amber-500" /> Saved to Improvement Zone
+      </div>
+      <div className="absolute -right-2 -top-4 flex items-center gap-1.5 rounded-2xl border border-border bg-card px-3 py-2 text-xs font-semibold shadow-elegant sm:-right-6">
+        <Target className="h-4 w-4 text-primary" /> 91% accuracy
+      </div>
     </div>
   );
 }
