@@ -90,6 +90,22 @@ function useTodayAndStreak(userId: string | undefined) {
   return { today, streak };
 }
 
+/** Today's to-do progress for the welcome card ring. */
+function useTodayTodo(userId?: string) {
+  const [v, setV] = useState<{ total: number; done: number } | null>(null);
+  useEffect(() => {
+    if (!userId) return;
+    const d = new Date();
+    const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    (supabase as any).from("study_tasks").select("done").eq("user_id", userId).eq("day", day)
+      .then(({ data }: { data: { done: boolean }[] | null }) => {
+        const rows = data ?? [];
+        setV({ total: rows.length, done: rows.filter((r) => r.done).length });
+      });
+  }, [userId]);
+  return v;
+}
+
 function useSubjectCounts() {
   const [counts, setCounts] = useState({ physics: 16047, chemistry: 15602, biology: 15146 });
   useEffect(() => {
@@ -120,6 +136,7 @@ export function HomeDashboard({ top }: { top?: ReactNode }) {
     enabled: !!user, staleTime: 60_000,
   });
   const { today, streak } = useTodayAndStreak(user?.id);
+  const todo = useTodayTodo(user?.id);
   const counts = useSubjectCounts();
 
   const firstName = profile?.full_name?.trim()?.split(" ")[0] || user?.email?.split("@")[0] || "Doctor";
@@ -133,7 +150,7 @@ export function HomeDashboard({ top }: { top?: ReactNode }) {
       <style dangerouslySetInnerHTML={{ __html: HOME_CSS + WRAP_CSS }} />
       <div className="nth-grid">
         {top ? <div className="full">{top}</div> : null}
-        <Welcome firstName={firstName} targetYear={targetYear} today={today} dailyGoal={dailyGoal} streak={streak} weekly={ex?.weekly} />
+        <Welcome firstName={firstName} targetYear={targetYear} today={today} dailyGoal={dailyGoal} streak={streak} weekly={ex?.weekly} todo={todo} />
         <MegaQuizCard />
         <AzkaStrip tips={(consult.data?.recommendations ?? []).map((r) => (r.detail.length <= 110 ? r.detail : r.title))} />
         <Banner banners={ex?.banners ?? []} showBuiltIn={ex?.showBuiltInSlides ?? true} nextContest={ex?.nextContest ?? null} />
@@ -164,8 +181,9 @@ const WRAP_CSS = `
 
 /* ---------------------------------------------------------------- 1 · Welcome */
 
-function Welcome({ firstName, targetYear, today, dailyGoal, streak, weekly }: {
+function Welcome({ firstName, targetYear, today, dailyGoal, streak, weekly, todo }: {
   firstName: string; targetYear: number; today: Today; dailyGoal: number; streak: number; weekly?: HomeExtras["weekly"];
+  todo: { total: number; done: number } | null;
 }) {
   const left = Math.max(0, dailyGoal - today.solved);
   const pct = dailyGoal > 0 ? Math.min(1, today.solved / dailyGoal) : 0;
@@ -204,13 +222,20 @@ function Welcome({ firstName, targetYear, today, dailyGoal, streak, weekly }: {
         </div>
         <svg className="ecg4" width="150" height="24" viewBox="0 0 200 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 14 H62 L68 14 L72 5 L78 23 L84 1 L90 20 L94 14 H138 L143 14 L146 9 L150 19 L154 14 H200" fill="none" stroke="#22D3EE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
-      <Link to="/progress" className="h3-ring glass w4-ring" aria-label={`Today's target: ${today.solved} of ${dailyGoal} questions`}>
+      <Link to="/todo" className={`h3-ring glass w4-ring w4-todo${todo && todo.total === 0 ? " empty" : ""}`}
+        aria-label={todo && todo.total ? `To-do: ${todo.done} of ${todo.total} tasks done today` : "Plan today's to-do list"}>
         <svg width="58" height="58" viewBox="0 0 58 58">
-          <defs><linearGradient id="nthRing" x1="0" x2="1"><stop offset="0" stopColor="#3B82F6" /><stop offset="1" stopColor="#22D3EE" /></linearGradient></defs>
+          <defs><linearGradient id="nthRing" x1="0" x2="1"><stop offset="0" stopColor="#10B981" /><stop offset="1" stopColor="#22D3EE" /></linearGradient></defs>
           <circle cx="29" cy="29" r="24" fill="none" stroke="rgba(255,255,255,.18)" strokeWidth="5" />
-          <circle cx="29" cy="29" r="24" fill="none" stroke="url(#nthRing)" strokeWidth="5" strokeLinecap="round" strokeDasharray="151" strokeDashoffset={151 - 151 * pct} style={{ animation: "nth-ring3 1.6s cubic-bezier(.2,.8,.2,1) .5s both" }} />
+          <circle cx="29" cy="29" r="24" fill="none" stroke="url(#nthRing)" strokeWidth="5" strokeLinecap="round" strokeDasharray="151"
+            strokeDashoffset={151 - 151 * (todo && todo.total ? todo.done / todo.total : 0)} style={{ animation: "nth-ring3 1.6s cubic-bezier(.2,.8,.2,1) .5s both" }} />
         </svg>
-        <span className="v"><span><b><CountUp to={today.solved} /></b><small>/{dailyGoal} today</small></span></span>
+        <span className="v">
+          {todo && todo.total > 0
+            ? <span><b>{todo.done}/{todo.total}</b><small>tasks</small></span>
+            : <span><b style={{ fontSize: 20, lineHeight: 1 }}>+</b><small>Plan</small></span>}
+        </span>
+        <span className="w4-todo-tag">To-do</span>
       </Link>
       <div className="h3-chips w4-chips">
         <Link to="/progress" className="chip fire">{Ico.flame}{streak > 0 ? `${streak}-day streak` : "Start a streak"}</Link>

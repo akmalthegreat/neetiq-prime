@@ -531,6 +531,9 @@ export const HOME_CSS = `
 @keyframes nth-ecg4{0%{stroke-dashoffset:260}70%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
 .nth .w4-ring{position:absolute;right:14px;top:14px;width:62px;height:62px;padding:2px}
 .nth .w4-ring svg{width:58px;height:58px}
+.nth .w4-todo-tag{position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);padding:2px 8px;border-radius:999px;background:linear-gradient(90deg,#10B981,#22D3EE);color:#04201A;font:800 9.5px var(--display);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;box-shadow:0 4px 12px -4px rgba(16,185,129,.8)}
+.nth .w4-todo.empty{animation:nth-todo-glow 2.4s ease-in-out infinite}
+@keyframes nth-todo-glow{0%,100%{box-shadow:0 0 0 0 rgba(34,211,238,.0)}50%{box-shadow:0 0 0 6px rgba(34,211,238,.25)}}
 .nth .w4-chips{position:relative;margin-top:auto;padding-top:12px;flex-wrap:nowrap}
 .nth .w4-chips .chip{height:32px;padding:0 10px;font-size:11.5px;white-space:nowrap}
 @media (min-width:520px) and (max-width:899px){.nth .w4-photo{width:62%;left:auto;right:-2%;top:50%;transform-origin:50% 40%;translate:0 -46%}

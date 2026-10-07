@@ -1,681 +1,661 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect, useMemo } from "react";
-import { PageShell } from "@/components/page-shell";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+// Daily to-do: plan the day's tasks by subject, time them, tick them off,
+// close the day with a short review, and see the last 30 days.
+
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/use-auth";
 import {
-  CheckCircle2,
-  CalendarDays,
-  Flame,
-  BarChart2,
-  TrendingUp,
-  Clock,
-  Circle,
-  Plus,
-  Trash2,
-  Calendar,
-  Sparkles,
-  ArrowLeft,
-  Target,
-  Trophy,
-  Filter,
-  CheckCheck,
-  BookOpen,
-  Atom,
-  FlaskConical,
-  Dna,
-  Zap,
+  Check, ChevronLeft, Clock, Flame, ListChecks, Lock, Pause, Play, Plus, Quote, Sparkles, Target, Trash2, Trophy, X,
+  CalendarDays, BarChart3, ArrowRight,
 } from "lucide-react";
+import { PageShell } from "@/components/page-shell";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
+import {
+  SUBJECTS, subjectOf, MISTAKE_TAGS, MOODS, localDay, addDays, taskSeconds, fmtDuration, fmtClock, quoteNow,
+  type Subject, type StudyTask, type StudyDay,
+} from "@/lib/study-plan";
 
 export const Route = createFileRoute("/todo")({
-  component: TodoListPage,
+  head: () => ({ meta: [{ title: "My To-Do & Targets — NEET Track" }] }),
+  component: TodoPage,
 });
 
-export type TodoItem = {
-  id: string;
-  title: string;
-  subject: "Physics" | "Chemistry" | "Biology" | "Mock" | "Revision" | "General";
-  timeMinutes: number;
-  priority: "high" | "medium" | "low";
-  completed: boolean;
-  createdAt: string;
+const db = supabase as any;
+const TARGETS = [null, 30, 60, 90, 120, 180] as const;
+const IDEAS: Record<Subject, string[]> = {
+  physics: ["Solve 40 MCQs", "Revise formulas", "Watch lecture + notes", "Solve PYQs"],
+  chemistry: ["Read NCERT line by line", "Solve 40 MCQs", "Revise reactions", "Solve PYQs"],
+  biology: ["Read NCERT chapter", "Solve 60 MCQs", "Revise diagrams", "Solve PYQs"],
+  other: ["Full mock test", "Mock test analysis", "Revise mistakes notebook", "Mega Quiz 8:30 PM"],
 };
+const PRAISE = ["Nailed it!", "One more down!", "That's how toppers work!", "Great focus!", "Keep the streak alive!", "Superb, Doctor!"];
 
-const SUBJECT_CONFIG = {
-  Physics: {
-    color: "text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800/40",
-    icon: Atom,
-  },
-  Chemistry: {
-    color: "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/40 border-teal-200 dark:border-teal-800/40",
-    icon: FlaskConical,
-  },
-  Biology: {
-    color: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/40",
-    icon: Dna,
-  },
-  Mock: {
-    color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/40",
-    icon: Trophy,
-  },
-  Revision: {
-    color: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/40",
-    icon: BookOpen,
-  },
-  General: {
-    color: "text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800",
-    icon: Target,
-  },
-};
+function TodoPage() {
+  const { user, loading } = useAuth();
+  const nav = useNavigate();
+  const [today, setToday] = useState(localDay());
+  const [tasks, setTasks] = useState<StudyTask[] | null>(null);
+  const [days, setDays] = useState<StudyDay[]>([]);
+  const [tab, setTab] = useState<"today" | "record">("today");
+  const [now, setNow] = useState(Date.now());
+  const [burst, setBurst] = useState(0);
+  const [victory, setVictory] = useState(false);
+  const victoryShown = useRef(false);
 
-const DEFAULT_TODOS: TodoItem[] = [];
+  useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
 
-export function TodoListPage() {
-  const { user } = useAuth();
-  const dateKey = useMemo(() => new Date().toISOString().slice(0, 10), []);
-  const storageKey = `neetiq_todos_${user?.id || "guest"}_${dateKey}`;
+  const from = addDays(today, -29);
+  const load = useCallback(async () => {
+    if (!user) return;
+    await importOldTodos(user.id, from);
+    const [t, d] = await Promise.all([
+      db.from("study_tasks").select("*").eq("user_id", user.id).gte("day", from).lte("day", today).order("sort").order("created_at"),
+      db.from("study_days").select("*").eq("user_id", user.id).gte("day", from).lte("day", today),
+    ]);
+    if (t.error) { toast.error("Could not load your tasks"); setTasks([]); return; }
+    setTasks(t.data ?? []);
+    setDays(d.data ?? []);
+  }, [user, from, today]);
+  useEffect(() => { load(); }, [load]);
 
-  const [todos, setTodos] = useState<TodoItem[]>(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch {
-      // fallback
-    }
-    return [];
-  });
-
-  const [title, setTitle] = useState("");
-  const [subject, setSubject] = useState<TodoItem["subject"]>("Biology");
-  const [timeMinutes, setTimeMinutes] = useState(45);
-  const [showRecap, setShowRecap] = useState(false);
-  const [priority, setPriority] = useState<TodoItem["priority"]>("high");
-  const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
-  const [submitted, setSubmitted] = useState(false);
-
+  // Tick every second while a timer runs; roll over at midnight.
+  const running = tasks?.find((t) => t.timer_started_at && t.day === today) ?? null;
   useEffect(() => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(todos));
-    } catch {
-      // ignore
+    const id = setInterval(() => {
+      setNow(Date.now());
+      const d = localDay();
+      if (d !== today) setToday(d);
+    }, running ? 1000 : 30000);
+    return () => clearInterval(id);
+  }, [running, today]);
+
+  const todays = useMemo(() => (tasks ?? []).filter((t) => t.day === today), [tasks, today]);
+  const todayDay = days.find((d) => d.day === today) ?? null;
+  const done = todays.filter((t) => t.done).length;
+  const studiedSec = todays.reduce((s, t) => s + taskSeconds(t, now), 0);
+
+  // Celebrate once when every task of the day is complete.
+  const armed = useRef(false); // only celebrate right after the student ticks a task
+  useEffect(() => {
+    if (armed.current && todays.length >= 2 && done === todays.length && !victoryShown.current) {
+      victoryShown.current = true;
+      setVictory(true);
+      setBurst((b) => b + 1);
     }
-  }, [todos, storageKey]);
+    if (done < todays.length) victoryShown.current = false;
+  }, [done, todays.length]);
 
-  const totalTasks = todos.length;
-  const completedTasks = todos.filter((t) => t.completed).length;
-  const totalMinutes = todos.reduce((acc, t) => acc + (t.timeMinutes || 0), 0);
-  const completedMinutes = todos
-    .filter((t) => t.completed)
-    .reduce((acc, t) => acc + (t.timeMinutes || 0), 0);
-  const progressPercent = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+  const patch = (id: string, p: Partial<StudyTask>) => setTasks((ts) => (ts ?? []).map((t) => (t.id === id ? { ...t, ...p } : t)));
 
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) {
-      toast.error("Please enter a task description");
-      return;
+  async function stopTimer(t: StudyTask): Promise<Partial<StudyTask>> {
+    if (!t.timer_started_at) return {};
+    const p = { spent_sec: taskSeconds(t), timer_started_at: null };
+    patch(t.id, p);
+    await db.from("study_tasks").update(p).eq("id", t.id);
+    return p;
+  }
+
+  async function toggleTimer(t: StudyTask) {
+    if (t.timer_started_at) { await stopTimer(t); return; }
+    if (running && running.id !== t.id) await stopTimer(running);
+    const p = { timer_started_at: new Date().toISOString() };
+    patch(t.id, p);
+    const { error } = await db.from("study_tasks").update(p).eq("id", t.id);
+    if (error) { toast.error("Could not start the timer"); load(); }
+  }
+
+  async function toggleDone(t: StudyTask) {
+    const stopP = t.timer_started_at ? await stopTimer(t) : {};
+    const p = { done: !t.done, done_at: !t.done ? new Date().toISOString() : null, ...stopP };
+    patch(t.id, p);
+    const { error } = await db.from("study_tasks").update({ done: p.done, done_at: p.done_at }).eq("id", t.id);
+    if (error) { toast.error("Could not update"); load(); return; }
+    if (p.done) {
+      armed.current = true;
+      setBurst((b) => b + 1);
+      toast.success(PRAISE[Math.floor(Math.random() * PRAISE.length)], { description: t.title });
     }
+  }
 
-    const newItem: TodoItem = {
-      id: `task-${Date.now()}`,
-      title: title.trim(),
-      subject,
-      timeMinutes: Number(timeMinutes) || 30,
-      priority,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    };
+  async function remove(t: StudyTask) {
+    setTasks((ts) => (ts ?? []).filter((x) => x.id !== t.id));
+    const { error } = await db.from("study_tasks").delete().eq("id", t.id);
+    if (error) { toast.error("Could not delete"); load(); }
+  }
 
-    setTodos((prev) => [newItem, ...prev]);
-    setTitle("");
-    toast.success("Task & Time Ticket added!");
-  };
+  async function add(subject: Subject, title: string, target: number | null) {
+    if (!user) return;
+    const row = { user_id: user.id, day: today, subject, title: title.trim(), target_min: target, sort: todays.length };
+    const { data, error } = await db.from("study_tasks").insert(row).select("*").single();
+    if (error) { toast.error("Could not add the task"); return; }
+    setTasks((ts) => [...(ts ?? []), data]);
+  }
 
-  const handleToggle = (id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => {
-        if (t.id === id) {
-          const next = !t.completed;
-          if (next) toast.success(`Completed: ${t.title}`);
-          return { ...t, completed: next };
-        }
-        return t;
-      })
-    );
-  };
-
-  const handleDelete = (id: string) => {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
-    toast.info("Task removed");
-  };
-
-  const handleSubmitDailyList = () => {
-    setSubmitted(true);
-    toast.success("🎉 Today's Study Ticket submitted! Keep pushing forward!");
-  };
-
-  const filteredTodos = todos.filter((t) => {
-    if (filter === "pending") return !t.completed;
-    if (filter === "completed") return t.completed;
+  async function saveDay(p: Partial<StudyDay>) {
+    if (!user) return;
+    const row = { user_id: user.id, day: today, ...(todayDay ?? {}), ...p, updated_at: new Date().toISOString() };
+    const { data, error } = await db.from("study_days").upsert(row).select("*").single();
+    if (error) { toast.error("Could not save"); return false; }
+    setDays((ds) => [...ds.filter((d) => d.day !== today), data]);
     return true;
-  });
+  }
+
+  async function carryOver(list: StudyTask[]) {
+    if (!user || !list.length) return;
+    const rows = list.map((t, i) => ({ user_id: user.id, day: today, subject: t.subject, title: t.title, target_min: t.target_min, sort: todays.length + i }));
+    const { data, error } = await db.from("study_tasks").insert(rows).select("*");
+    if (error) { toast.error("Could not move the tasks"); return; }
+    setTasks((ts) => [...(ts ?? []), ...(data ?? [])]);
+    toast.success(`${list.length} task${list.length === 1 ? "" : "s"} moved to today`);
+  }
+
+  const yesterdayLeft = useMemo(() => (tasks ?? []).filter((t) => t.day === addDays(today, -1) && !t.done), [tasks, today]);
+  const quote = quoteNow(new Date(now));
 
   return (
     <PageShell>
-      <div className="relative -mx-4 -my-10 px-4 py-8 sm:-mx-6 sm:-my-14 sm:px-6 sm:py-10 lg:-mx-8 lg:px-8 bg-gradient-to-b from-sky-50/70 via-teal-50/40 to-emerald-50/60 dark:from-[#0b1a27] dark:via-[#0e2334] dark:to-[#081520] min-h-[calc(100vh-4rem)]">
-        <div className="mx-auto max-w-3xl space-y-5 pb-12">
-          {/* Back button and navigation */}
-          <div className="flex items-center justify-between">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition-colors hover:border-slate-300 hover:bg-white hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Dashboard</span>
-            </Link>
+      <Confetti fire={burst} />
+      {victory && <Victory done={done} studied={studiedSec} onClose={() => setVictory(false)} />}
 
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-              <Calendar className="h-3.5 w-3.5 text-teal-500" />
-              <span>
-                {new Date().toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
+      <div className="mx-auto max-w-3xl space-y-5">
+        {/* Quote */}
+        <section className="relative overflow-hidden rounded-3xl bg-[#071233] p-6 text-white sm:p-8">
+          <div className="absolute inset-0 bg-[radial-gradient(80%_80%_at_100%_0%,rgba(250,204,21,.18),transparent_60%),radial-gradient(70%_70%_at_0%_100%,rgba(37,99,235,.35),transparent_60%)]" />
+          <Quote className="absolute right-5 top-5 h-16 w-16 text-white/[.07]" />
+          <div className="relative">
+            <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-200">{quote.slot} thought · {new Date(now).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</div>
+            <p className="mt-3 text-lg font-semibold leading-snug sm:text-2xl">“{quote.q}”</p>
+            <p className="mt-2 text-sm text-white/70">— {quote.a}</p>
           </div>
+        </section>
 
-          {/* Hero Header Card */}
-          <div className="relative overflow-hidden rounded-3xl border border-teal-200/80 bg-gradient-to-br from-white via-white/95 to-teal-50/70 p-5 shadow-lg shadow-teal-500/5 dark:border-teal-500/30 dark:bg-gradient-to-br dark:from-[#0f3239] dark:via-[#133d45] dark:to-[#0c282e] dark:text-white">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-emerald-400/15 blur-2xl dark:bg-emerald-400/20" />
-            <div className="pointer-events-none absolute -bottom-10 left-10 h-40 w-40 rounded-full bg-cyan-400/15 blur-2xl dark:bg-cyan-400/20" />
-
-            <div className="relative z-10">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-500/10 px-2.5 py-0.5 text-[11px] font-bold text-teal-700 dark:border-teal-400/30 dark:bg-teal-500/20 dark:text-teal-300">
-                    <Sparkles className="h-3 w-3" />
-                    <span>Daily Study Plan &amp; Time Tickets</span>
-                  </div>
-                  <h1 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                    Today's High-Yield Checklist
-                  </h1>
-                  <p className="mt-0.5 text-xs sm:text-sm text-slate-600 dark:text-teal-100/80">
-                    Set targeted time tickets, focus on your weak topics, and check off every milestone.
-                  </p>
-                </div>
-
-                <div className="flex sm:flex-col items-center justify-between sm:items-end gap-1.5 rounded-2xl border border-slate-200/80 bg-white/80 p-3 shadow-xs dark:border-white/10 dark:bg-white/5">
-                  <div className="flex items-center gap-1.5 text-xs font-black text-emerald-600 dark:text-emerald-400">
-                    <CheckCheck className="h-4 w-4" />
-                    <span>{completedTasks} of {totalTasks} Done</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-300">
-                    <Clock className="h-3 w-3 text-cyan-500" />
-                    <span>{completedMinutes}m / {totalMinutes}m ticket</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div className="mt-5 space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-slate-700 dark:text-slate-200">Completion Progress</span>
-                  <span className="text-emerald-600 dark:text-emerald-400">{progressPercent}%</span>
-                </div>
-                <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 transition-all duration-500 shadow-sm shadow-emerald-500/30"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          {/* Add Task Form Card */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 sm:p-5 shadow-sm dark:border-white/10 dark:bg-slate-900/60 dark:text-white backdrop-blur-xs">
-            <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2 mb-3">
-              <Plus className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-              <span>Create New Study Ticket</span>
-            </h2>
-
-            <form onSubmit={handleAdd} className="space-y-3">
-              <div>
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Complete 50 questions in Human Reproduction & analyze mistakes..."
-                  className="rounded-xl border-slate-200 bg-white dark:border-white/15 dark:bg-white/5 h-10 text-xs sm:text-sm font-medium focus-visible:ring-teal-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {/* Subject Selector */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
-                    Subject
-                  </label>
-                  <select
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value as TodoItem["subject"])}
-                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
-                  >
-                    <option value="Biology" className="bg-slate-900 text-white">Biology</option>
-                    <option value="Chemistry" className="bg-slate-900 text-white">Chemistry</option>
-                    <option value="Physics" className="bg-slate-900 text-white">Physics</option>
-                    <option value="Mock" className="bg-slate-900 text-white">Mock Test</option>
-                    <option value="Revision" className="bg-slate-900 text-white">Revision</option>
-                    <option value="General" className="bg-slate-900 text-white">General / Doubt</option>
-                  </select>
-                </div>
-
-                {/* Time Ticket Duration */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
-                    Time Ticket (Mins)
-                  </label>
-                  <select
-                    value={timeMinutes}
-                    onChange={(e) => setTimeMinutes(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
-                  >
-                    <option value={20} className="bg-slate-900 text-white">20 Mins (Sprint)</option>
-                    <option value={30} className="bg-slate-900 text-white">30 Mins (Quick)</option>
-                    <option value={45} className="bg-slate-900 text-white">45 Mins (Standard)</option>
-                    <option value={60} className="bg-slate-900 text-white">60 Mins (1 Hour)</option>
-                    <option value={90} className="bg-slate-900 text-white">90 Mins (1.5 Hours)</option>
-                    <option value={120} className="bg-slate-900 text-white">120 Mins (2 Hours)</option>
-                    <option value={150} className="bg-slate-900 text-white">150 Mins (2.5 Hours)</option>
-                    <option value={180} className="bg-slate-900 text-white">180 Mins (3 Hours)</option>
-                    <option value={210} className="bg-slate-900 text-white">210 Mins (3.5 Hours)</option>
-                    <option value={240} className="bg-slate-900 text-white">240 Mins (4 Hours Max Power Block)</option>
-                  </select>
-                </div>
-
-                {/* Priority */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 block uppercase">
-                    Priority
-                  </label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value as TodoItem["priority"])}
-                    className="w-full rounded-xl border border-slate-200 bg-white dark:border-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-teal-500"
-                  >
-                    <option value="high" className="bg-slate-900 text-white">🔥 High Priority</option>
-                    <option value="medium" className="bg-slate-900 text-white">⚡ Medium</option>
-                    <option value="low" className="bg-slate-900 text-white">🌱 Low</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="pt-1 flex justify-end">
-                <Button
-                  type="submit"
-                  className="rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold shadow-md shadow-teal-500/20 text-xs px-4 py-2 h-9"
-                >
-                  <Plus className="mr-1.5 h-3.5 w-3.5" />
-                  <span>Add To-Do Ticket</span>
-                </Button>
-              </div>
-            </form>
-          </div>
-
-          {/* =========================================================
-              WEEKLY TRACK REPORT SECTION
-              ========================================================= */}
-          <div className="overflow-hidden rounded-3xl border border-teal-200/80 bg-white/95 p-5 shadow-md shadow-teal-900/5 dark:border-teal-500/20 dark:bg-slate-900/70 backdrop-blur-md">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-md shadow-teal-500/20">
-                  <BarChart2 className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
-                      Weekly Track Report
-                    </h2>
-                    <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                      7-Day Momentum
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Live overview of planned study hours, ticket completion, and subject distribution
-                  </p>
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setShowRecap(true)}
-                className="self-start sm:self-auto rounded-xl border-teal-200 text-teal-700 hover:bg-teal-50 dark:border-teal-500/30 dark:text-teal-300 dark:hover:bg-teal-950/40 text-xs font-bold"
-              >
-                <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
-                <span>Full Recap Details</span>
-              </Button>
-            </div>
-
-            {/* Metrics cards */}
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-center dark:border-white/5 dark:bg-white/5">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Planned Time
-                </span>
-                <span className="mt-1 block text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                  {(totalMinutes / 60).toFixed(1)} <span className="text-xs font-semibold text-slate-500">hrs</span>
-                </span>
-              </div>
-              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-center dark:border-emerald-500/20 dark:bg-emerald-950/20">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  Completed Time
-                </span>
-                <span className="mt-1 block text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400">
-                  {(completedMinutes / 60).toFixed(1)} <span className="text-xs font-semibold">hrs</span>
-                </span>
-              </div>
-              <div className="rounded-2xl border border-teal-500/20 bg-teal-500/5 p-3 text-center dark:border-teal-500/20 dark:bg-teal-950/20">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
-                  Tickets Done
-                </span>
-                <span className="mt-1 block text-base sm:text-lg font-black text-teal-600 dark:text-teal-400">
-                  {completedTasks} <span className="text-xs font-semibold text-slate-500">/ {totalTasks}</span>
-                </span>
-              </div>
-              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3 text-center dark:border-amber-500/20 dark:bg-amber-950/20">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                  Completion
-                </span>
-                <span className="mt-1 block text-base sm:text-lg font-black text-amber-600 dark:text-amber-400">
-                  {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}%
-                </span>
-              </div>
-            </div>
-
-            {/* Subject Distribution Bar */}
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
-              <div className="flex items-center justify-between text-xs mb-2">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Subject Distribution</span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {todos.length} active tickets
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[
-                  { name: "Biology", color: "bg-purple-500", text: "text-purple-600 dark:text-purple-400", count: todos.filter((t) => t.subject === "Biology").length },
-                  { name: "Chemistry", color: "bg-teal-500", text: "text-teal-600 dark:text-teal-400", count: todos.filter((t) => t.subject === "Chemistry").length },
-                  { name: "Physics", color: "bg-sky-500", text: "text-sky-600 dark:text-sky-400", count: todos.filter((t) => t.subject === "Physics").length },
-                  { name: "Mocks/Rev", color: "bg-amber-500", text: "text-amber-600 dark:text-amber-400", count: todos.filter((t) => t.subject === "Mock" || t.subject === "Revision").length },
-                ].map((s) => (
-                  <div key={s.name} className="flex items-center justify-between rounded-xl bg-slate-50 px-2.5 py-1.5 dark:bg-white/5">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className={`h-2 w-2 rounded-full ${s.color}`} />
-                      <span className={`text-[11px] font-semibold truncate ${s.text}`}>{s.name}</span>
-                    </div>
-                    <span className="text-xs font-bold text-slate-800 dark:text-white ml-1">
-                      {s.count}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Filter Bar & List Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Target className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-white">
-                Study Items ({filteredTodos.length})
-              </h3>
-            </div>
-
-            <div className="flex items-center gap-1 rounded-xl border border-slate-200/80 bg-white/80 p-0.5 text-xs dark:border-white/10 dark:bg-white/5">
-              <button
-                type="button"
-                onClick={() => setFilter("all")}
-                className={`rounded-lg px-2.5 py-1 font-semibold transition-colors ${
-                  filter === "all"
-                    ? "bg-teal-500 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-                }`}
-              >
-                All
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilter("pending")}
-                className={`rounded-lg px-2.5 py-1 font-semibold transition-colors ${
-                  filter === "pending"
-                    ? "bg-teal-500 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-                }`}
-              >
-                Pending
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilter("completed")}
-                className={`rounded-lg px-2.5 py-1 font-semibold transition-colors ${
-                  filter === "completed"
-                    ? "bg-teal-500 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-                }`}
-              >
-                Completed
-              </button>
-            </div>
-          </div>
-
-          {/* Task List */}
-          <div className="space-y-2.5">
-            {filteredTodos.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center dark:border-white/10">
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  No tasks found in this view. Add one above to kickstart your study session!
-                </p>
-              </div>
-            ) : (
-              filteredTodos.map((item) => {
-                const subConfig = SUBJECT_CONFIG[item.subject] || SUBJECT_CONFIG.General;
-                const IconComponent = subConfig.icon;
-
-                return (
-                  <div
-                    key={item.id}
-                    className={`group relative flex items-center justify-between rounded-2xl border p-3.5 transition-all duration-200 ${
-                      item.completed
-                        ? "border-emerald-200/60 bg-white/50 dark:border-emerald-900/30 dark:bg-emerald-950/10 opacity-75"
-                        : "border-slate-200/80 bg-white hover:border-teal-300 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-teal-400/40"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {/* Checkbox toggle */}
-                      <button
-                        type="button"
-                        onClick={() => handleToggle(item.id)}
-                        className="shrink-0 transition-transform active:scale-90"
-                        aria-label={item.completed ? "Mark pending" : "Mark completed"}
-                      >
-                        {item.completed ? (
-                          <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-100 dark:fill-emerald-950" />
-                        ) : (
-                          <Circle className="h-5 w-5 text-slate-400 group-hover:text-teal-500" />
-                        )}
-                      </button>
-
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${subConfig.color}`}
-                          >
-                            <IconComponent className="h-3 w-3" />
-                            <span>{item.subject}</span>
-                          </span>
-
-                          <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-                            <Clock className="h-2.5 w-2.5 text-cyan-500" />
-                            <span>{item.timeMinutes}m ticket</span>
-                          </span>
-
-                          {item.priority === "high" && (
-                            <span className="inline-flex items-center rounded-md border border-rose-200 bg-rose-50 px-1.5 py-0.5 text-[9px] font-bold text-rose-600 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-400">
-                              High Yield
-                            </span>
-                          )}
-                        </div>
-
-                        <p
-                          className={`mt-1 text-xs sm:text-sm font-semibold truncate ${
-                            item.completed
-                              ? "line-through text-slate-400 dark:text-slate-500"
-                              : "text-slate-900 dark:text-white"
-                          }`}
-                        >
-                          {item.title}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Delete action */}
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(item.id)}
-                      className="ml-2 text-slate-400 opacity-60 hover:opacity-100 hover:text-rose-500 transition-colors p-1"
-                      aria-label="Delete task"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-          {/* Submit / Finish Action */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 text-center dark:border-white/10 dark:bg-white/5">
-            {submitted ? (
-              <div className="flex items-center justify-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                <Sparkles className="h-4 w-4" />
-                <span>Today's Study Plan is active! Check off items as you study.</span>
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-left">
-                  <div className="text-xs font-bold text-slate-900 dark:text-white">
-                    Ready to lock in today's study goal?
-                  </div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Submit your tickets and turn on your focus mode.
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleSubmitDailyList}
-                  className="rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-xs shadow-md shadow-teal-500/20"
-                >
-                  <CheckCheck className="mr-1.5 h-3.5 w-3.5" />
-                  <span>Submit Today's To-Do List</span>
-                </Button>
-              </div>
-            )}
-          </div>
+        {/* Tabs */}
+        <div className="grid grid-cols-2 gap-1 rounded-2xl bg-secondary/60 p-1">
+          {([["today", "Today", ListChecks], ["record", "30-day record", BarChart3]] as const).map(([k, l, Icon]) => (
+            <button key={k} type="button" onClick={() => setTab(k)}
+              className={cn("flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition", tab === k ? "bg-background shadow-sm" : "text-muted-foreground")}>
+              <Icon className="h-4 w-4" /> {l}
+            </button>
+          ))}
         </div>
+
+        {tasks === null ? (
+          <div className="space-y-3">{[0, 1, 2].map((i) => <div key={i} className="h-20 animate-pulse rounded-2xl bg-secondary/60" />)}</div>
+        ) : tab === "today" ? (
+          <TodayView
+            tasks={todays} day={todayDay} now={now} studiedSec={studiedSec} done={done}
+            onAdd={add} onToggle={toggleDone} onTimer={toggleTimer} onRemove={remove} onSaveDay={saveDay}
+            yesterdayLeft={todays.length === 0 ? yesterdayLeft : []} onCarry={() => carryOver(yesterdayLeft)}
+          />
+        ) : (
+          <RecordView tasks={tasks} days={days} today={today} />
+        )}
       </div>
-
-      {/* Weekly Recap Modal */}
-      <Dialog open={showRecap} onOpenChange={setShowRecap}>
-        <DialogContent className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-slate-950">
-          <DialogHeader>
-            <div className="flex items-center gap-2 text-teal-600 dark:text-teal-400">
-              <CalendarDays className="h-5 w-5" />
-              <DialogTitle className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-                Weekly Study Recap
-              </DialogTitle>
-            </div>
-            <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
-              Your 7-day NEET preparation momentum & focus breakdown
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="mt-4 space-y-4">
-            {/* Top Stat Grid */}
-            <div className="grid grid-cols-3 gap-2.5">
-              <div className="rounded-xl border border-teal-500/20 bg-teal-500/10 p-3 text-center">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">Total Planned</span>
-                <span className="mt-1 block text-lg font-black text-slate-900 dark:text-white">
-                  {(totalMinutes / 60).toFixed(1)} <span className="text-xs font-semibold">hrs</span>
-                </span>
-              </div>
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-center">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Completed</span>
-                <span className="mt-1 block text-lg font-black text-slate-900 dark:text-white">
-                  {(completedMinutes / 60).toFixed(1)} <span className="text-xs font-semibold">hrs</span>
-                </span>
-              </div>
-              <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-center">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Completion</span>
-                <span className="mt-1 block text-lg font-black text-slate-900 dark:text-white">
-                  {totalMinutes > 0 ? Math.round((completedMinutes / totalMinutes) * 100) : 0}%
-                </span>
-              </div>
-            </div>
-
-            {/* Subject Distribution */}
-            <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-3.5 dark:border-white/10 dark:bg-white/5">
-              <span className="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-2.5">
-                Targeted Subject Focus
-              </span>
-              <div className="space-y-2">
-                {[
-                  { name: "Biology", color: "bg-emerald-500", count: todos.filter(t => t.subject === "Biology").length },
-                  { name: "Chemistry", color: "bg-teal-500", count: todos.filter(t => t.subject === "Chemistry").length },
-                  { name: "Physics", color: "bg-sky-500", count: todos.filter(t => t.subject === "Physics").length },
-                  { name: "Mocks & Revision", color: "bg-purple-500", count: todos.filter(t => t.subject === "Mock" || t.subject === "Revision").length },
-                ].map((s) => (
-                  <div key={s.name} className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className={`h-2.5 w-2.5 rounded-full ${s.color}`} />
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">{s.name}</span>
-                    </div>
-                    <span className="font-bold text-slate-900 dark:text-white">
-                      {s.count} {s.count === 1 ? "ticket" : "tickets"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Motivation Badge */}
-            <div className="flex items-center gap-3 rounded-xl border border-amber-400/30 bg-amber-500/10 p-3">
-              <Flame className="h-6 w-6 shrink-0 text-amber-500" />
-              <div className="text-xs">
-                <span className="font-bold text-amber-800 dark:text-amber-300">Aiming for NEET 2027 Top Rank!</span>
-                <p className="text-[11px] text-slate-600 dark:text-slate-400">Consistency in completing 3–4 hr focus sessions guarantees 700+ score.</p>
-              </div>
-            </div>
-
-            <Button
-              onClick={() => setShowRecap(false)}
-              className="w-full rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 font-bold text-white shadow-md shadow-teal-500/20"
-            >
-              Keep Crushing Goals
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </PageShell>
-
   );
 }
+
+/** One-time import of the old browser-only to-do lists (last 30 days) into the database. */
+async function importOldTodos(uid: string, from: string) {
+  try {
+    const flag = `nt_todo_imported_${uid}`;
+    if (localStorage.getItem(flag)) return;
+    const prefix = `neetiq_todos_${uid}_`;
+    const map: Record<string, Subject> = { Physics: "physics", Chemistry: "chemistry", Biology: "biology" };
+    const rows: any[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k?.startsWith(prefix)) continue;
+      const day = k.slice(prefix.length);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day < from) continue;
+      const items = JSON.parse(localStorage.getItem(k) || "[]");
+      if (!Array.isArray(items)) continue;
+      items.forEach((it: any, n: number) => {
+        const title = String(it?.title ?? "").trim().slice(0, 140);
+        if (!title) return;
+        const mins = Number(it?.timeMinutes);
+        rows.push({
+          user_id: uid, day, subject: map[it?.subject] ?? "other", title,
+          target_min: Number.isFinite(mins) && mins >= 5 ? Math.min(720, Math.round(mins)) : null,
+          done: !!it?.completed, done_at: it?.completed ? new Date(day + "T20:00:00").toISOString() : null, sort: n,
+        });
+      });
+    }
+    if (rows.length) {
+      const { error } = await db.from("study_tasks").insert(rows);
+      if (error) return; // try again next visit
+    }
+    localStorage.setItem(flag, "1");
+  } catch { /* storage unavailable: nothing to import */ }
+}
+
+/* ================================================================ TODAY */
+
+function TodayView({ tasks, day, now, studiedSec, done, onAdd, onToggle, onTimer, onRemove, onSaveDay, yesterdayLeft, onCarry }: {
+  tasks: StudyTask[]; day: StudyDay | null; now: number; studiedSec: number; done: number;
+  onAdd: (s: Subject, title: string, t: number | null) => Promise<void>;
+  onToggle: (t: StudyTask) => void; onTimer: (t: StudyTask) => void; onRemove: (t: StudyTask) => void;
+  onSaveDay: (p: Partial<StudyDay>) => Promise<boolean | undefined>;
+  yesterdayLeft: StudyTask[]; onCarry: () => void;
+}) {
+  const total = tasks.length;
+  const pct = total ? done / total : 0;
+  const targetSec = tasks.reduce((s, t) => s + (t.target_min ?? 0) * 60, 0);
+  const locked = !!day?.locked_at;
+
+  return (
+    <div className="space-y-5">
+      {/* Summary */}
+      <section className="grid grid-cols-[auto_1fr] items-center gap-4 rounded-3xl border border-border bg-card p-4 sm:p-5">
+        <Ring pct={pct} size={92}>
+          <div className="text-center leading-none"><div className="text-2xl font-black">{done}<span className="text-sm font-bold text-muted-foreground">/{total}</span></div><div className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">done</div></div>
+        </Ring>
+        <div className="grid grid-cols-2 gap-2">
+          <Stat icon={<Clock className="h-4 w-4 text-sky-500" />} label="Studied today" value={fmtDuration(studiedSec)} sub={targetSec ? `of ${fmtDuration(targetSec)} planned` : "Use the timers"} />
+          <Stat icon={<Target className="h-4 w-4 text-emerald-500" />} label="Completion" value={`${Math.round(pct * 100)}%`} sub={total ? (done === total ? "All done 🎉" : `${total - done} to go`) : "Add your tasks"} />
+        </div>
+      </section>
+
+      {yesterdayLeft.length > 0 && (
+        <button type="button" onClick={onCarry} className="flex w-full items-center gap-3 rounded-2xl border border-dashed border-amber-400/60 bg-amber-400/5 p-4 text-left text-sm">
+          <ArrowRight className="h-4 w-4 text-amber-500" />
+          <span className="flex-1"><b>{yesterdayLeft.length} unfinished task{yesterdayLeft.length === 1 ? "" : "s"}</b> from yesterday. Move them to today?</span>
+          <span className="font-semibold text-amber-600 dark:text-amber-400">Move</span>
+        </button>
+      )}
+
+      <AddTask onAdd={onAdd} />
+
+      {/* Tasks */}
+      {total === 0 ? (
+        <div className="rounded-3xl border border-dashed border-border p-8 text-center">
+          <div className="text-3xl">📝</div>
+          <p className="mt-2 font-semibold">Plan your day</p>
+          <p className="mt-1 text-sm text-muted-foreground">Add what you will study in Physics, Chemistry and Biology today. Small, clear tasks work best.</p>
+        </div>
+      ) : (
+        <section className="space-y-4">
+          {SUBJECTS.map((s) => {
+            const list = tasks.filter((t) => t.subject === s.key);
+            if (!list.length) return null;
+            return (
+              <div key={s.key}>
+                <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider" style={{ color: s.color }}>
+                  <span>{s.emoji}</span>{s.label}<span className="font-medium text-muted-foreground">· {list.filter((t) => t.done).length}/{list.length}</span>
+                </div>
+                <ul className="space-y-2">
+                  {list.map((t) => <TaskRow key={t.id} t={t} now={now} onToggle={onToggle} onTimer={onTimer} onRemove={onRemove} />)}
+                </ul>
+              </div>
+            );
+          })}
+          {!locked ? (
+            <button type="button" onClick={async () => { if (await onSaveDay({ locked_at: new Date().toISOString() })) toast.success("Today's plan is set. Now execute it!"); }}
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-sm font-bold text-white shadow-lg shadow-blue-500/20">
+              <Lock className="h-4 w-4" /> Submit today's plan ({total} task{total === 1 ? "" : "s"})
+            </button>
+          ) : (
+            <p className="text-center text-xs text-muted-foreground"><Lock className="mr-1 inline h-3 w-3" />Plan submitted at {new Date(day!.locked_at!).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}. You can still add tasks.</p>
+          )}
+        </section>
+      )}
+
+      <DayReview day={day} total={total} done={done} studiedSec={studiedSec} onSave={onSaveDay} />
+    </div>
+  );
+}
+
+function TaskRow({ t, now, onToggle, onTimer, onRemove }: { t: StudyTask; now: number; onToggle: (t: StudyTask) => void; onTimer: (t: StudyTask) => void; onRemove: (t: StudyTask) => void }) {
+  const s = subjectOf(t.subject);
+  const sec = taskSeconds(t, now);
+  const run = !!t.timer_started_at;
+  const pct = t.target_min ? Math.min(1, sec / (t.target_min * 60)) : 0;
+  return (
+    <li className={cn("group relative overflow-hidden rounded-2xl border bg-card p-3 transition", t.done ? "border-emerald-500/30 bg-emerald-500/[.04]" : run ? "border-sky-400/60 shadow-[0_0_0_3px_rgba(56,189,248,.12)]" : "border-border")}>
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={() => onToggle(t)} aria-label={t.done ? "Mark not done" : "Mark done"}
+          className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition active:scale-90",
+            t.done ? "border-emerald-500 bg-emerald-500 text-white" : "border-muted-foreground/40 hover:border-emerald-500")}>
+          {t.done && <Check className="h-4 w-4" strokeWidth={3} />}
+        </button>
+        <div className="min-w-0 flex-1">
+          <div className={cn("truncate font-medium", t.done && "text-muted-foreground line-through")}>{t.title}</div>
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+            <span className={cn("font-mono tabular-nums", run && "font-bold text-sky-600 dark:text-sky-400")}>{fmtClock(sec)}</span>
+            {t.target_min ? <span>/ {fmtDuration(t.target_min * 60)} target</span> : null}
+          </div>
+        </div>
+        {!t.done && (
+          <button type="button" onClick={() => onTimer(t)} aria-label={run ? "Pause timer" : "Start timer"}
+            className={cn("inline-flex h-9 items-center gap-1 rounded-xl px-3 text-xs font-bold", run ? "bg-sky-500 text-white" : "bg-secondary text-foreground")}>
+            {run ? <><Pause className="h-3.5 w-3.5" />Pause</> : <><Play className="h-3.5 w-3.5" />Start</>}
+          </button>
+        )}
+        <button type="button" onClick={() => onRemove(t)} aria-label="Delete task" className="p-1.5 text-muted-foreground/60 hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
+      </div>
+      {t.target_min ? <div className="absolute inset-x-0 bottom-0 h-1 bg-transparent"><div className="h-full transition-all" style={{ width: `${pct * 100}%`, background: s.color }} /></div> : null}
+    </li>
+  );
+}
+
+function AddTask({ onAdd }: { onAdd: (s: Subject, title: string, t: number | null) => Promise<void> }) {
+  const [subject, setSubject] = useState<Subject>("physics");
+  const [title, setTitle] = useState("");
+  const [target, setTarget] = useState<number | null>(60);
+  const [busy, setBusy] = useState(false);
+  async function submit() {
+    if (!title.trim()) { toast("Write the task first"); return; }
+    setBusy(true);
+    await onAdd(subject, title, target);
+    setBusy(false);
+    setTitle("");
+  }
+  const s = subjectOf(subject);
+  return (
+    <section className="rounded-3xl border border-border bg-card p-4">
+      <div className="mb-3 flex items-center gap-2 text-sm font-bold"><Plus className="h-4 w-4 text-primary" /> Add a task</div>
+      <div className="grid grid-cols-4 gap-1.5">
+        {SUBJECTS.map((x) => (
+          <button key={x.key} type="button" onClick={() => setSubject(x.key)}
+            className={cn("rounded-xl border px-1 py-2 text-xs font-bold transition", subject === x.key ? "text-white" : "border-border text-muted-foreground")}
+            style={subject === x.key ? { background: x.color, borderColor: x.color } : undefined}>
+            <span className="mr-0.5">{x.emoji}</span>{x.label}
+          </button>
+        ))}
+      </div>
+      <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={140}
+          placeholder={`e.g. ${IDEAS[subject][0]}`} className="h-11 min-w-0 flex-1 rounded-xl border border-input bg-background px-3 text-sm outline-none focus:border-primary" />
+        <button type="submit" disabled={busy} className="h-11 rounded-xl px-4 text-sm font-bold text-white disabled:opacity-60" style={{ background: s.color }}>Add</button>
+      </form>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {IDEAS[subject].map((idea) => (
+          <button key={idea} type="button" onClick={() => setTitle(idea)} className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground hover:text-foreground">{idea}</button>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+        <span className="mr-1 text-muted-foreground">Target time</span>
+        {TARGETS.map((m) => (
+          <button key={String(m)} type="button" onClick={() => setTarget(m)}
+            className={cn("rounded-lg border px-2.5 py-1 font-semibold", target === m ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground")}>
+            {m === null ? "None" : fmtDuration(m * 60)}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DayReview({ day, total, done, studiedSec, onSave }: { day: StudyDay | null; total: number; done: number; studiedSec: number; onSave: (p: Partial<StudyDay>) => Promise<boolean | undefined> }) {
+  const [editing, setEditing] = useState(false);
+  const [mood, setMood] = useState<number | null>(day?.mood ?? null);
+  const [well, setWell] = useState(day?.went_well ?? "");
+  const [mist, setMist] = useState(day?.mistakes ?? "");
+  const [tags, setTags] = useState<string[]>(day?.mistake_tags ?? []);
+  useEffect(() => { setMood(day?.mood ?? null); setWell(day?.went_well ?? ""); setMist(day?.mistakes ?? ""); setTags(day?.mistake_tags ?? []); }, [day?.day, day?.closed_at]);
+  const closed = !!day?.closed_at && !editing;
+
+  if (closed) {
+    const m = MOODS.find((x) => x.v === day!.mood);
+    return (
+      <section className="rounded-3xl border border-emerald-500/30 bg-emerald-500/[.04] p-5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 font-bold"><Sparkles className="h-4 w-4 text-emerald-500" /> Day closed {m ? `· ${m.emoji} ${m.label}` : ""}</div>
+          <button type="button" onClick={() => setEditing(true)} className="text-xs font-semibold text-primary">Edit</button>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">{done}/{total} tasks · {fmtDuration(studiedSec)} studied</p>
+        {day!.went_well && <p className="mt-3 text-sm"><b>Went well:</b> {day!.went_well}</p>}
+        {(day!.mistakes || day!.mistake_tags.length > 0) && (
+          <p className="mt-2 text-sm"><b>Mistakes:</b> {day!.mistake_tags.join(", ")}{day!.mistakes ? `${day!.mistake_tags.length ? " — " : ""}${day!.mistakes}` : ""}</p>
+        )}
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-3xl border border-border bg-card p-5">
+      <div className="flex items-center gap-2 font-bold"><Flame className="h-4 w-4 text-amber-500" /> End-of-day review</div>
+      <p className="mt-1 text-sm text-muted-foreground">Before you sleep: tick what you finished, then reflect for one minute. This is how toppers improve every day.</p>
+
+      <div className="mt-4 text-xs font-semibold text-muted-foreground">How did today go?</div>
+      <div className="mt-2 grid grid-cols-5 gap-1.5">
+        {MOODS.map((m) => (
+          <button key={m.v} type="button" onClick={() => setMood(m.v)}
+            className={cn("rounded-xl border py-2 text-center transition", mood === m.v ? "border-primary bg-primary/10" : "border-border")}>
+            <div className="text-xl">{m.emoji}</div><div className="mt-0.5 text-[10px] text-muted-foreground">{m.label}</div>
+          </button>
+        ))}
+      </div>
+
+      <label className="mt-4 block text-xs font-semibold text-muted-foreground">What went well today?</label>
+      <textarea value={well} onChange={(e) => setWell(e.target.value)} maxLength={1000} rows={2} placeholder="e.g. Finished Thermodynamics PYQs with 85% accuracy"
+        className="mt-1.5 w-full rounded-xl border border-input bg-background p-3 text-sm outline-none focus:border-primary" />
+
+      <div className="mt-4 text-xs font-semibold text-muted-foreground">What mistakes did you make?</div>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {MISTAKE_TAGS.map((tg) => {
+          const on = tags.includes(tg);
+          return (
+            <button key={tg} type="button" onClick={() => setTags((x) => (on ? x.filter((y) => y !== tg) : [...x, tg]))}
+              className={cn("rounded-full border px-3 py-1 text-xs font-medium", on ? "border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400" : "border-border text-muted-foreground")}>
+              {tg}
+            </button>
+          );
+        })}
+      </div>
+      <textarea value={mist} onChange={(e) => setMist(e.target.value)} maxLength={1000} rows={2} placeholder="e.g. Kept checking my phone after lunch; mixed up sign conventions in optics"
+        className="mt-2 w-full rounded-xl border border-input bg-background p-3 text-sm outline-none focus:border-primary" />
+
+      <button type="button" disabled={!mood}
+        onClick={async () => {
+          const ok = await onSave({ mood, went_well: well.trim() || null, mistakes: mist.trim() || null, mistake_tags: tags, closed_at: new Date().toISOString() });
+          if (ok) { setEditing(false); toast.success("Day closed. See you tomorrow, Doctor!"); }
+        }}
+        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-foreground text-sm font-bold text-background disabled:opacity-40">
+        <Check className="h-4 w-4" /> Close my day
+      </button>
+    </section>
+  );
+}
+
+/* ================================================================ 30-DAY RECORD */
+
+function RecordView({ tasks, days, today }: { tasks: StudyTask[]; days: StudyDay[]; today: string }) {
+  const [pick, setPick] = useState<string | null>(null);
+  const list = useMemo(() => Array.from({ length: 30 }, (_, i) => addDays(today, i - 29)), [today]);
+  const byDay = useMemo(() => {
+    const m = new Map<string, { total: number; done: number; sec: number }>();
+    for (const d of list) m.set(d, { total: 0, done: 0, sec: 0 });
+    for (const t of tasks) {
+      const r = m.get(t.day);
+      if (!r) continue;
+      r.total++; if (t.done) r.done++; r.sec += taskSeconds(t);
+    }
+    return m;
+  }, [tasks, list]);
+
+  const planned = list.filter((d) => byDay.get(d)!.total > 0);
+  const totalTasks = planned.reduce((s, d) => s + byDay.get(d)!.total, 0);
+  const doneTasks = planned.reduce((s, d) => s + byDay.get(d)!.done, 0);
+  const totalSec = list.reduce((s, d) => s + byDay.get(d)!.sec, 0);
+  const goodDay = (d: string) => { const r = byDay.get(d)!; return r.total > 0 && r.done / r.total >= 0.6; };
+  let streak = 0;
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (goodDay(list[i])) streak++;
+    else if (i === list.length - 1) continue; // today may still be in progress
+    else break;
+  }
+  let best = 0, cur = 0;
+  for (const d of list) { cur = goodDay(d) ? cur + 1 : 0; best = Math.max(best, cur); }
+  const consistency = Math.round((list.filter(goodDay).length / 30) * 100);
+  const accuracy = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+
+  const subj = SUBJECTS.map((s) => ({ ...s, sec: tasks.filter((t) => t.subject === s.key).reduce((a, t) => a + taskSeconds(t), 0) }));
+  const maxSubj = Math.max(1, ...subj.map((s) => s.sec));
+  const tagCount = new Map<string, number>();
+  for (const d of days) for (const tg of d.mistake_tags ?? []) tagCount.set(tg, (tagCount.get(tg) ?? 0) + 1);
+  const topTags = [...tagCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  const sel = pick ? { day: pick, r: byDay.get(pick)!, tasks: tasks.filter((t) => t.day === pick), rev: days.find((d) => d.day === pick) } : null;
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Stat icon={<Target className="h-4 w-4 text-emerald-500" />} label="Task completion" value={`${accuracy}%`} sub={`${doneTasks}/${totalTasks} tasks`} />
+        <Stat icon={<CalendarDays className="h-4 w-4 text-violet-500" />} label="Consistency" value={`${consistency}%`} sub="days with 60%+ done" />
+        <Stat icon={<Flame className="h-4 w-4 text-amber-500" />} label="Current streak" value={`${streak} day${streak === 1 ? "" : "s"}`} sub={`Best: ${best}`} />
+        <Stat icon={<Clock className="h-4 w-4 text-sky-500" />} label="Study time" value={fmtDuration(totalSec)} sub={planned.length ? `${fmtDuration(Math.round(totalSec / planned.length))} per study day` : "last 30 days"} />
+      </div>
+
+      <section className="rounded-3xl border border-border bg-card p-4">
+        <div className="mb-3 flex items-center justify-between text-sm font-bold"><span>Last 30 days</span><span className="text-xs font-normal text-muted-foreground">Tap a day</span></div>
+        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+          {list.map((d) => {
+            const r = byDay.get(d)!;
+            const p = r.total ? r.done / r.total : -1;
+            const bg = p < 0 ? "bg-secondary/50" : p >= 1 ? "bg-emerald-500" : p >= 0.6 ? "bg-emerald-400/70" : p > 0 ? "bg-amber-400/70" : "bg-rose-400/50";
+            const dt = new Date(d + "T00:00:00");
+            return (
+              <button key={d} type="button" onClick={() => setPick(d === pick ? null : d)}
+                className={cn("flex aspect-square flex-col items-center justify-center rounded-lg text-[11px] font-semibold", bg, p >= 0.6 && "text-white", d === pick && "ring-2 ring-primary ring-offset-2 ring-offset-background", d === today && "outline outline-2 outline-primary/50")}>
+                {dt.getDate()}
+                {r.total > 0 && <span className="text-[9px] font-medium opacity-80">{r.done}/{r.total}</span>}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-emerald-500" />All done</span>
+          <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-emerald-400/70" />60%+</span>
+          <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-amber-400/70" />Some</span>
+          <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-rose-400/50" />None done</span>
+          <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded bg-secondary" />No plan</span>
+        </div>
+      </section>
+
+      {sel && (
+        <section className="rounded-3xl border border-primary/30 bg-card p-4">
+          <div className="flex items-center justify-between">
+            <div className="font-bold">{new Date(sel.day + "T00:00:00").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</div>
+            <button type="button" onClick={() => setPick(null)} className="p-1 text-muted-foreground"><X className="h-4 w-4" /></button>
+          </div>
+          <p className="text-xs text-muted-foreground">{sel.r.done}/{sel.r.total} tasks · {fmtDuration(sel.r.sec)} studied {sel.rev?.mood ? `· ${MOODS.find((m) => m.v === sel.rev!.mood)?.emoji}` : ""}</p>
+          {sel.tasks.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">No tasks planned this day.</p> : (
+            <ul className="mt-3 space-y-1.5 text-sm">
+              {sel.tasks.map((t) => (
+                <li key={t.id} className="flex items-center gap-2">
+                  <span className={cn("flex h-5 w-5 items-center justify-center rounded-full text-[10px]", t.done ? "bg-emerald-500 text-white" : "border border-muted-foreground/40")}>{t.done ? "✓" : ""}</span>
+                  <span className={cn("flex-1", !t.done && "text-muted-foreground")}>{t.title}</span>
+                  <span className="text-xs" style={{ color: subjectOf(t.subject).color }}>{subjectOf(t.subject).label}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {sel.rev?.went_well && <p className="mt-3 text-sm"><b>Went well:</b> {sel.rev.went_well}</p>}
+          {(sel.rev?.mistakes || (sel.rev?.mistake_tags?.length ?? 0) > 0) && <p className="mt-1 text-sm"><b>Mistakes:</b> {sel.rev!.mistake_tags.join(", ")}{sel.rev!.mistakes ? ` — ${sel.rev!.mistakes}` : ""}</p>}
+        </section>
+      )}
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <section className="rounded-3xl border border-border bg-card p-4">
+          <div className="mb-3 text-sm font-bold">Study time by subject</div>
+          <div className="space-y-2.5">
+            {subj.map((s) => (
+              <div key={s.key}>
+                <div className="flex justify-between text-xs"><span>{s.emoji} {s.label}</span><span className="font-semibold">{fmtDuration(s.sec)}</span></div>
+                <div className="mt-1 h-2 rounded-full bg-secondary"><div className="h-full rounded-full" style={{ width: `${(s.sec / maxSubj) * 100}%`, background: s.color }} /></div>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className="rounded-3xl border border-border bg-card p-4">
+          <div className="mb-3 text-sm font-bold">Your most common mistakes</div>
+          {topTags.length === 0 ? <p className="text-sm text-muted-foreground">Close your days with a review to see patterns here.</p> : (
+            <ul className="space-y-2 text-sm">
+              {topTags.map(([tg, n]) => (
+                <li key={tg} className="flex items-center justify-between"><span>{tg}</span><span className="rounded-full bg-rose-500/10 px-2 py-0.5 text-xs font-bold text-rose-600 dark:text-rose-400">{n} day{n === 1 ? "" : "s"}</span></li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================ BITS */
+
+function Stat({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-3">
+      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{icon}{label}</div>
+      <div className="mt-1 text-xl font-black tabular-nums">{value}</div>
+      {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
+    </div>
+  );
+}
+
+function Ring({ pct, size, children }: { pct: number; size: number; children: React.ReactNode }) {
+  const r = size / 2 - 7, c = 2 * Math.PI * r;
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" className="text-secondary" strokeWidth="8" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="url(#todoRing)" strokeWidth="8" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - pct)} style={{ transition: "stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)" }} />
+        <defs><linearGradient id="todoRing" x1="0" x2="1"><stop offset="0" stopColor="#10B981" /><stop offset="1" stopColor="#22D3EE" /></linearGradient></defs>
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">{children}</div>
+    </div>
+  );
+}
+
+function Victory({ done, studied, onClose }: { done: number; studied: number; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div className="relative w-full max-w-sm overflow-hidden rounded-[28px] bg-gradient-to-b from-[#0B1A45] to-[#050B1F] p-7 text-center text-white shadow-2xl" onClick={(e) => e.stopPropagation()}
+        style={{ animation: "todo-pop .5s cubic-bezier(.2,1.4,.4,1) both" }}>
+        <style>{`@keyframes todo-pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}@keyframes todo-shine{to{transform:rotate(360deg)}}`}</style>
+        <div className="absolute left-1/2 top-16 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[conic-gradient(from_0deg,transparent,rgba(250,204,21,.25),transparent_30%)]" style={{ animation: "todo-shine 6s linear infinite" }} />
+        <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-amber-200 to-yellow-500 shadow-[0_15px_40px_-10px_rgba(250,204,21,.8)]"><Trophy className="h-10 w-10 text-slate-900" /></div>
+        <div className="relative mt-5 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-200">Victory</div>
+        <h2 className="relative mt-1 text-2xl font-black">Every task done!</h2>
+        <p className="relative mt-2 text-sm text-white/75">{done} tasks completed · {fmtDuration(studied)} of focused study. This is how 700+ is built, one day at a time.</p>
+        <button type="button" onClick={onClose} className="relative mt-6 h-12 w-full rounded-2xl bg-gradient-to-r from-amber-300 to-yellow-500 text-sm font-extrabold text-slate-950">Keep going 💪</button>
+      </div>
+    </div>
+  );
+}
+
+/** Lightweight confetti burst; fires whenever `fire` changes (and is > 0). */
+function Confetti({ fire }: { fire: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    if (!fire || !ref.current) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const cv = ref.current, ctx = cv.getContext("2d")!;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.scale(dpr, dpr);
+    const colors = ["#F59E0B", "#10B981", "#3B82F6", "#EC4899", "#8B5CF6", "#FDE68A"];
+    const parts = Array.from({ length: 140 }, () => ({
+      x: innerWidth / 2, y: innerHeight * 0.4, vx: (Math.random() - 0.5) * 16, vy: -Math.random() * 15 - 4,
+      w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4, c: colors[(Math.random() * colors.length) | 0],
+    }));
+    let raf = 0; const start = performance.now();
+    const step = (t: number) => {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      for (const p of parts) {
+        p.vy += 0.42; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+      }
+      if (t - start < 2600) raf = requestAnimationFrame(step); else ctx.clearRect(0, 0, innerWidth, innerHeight);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [fire]);
+  return <canvas ref={ref} className="pointer-events-none fixed inset-0 z-[80] h-full w-full" aria-hidden="true" />;
+}
+
+// Keep the unused-import checker quiet for icons used only conditionally.
+void ChevronLeft;

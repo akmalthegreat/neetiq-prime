@@ -2,8 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Menu, X, LogOut, Sun, Moon, User, Search, LayoutDashboard, Zap, Trophy, Crown, ArrowRight, ChevronRight,
   LayoutList, History, Timer, SlidersHorizontal, Infinity as InfinityIcon, NotebookPen, Highlighter, Layers, Atom,
-  RotateCcw, Bookmark, Route as RouteIcon, Gauge, Swords, Gift, Handshake,
-} from "lucide-react";
+  RotateCcw, Bookmark, Route as RouteIcon, Gauge, Swords, Gift, Handshake, ListChecks } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -56,6 +55,7 @@ const SECTIONS: Section[] = [
     label: "Improve",
     tone: "amber",
     items: [
+      { to: "/todo", label: "My To-Do & Targets", icon: ListChecks },
       { to: "/mistakes", label: "My Mistakes", icon: RotateCcw },
       { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
       { to: "/ai-path", label: "Study Path", icon: RouteIcon },

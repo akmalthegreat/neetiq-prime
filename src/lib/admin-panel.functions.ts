@@ -413,3 +413,68 @@ export const adminQuickStats = createServerFn({ method: "GET" })
       mega: megaInfo,
     };
   });
+
+/* ------------------------------------------------------------------ student journey */
+
+export const adminStudentJourney = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i) => z.object({ user_id: z.string().uuid() }).parse(i))
+  .handler(async ({ data, context }) => {
+    await ensureAdmin(context);
+    const d = await db();
+    const uid = data.user_id;
+    const since30 = new Date(Date.now() - 30 * 86_400_000);
+    const fromDay = since30.toISOString().slice(0, 10);
+
+    const [prof, subs, tasks, days, attempts, mega] = await Promise.all([
+      d.from("profiles").select("id,full_name,email,created_at,last_seen_at,target_year,xp_total").eq("id", uid).maybeSingle(),
+      d.from("subscriptions").select("status,expires_at,started_at,source,batches:source_batch_id(title)").eq("user_id", uid).order("expires_at", { ascending: false }).limit(5),
+      d.from("study_tasks").select("day,subject,title,done,spent_sec,timer_started_at,target_min").eq("user_id", uid).gte("day", fromDay).order("day", { ascending: false }).limit(2000),
+      d.from("study_days").select("day,locked_at,closed_at,mood,went_well,mistakes,mistake_tags").eq("user_id", uid).gte("day", fromDay).order("day", { ascending: false }),
+      d.from("attempts").select("id,score,correct_count,wrong_count,unattempted_count,submitted_at,status,tests:test_id(title,type,series)").eq("user_id", uid).eq("status", "completed").order("submitted_at", { ascending: false }).limit(1000),
+      d.from("mega_entries").select("quiz_id,score,rank,prize,status").eq("user_id", uid).limit(500),
+    ]);
+    if (!prof.data) throw new Error("Student not found");
+
+    const att = (attempts.data ?? []) as any[];
+    const solved = att.reduce((s, a) => s + Number(a.correct_count ?? 0) + Number(a.wrong_count ?? 0), 0);
+    const correct = att.reduce((s, a) => s + Number(a.correct_count ?? 0), 0);
+    const recent = att.filter((a) => a.submitted_at && new Date(a.submitted_at) >= since30);
+    const solved30 = recent.reduce((s, a) => s + Number(a.correct_count ?? 0) + Number(a.wrong_count ?? 0), 0);
+    const tests = att.filter((a) => a.tests?.type === "mock" || a.tests?.type === "contest").slice(0, 15).map((a) => ({
+      id: a.id, title: a.tests?.title ?? "Test", score: Number(a.score ?? 0), at: a.submitted_at,
+    }));
+
+    // To-do record, day by day
+    const byDay = new Map<string, { day: string; total: number; done: number; sec: number }>();
+    for (const t of (tasks.data ?? []) as any[]) {
+      const r = byDay.get(t.day) ?? { day: t.day, total: 0, done: 0, sec: 0 };
+      r.total++; if (t.done) r.done++; r.sec += Number(t.spent_sec ?? 0);
+      byDay.set(t.day, r);
+    }
+    const dayRows = [...byDay.values()].sort((a, b) => (a.day < b.day ? 1 : -1));
+    const totalT = dayRows.reduce((s, r) => s + r.total, 0);
+    const doneT = dayRows.reduce((s, r) => s + r.done, 0);
+    const goodDays = dayRows.filter((r) => r.total && r.done / r.total >= 0.6).length;
+    const studySec = dayRows.reduce((s, r) => s + r.sec, 0);
+
+    const megaRows = (mega.data ?? []) as any[];
+    const liveSub = ((subs.data ?? []) as any[]).find((s) => s.status === "active" && new Date(s.expires_at) > new Date());
+
+    return {
+      profile: prof.data as any,
+      premium: liveSub ? { plan: liveSub.batches?.title ?? "Premium", expiresAt: liveSub.expires_at as string } : null,
+      questions: { solved, accuracy: solved ? Math.round((correct / solved) * 100) : 0, solved30, attempts: att.length },
+      tests,
+      mega: { played: megaRows.length, wins: megaRows.filter((m) => Number(m.prize ?? 0) > 0).length, best: megaRows.reduce((b, m) => Math.max(b, Number(m.score ?? 0)), 0) },
+      todo: {
+        days: dayRows,
+        completion: totalT ? Math.round((doneT / totalT) * 100) : 0,
+        consistency: Math.round((goodDays / 30) * 100),
+        plannedDays: dayRows.length,
+        studySec,
+        tasks: (tasks.data ?? []) as any[],
+        reviews: (days.data ?? []) as any[],
+      },
+    };
+  });

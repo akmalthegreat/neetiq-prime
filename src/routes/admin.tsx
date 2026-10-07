@@ -39,6 +39,7 @@ import { AdminCouponsTab } from "@/components/admin-coupons";
 import { PremiumMembers } from "@/components/admin/premium-members";
 import { BannerManager } from "@/components/admin/banner-manager";
 import { Announcements } from "@/components/admin/announcements";
+import { StudentJourney } from "@/components/admin/student-journey";
 import { ALL_TOOLS, AdminMobilePicker, AdminSidebar, AdminQuickStats } from "@/components/admin/admin-nav";
 
 export const Route = createFileRoute("/admin")({
@@ -109,6 +110,7 @@ function AdminWorkspace() {
       case "premium": return <PremiumMembers />;
       case "banners": return <BannerManager />;
       case "announce": return <Announcements />;
+      case "journey": return <StudentJourney />;
       case "userReport": return <UserReportPanel />;
       case "payments": return <WithdrawalsPanel />;
       case "batches": return <AdminBatchesTab />;

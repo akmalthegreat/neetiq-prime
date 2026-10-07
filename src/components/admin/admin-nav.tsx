@@ -22,6 +22,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   { title: "Home", tools: [{ value: "overview", label: "Overview", icon: LayoutDashboard }] },
   { title: "Members & money", tools: [
     { value: "premium", label: "Premium members", icon: Crown, isNew: true },
+    { value: "journey", label: "Student journey", icon: Activity, isNew: true },
     { value: "userReport", label: "Find a student", icon: UserSearch },
     { value: "payments", label: "Withdrawals", icon: Banknote },
     { value: "topWallets", label: "Top wallets", icon: Wallet },
