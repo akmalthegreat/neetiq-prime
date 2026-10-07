@@ -16,6 +16,9 @@ export const INTRO_FONTS_HREF = "https://fonts.googleapis.com/css2?family=Poppin
 
 const TOTAL_MS = 5250;
 
+/** Runs inline right after the intro markup (before hydration). In the installed app, skip the first ~0.95 s. */
+const APP_HANDOFF_SCRIPT = `try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone){var s=document.getElementById('nt-splash');if(s&&s.getAnimations){s.getAnimations({subtree:true}).forEach(function(a){a.currentTime=(Number(a.currentTime)||0)+950})}}}catch(e){}`;
+
 // Deterministic star field (same on server and client, so hydration matches).
 const STARS = (() => {
   let seed = 7;
@@ -127,6 +130,8 @@ export function SplashIntro() {
           </div>
         </div>
       </div>
+      {/* Installed app: Android already showed the logo on its launch screen, so jump straight to the logo burst. */}
+      <script dangerouslySetInnerHTML={{ __html: APP_HANDOFF_SCRIPT }} />
     </div>
   );
 }

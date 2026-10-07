@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "canonical", href: "https://neettrack.com/" },
-      { rel: "manifest", href: "/manifest.webmanifest?v=3" },
+      { rel: "manifest", href: "/manifest.webmanifest?v=4" },
       { rel: "preload", href: "/brand/nt-mark.webp", as: "image", type: "image/webp" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
