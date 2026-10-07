@@ -119,6 +119,30 @@ function MentorshipCard({ onNavigate, compact }: { onNavigate?: () => void; comp
   );
 }
 
+/** Daily Mega Quiz entry: always visible near the top of the menu. */
+function MegaQuizLink({ path, onNavigate }: { path: string; onNavigate?: () => void }) {
+  const active = path.startsWith("/mega-quiz");
+  return (
+    <Link
+      to="/mega-quiz"
+      onClick={onNavigate}
+      className={cn(
+        "flex items-center gap-3 rounded-2xl border px-3.5 py-3 transition-colors",
+        active ? "border-amber-500/60 bg-amber-500/15" : "border-amber-500/35 bg-amber-500/[0.07] hover:bg-amber-500/15",
+      )}
+    >
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-amber-400/20 text-amber-600 dark:text-amber-300">
+        <Trophy className="h-[18px] w-[18px]" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[15px] font-bold leading-tight">Daily Mega Quiz</span>
+        <span className="block text-xs text-muted-foreground">Live at 6 PM · win ₹21</span>
+      </span>
+      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+    </Link>
+  );
+}
+
 function DashboardLink({ path, onNavigate, big }: { path: string; onNavigate?: () => void; big?: boolean }) {
   const active = path.startsWith("/dashboard");
   return (
@@ -249,6 +273,7 @@ export function SiteHeader() {
         <div className="flex-1 overflow-y-auto px-3 pb-4">
           <DashboardLink path={path} />
           <div className="mt-3"><MentorshipCard compact /></div>
+          <div className="mt-3"><MegaQuizLink path={path} /></div>
           <SidebarNav path={path} />
         </div>
 
@@ -376,6 +401,7 @@ export function SiteHeader() {
                 </Link>
               )}
               <div className="mt-3.5"><MentorshipCard onNavigate={() => setOpen(false)} /></div>
+              <div className="mt-3.5"><MegaQuizLink path={path} onNavigate={() => setOpen(false)} /></div>
               <div className="mt-3.5"><DashboardLink path={path} big onNavigate={() => setOpen(false)} /></div>
               <MobileNav path={path} onNavigate={() => setOpen(false)} />
               {user ? (

@@ -15,6 +15,7 @@ import { Route as AdminCollaboratorsRouteImport } from './routes/admin-collabora
 import { Route as AiPathRouteImport } from './routes/ai-path'
 import { Route as ConsultRouteImport } from './routes/consult'
 import { Route as ShortNotesRouteImport } from './routes/short-notes'
+import { Route as MegaQuizRouteImport } from './routes/mega-quiz'
 import { Route as NotesSubjectSlugRouteImport } from './routes/notes.$subject.$slug'
 import { Route as ConsultPlanRouteImport } from './routes/consult-plan'
 import { Route as ConsultReportRouteImport } from './routes/consult-report'
@@ -69,6 +70,8 @@ import { Route as BattleMatchIdResultRouteImport } from './routes/battle.$matchI
 import { Route as ContestContestIdJoinRouteImport } from './routes/contest.$contestId.join'
 import { Route as ContestContestIdResultsRouteImport } from './routes/contest.$contestId.results'
 import { Route as ApiPublicCronDailyContestRouteImport } from './routes/api/public/cron.daily-contest'
+import { Route as ApiPublicCronPushRunRouteImport } from './routes/api/public/cron.push-run'
+import { Route as ApiPublicPushLatestRouteImport } from './routes/api/public/push.latest'
 import { Route as ApiPublicCronDailyDppRouteImport } from './routes/api/public/cron.daily-dpp'
 import { Route as ApiPublicCronFinalizeContestsRouteImport } from './routes/api/public/cron.finalize-contests'
 import { Route as ApiPublicCronInfiniteRunRouteImport } from './routes/api/public/cron.infinite-run'
@@ -108,6 +111,11 @@ const ConsultRoute = ConsultRouteImport.update({
 const ShortNotesRoute = ShortNotesRouteImport.update({
   id: '/short-notes',
   path: '/short-notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MegaQuizRoute = MegaQuizRouteImport.update({
+  id: '/mega-quiz',
+  path: '/mega-quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotesSubjectSlugRoute = NotesSubjectSlugRouteImport.update({
@@ -382,6 +390,16 @@ const ApiPublicCronDailyContestRoute =
     path: '/api/public/cron/daily-contest',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCronPushRunRoute = ApiPublicCronPushRunRouteImport.update({
+  id: '/api/public/cron/push-run',
+  path: '/api/public/cron/push-run',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPushLatestRoute = ApiPublicPushLatestRouteImport.update({
+  id: '/api/public/push/latest',
+  path: '/api/public/push/latest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronDailyDppRoute = ApiPublicCronDailyDppRouteImport.update({
   id: '/api/public/cron/daily-dpp',
   path: '/api/public/cron/daily-dpp',
@@ -447,6 +465,7 @@ export interface FileRoutesByFullPath {
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
+  '/mega-quiz': typeof MegaQuizRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
@@ -501,6 +520,8 @@ export interface FileRoutesByFullPath {
   '/contest/$contestId/join': typeof ContestContestIdJoinRoute
   '/contest/$contestId/results': typeof ContestContestIdResultsRoute
   '/api/public/cron/daily-contest': typeof ApiPublicCronDailyContestRoute
+  '/api/public/cron/push-run': typeof ApiPublicCronPushRunRoute
+  '/api/public/push/latest': typeof ApiPublicPushLatestRoute
   '/api/public/cron/daily-dpp': typeof ApiPublicCronDailyDppRoute
   '/api/public/cron/finalize-contests': typeof ApiPublicCronFinalizeContestsRoute
   '/api/public/cron/infinite-run': typeof ApiPublicCronInfiniteRunRoute
@@ -519,6 +540,7 @@ export interface FileRoutesByTo {
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
+  '/mega-quiz': typeof MegaQuizRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
@@ -573,6 +595,8 @@ export interface FileRoutesByTo {
   '/contest/$contestId/join': typeof ContestContestIdJoinRoute
   '/contest/$contestId/results': typeof ContestContestIdResultsRoute
   '/api/public/cron/daily-contest': typeof ApiPublicCronDailyContestRoute
+  '/api/public/cron/push-run': typeof ApiPublicCronPushRunRoute
+  '/api/public/push/latest': typeof ApiPublicPushLatestRoute
   '/api/public/cron/daily-dpp': typeof ApiPublicCronDailyDppRoute
   '/api/public/cron/finalize-contests': typeof ApiPublicCronFinalizeContestsRoute
   '/api/public/cron/infinite-run': typeof ApiPublicCronInfiniteRunRoute
@@ -592,6 +616,7 @@ export interface FileRoutesById {
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
+  '/mega-quiz': typeof MegaQuizRoute
   '/notes/$subject/$slug': typeof NotesSubjectSlugRoute
   '/consult-plan': typeof ConsultPlanRoute
   '/consult-report': typeof ConsultReportRoute
@@ -646,6 +671,8 @@ export interface FileRoutesById {
   '/contest/$contestId/join': typeof ContestContestIdJoinRoute
   '/contest/$contestId/results': typeof ContestContestIdResultsRoute
   '/api/public/cron/daily-contest': typeof ApiPublicCronDailyContestRoute
+  '/api/public/cron/push-run': typeof ApiPublicCronPushRunRoute
+  '/api/public/push/latest': typeof ApiPublicPushLatestRoute
   '/api/public/cron/daily-dpp': typeof ApiPublicCronDailyDppRoute
   '/api/public/cron/finalize-contests': typeof ApiPublicCronFinalizeContestsRoute
   '/api/public/cron/infinite-run': typeof ApiPublicCronInfiniteRunRoute
@@ -666,6 +693,7 @@ export interface FileRouteTypes {
     | '/ai-path'
     | '/consult'
     | '/short-notes'
+    | '/mega-quiz'
     | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
@@ -720,6 +748,8 @@ export interface FileRouteTypes {
     | '/contest/$contestId/join'
     | '/contest/$contestId/results'
     | '/api/public/cron/daily-contest'
+    | '/api/public/cron/push-run'
+    | '/api/public/push/latest'
     | '/api/public/cron/daily-dpp'
     | '/api/public/cron/finalize-contests'
     | '/api/public/cron/infinite-run'
@@ -738,6 +768,7 @@ export interface FileRouteTypes {
     | '/ai-path'
     | '/consult'
     | '/short-notes'
+    | '/mega-quiz'
     | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
@@ -792,6 +823,8 @@ export interface FileRouteTypes {
     | '/contest/$contestId/join'
     | '/contest/$contestId/results'
     | '/api/public/cron/daily-contest'
+    | '/api/public/cron/push-run'
+    | '/api/public/push/latest'
     | '/api/public/cron/daily-dpp'
     | '/api/public/cron/finalize-contests'
     | '/api/public/cron/infinite-run'
@@ -810,6 +843,7 @@ export interface FileRouteTypes {
     | '/ai-path'
     | '/consult'
     | '/short-notes'
+    | '/mega-quiz'
     | '/notes/$subject/$slug'
     | '/consult-plan'
     | '/consult-report'
@@ -864,6 +898,8 @@ export interface FileRouteTypes {
     | '/contest/$contestId/join'
     | '/contest/$contestId/results'
     | '/api/public/cron/daily-contest'
+    | '/api/public/cron/push-run'
+    | '/api/public/push/latest'
     | '/api/public/cron/daily-dpp'
     | '/api/public/cron/finalize-contests'
     | '/api/public/cron/infinite-run'
@@ -883,6 +919,7 @@ export interface RootRouteChildren {
   AiPathRoute: typeof AiPathRoute
   ConsultRoute: typeof ConsultRoute
   ShortNotesRoute: typeof ShortNotesRoute
+  MegaQuizRoute: typeof MegaQuizRoute
   NotesSubjectSlugRoute: typeof NotesSubjectSlugRoute
   ConsultPlanRoute: typeof ConsultPlanRoute
   ConsultReportRoute: typeof ConsultReportRoute
@@ -930,6 +967,8 @@ export interface RootRouteChildren {
   BattleMatchIdPlayRoute: typeof BattleMatchIdPlayRoute
   BattleMatchIdResultRoute: typeof BattleMatchIdResultRoute
   ApiPublicCronDailyContestRoute: typeof ApiPublicCronDailyContestRoute
+  ApiPublicCronPushRunRoute: typeof ApiPublicCronPushRunRoute
+  ApiPublicPushLatestRoute: typeof ApiPublicPushLatestRoute
   ApiPublicCronDailyDppRoute: typeof ApiPublicCronDailyDppRoute
   ApiPublicCronFinalizeContestsRoute: typeof ApiPublicCronFinalizeContestsRoute
   ApiPublicCronInfiniteRunRoute: typeof ApiPublicCronInfiniteRunRoute
@@ -984,6 +1023,13 @@ declare module '@tanstack/react-router' {
       path: '/short-notes'
       fullPath: '/short-notes'
       preLoaderRoute: typeof ShortNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mega-quiz': {
+      id: '/mega-quiz'
+      path: '/mega-quiz'
+      fullPath: '/mega-quiz'
+      preLoaderRoute: typeof MegaQuizRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notes/$subject/$slug': {
@@ -1364,6 +1410,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronDailyContestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/push-run': {
+      id: '/api/public/cron/push-run'
+      path: '/api/public/cron/push-run'
+      fullPath: '/api/public/cron/push-run'
+      preLoaderRoute: typeof ApiPublicCronPushRunRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/push/latest': {
+      id: '/api/public/push/latest'
+      path: '/api/public/push/latest'
+      fullPath: '/api/public/push/latest'
+      preLoaderRoute: typeof ApiPublicPushLatestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/daily-dpp': {
       id: '/api/public/cron/daily-dpp'
       path: '/api/public/cron/daily-dpp'
@@ -1485,6 +1545,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiPathRoute: AiPathRoute,
   ConsultRoute: ConsultRoute,
   ShortNotesRoute: ShortNotesRoute,
+  MegaQuizRoute: MegaQuizRoute,
   NotesSubjectSlugRoute: NotesSubjectSlugRoute,
   ConsultPlanRoute: ConsultPlanRoute,
   ConsultReportRoute: ConsultReportRoute,
@@ -1532,6 +1593,8 @@ const rootRouteChildren: RootRouteChildren = {
   BattleMatchIdPlayRoute: BattleMatchIdPlayRoute,
   BattleMatchIdResultRoute: BattleMatchIdResultRoute,
   ApiPublicCronDailyContestRoute: ApiPublicCronDailyContestRoute,
+  ApiPublicCronPushRunRoute: ApiPublicCronPushRunRoute,
+  ApiPublicPushLatestRoute: ApiPublicPushLatestRoute,
   ApiPublicCronDailyDppRoute: ApiPublicCronDailyDppRoute,
   ApiPublicCronFinalizeContestsRoute: ApiPublicCronFinalizeContestsRoute,
   ApiPublicCronInfiniteRunRoute: ApiPublicCronInfiniteRunRoute,
