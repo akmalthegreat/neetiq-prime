@@ -74,17 +74,36 @@ async function loadSnapshot(userId: string): Promise<Snapshot> {
   });
   const questions = new Map(questionRows.map((q) => [q.id, q]));
 
-  const chapterIds = new Set<string>();
-  questionRows.forEach((q) => q.chapter_id && chapterIds.add(q.chapter_id));
-  mistakes.forEach((m) => m.chapter_id && chapterIds.add(m.chapter_id));
-  const chapterRows = await inChunks<any>([...chapterIds], async (chunk) => {
-    const { data } = await db.from("chapters").select("id,name,subject_id").in("id", chunk);
-    return data ?? [];
-  });
+  // Load the whole chapter list (same approach as the flashcards / NCERT pages),
+  // so names resolve whatever format the chapter ids use.
+  const chapterRows: any[] = [];
+  for (let from = 0; from < 20000; from += 1000) {
+    const { data, error } = await db.from("chapters").select("id,name,subject_id").range(from, from + 999);
+    if (error) { console.warn("[consult] chapters lookup failed", error.message); break; }
+    chapterRows.push(...(data ?? []));
+    if (!data || data.length < 1000) break;
+  }
+  const chapterMap = new Map<string, { name: string; subject_id: string | null }>();
+  for (const c of chapterRows) {
+    if (!c?.id || !c?.name) continue;
+    const entry = { name: String(c.name).trim(), subject_id: c.subject_id ?? null };
+    chapterMap.set(String(c.id), entry);
+    chapterMap.set(String(c.id).trim().toLowerCase(), entry);
+  }
+  // Resolve ids that differ only by case/whitespace.
+  const resolve = new Map<string, { name: string; subject_id: string | null }>();
+  const allIds = new Set<string>();
+  questionRows.forEach((q) => q.chapter_id && allIds.add(q.chapter_id));
+  mistakes.forEach((m) => m.chapter_id && allIds.add(m.chapter_id));
+  for (const id of allIds) {
+    const hit = chapterMap.get(String(id)) ?? chapterMap.get(String(id).trim().toLowerCase());
+    if (hit) resolve.set(id, hit);
+  }
+  if (allIds.size && !resolve.size) console.warn(`[consult] none of ${allIds.size} chapter ids matched the chapters table`);
 
   const lookups: Lookups = {
     subjectNames: new Map((subjectRows ?? []).map((s: any) => [String(s.id), String(s.name)])),
-    chapters: new Map(chapterRows.map((c: any) => [String(c.id), { name: String(c.name), subject_id: c.subject_id ?? null }])),
+    chapters: resolve,
   };
 
   return buildSnapshot({ attempts, questions, lookups, mistakes });

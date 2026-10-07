@@ -182,7 +182,7 @@ export function buildSnapshot(input: {
       c = {
         ...emptyTally(),
         chapterId: q.chapter_id,
-        name: meta?.name ?? "Unnamed chapter",
+        name: meta?.name ?? "",
         section: sectionOf(subjectLabel) ?? sectionForQuestion(q),
         accuracy: null,
         lastSeen: null,
@@ -287,7 +287,8 @@ export function buildSnapshot(input: {
   const chapterList = [...chapters.values()]
     .map((c) => ({ ...c, accuracy: pct(c.correct, c.answered) }))
     .sort((a, b) => b.answered - a.answered);
-  const judged = chapterList.filter((c) => c.answered >= RULES.chapterMinAnswered && c.accuracy !== null);
+  // Only named chapters are listed; unnamed ones still count in subject totals.
+  const judged = chapterList.filter((c) => c.name && c.answered >= RULES.chapterMinAnswered && c.accuracy !== null);
   const strengths = judged
     .filter((c) => c.accuracy! >= RULES.strongAccuracy)
     .sort((a, b) => b.accuracy! - a.accuracy! || b.answered - a.answered)
@@ -360,7 +361,8 @@ export function buildSnapshot(input: {
       total: input.mistakes.length,
       last7: mistakes7,
       topChapters: [...mistakeByChapter.entries()]
-        .map(([chapterId, count]) => ({ chapterId, count, name: lookups.chapters.get(chapterId)?.name ?? "Unnamed chapter" }))
+        .map(([chapterId, count]) => ({ chapterId, count, name: lookups.chapters.get(chapterId)?.name ?? "" }))
+        .filter((c) => c.name)
         .sort((a, b) => b.count - a.count)
         .slice(0, 5),
     },
