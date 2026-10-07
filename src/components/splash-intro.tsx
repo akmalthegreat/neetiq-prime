@@ -1,16 +1,33 @@
 import { useEffect, useState } from "react";
+import { AKMAL_SIGNATURE_PATH } from "@/components/splash-signature";
 
 /**
- * Opening intro shown once per browser session when the site is opened.
- * Pure CSS animation, server-rendered, so it starts on the very first paint (before the
- * app hydrates) and never delays loading. Total ~1.9 s; a tap skips it.
- * Repeat loads in the same session are hidden before paint by INTRO_HEAD_SCRIPT.
+ * Cinematic opening intro, shown once per browser session when the site/app is opened.
+ * Pure CSS + SVG, server-rendered, so it starts on the very first paint and never delays loading.
+ * Timeline (~5 s): aurora + stars → heartbeat sweep → light burst → 3D logo reveal with chrome
+ * shine, rays and orbit → wordmark → tagline → gold "Created by Akmal, MBBS" signature → iris out.
+ * A tap skips it. Repeat loads in the same session are hidden before paint by INTRO_HEAD_SCRIPT.
  */
 
-/** Runs in <head> before paint: skip the intro if it already played in this session. */
 export const INTRO_HEAD_SCRIPT = `try{if(sessionStorage.getItem('nt-intro')){document.documentElement.setAttribute('data-intro','seen')}else{sessionStorage.setItem('nt-intro','1')}}catch(e){}`;
 
-const TOTAL_MS = 1950;
+/** Google Font used by the intro wordmark. Added to the root <head>. */
+export const INTRO_FONTS_HREF = "https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap";
+
+const TOTAL_MS = 5250;
+
+// Deterministic star field (same on server and client, so hydration matches).
+const STARS = (() => {
+  let seed = 7;
+  const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  return Array.from({ length: 38 }, () => ({
+    x: +(r() * 100).toFixed(2),
+    y: +(r() * 100).toFixed(2),
+    s: +(1 + r() * 2.2).toFixed(2),
+    d: +(r() * 2.4).toFixed(2),
+    t: +(1.6 + r() * 2).toFixed(2),
+  }));
+})();
 
 export function SplashIntro() {
   const [gone, setGone] = useState(false);
@@ -24,129 +41,205 @@ export function SplashIntro() {
 
   useEffect(() => {
     if (!leaving) return;
-    const t = window.setTimeout(() => setGone(true), 380);
+    const t = window.setTimeout(() => setGone(true), 520);
     return () => window.clearTimeout(t);
   }, [leaving]);
 
   if (gone) return null;
 
-  const word = "NEET";
-  const word2 = "Track";
+  const wm = ["N", "E", "E", "T", " ", "T", "r", "a", "c", "k"];
   return (
     <div id="nt-splash" className={leaving ? "out" : ""} aria-hidden="true" onClick={() => setLeaving(true)}>
       <style dangerouslySetInnerHTML={{ __html: INTRO_CSS }} />
-      <div className="bg" />
-      <div className="grid" />
 
-      <svg className="ecg" viewBox="0 0 1200 200" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="nt-ecg-g" x1="0" x2="1">
-            <stop offset="0" stopColor="#38BDF8" stopOpacity="0" />
-            <stop offset=".35" stopColor="#38BDF8" />
-            <stop offset=".65" stopColor="#2DD4BF" />
-            <stop offset="1" stopColor="#34D399" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path className="line" pathLength={1} d="M0 100 H470 L500 100 L520 70 L540 100 L560 100 L578 18 L600 182 L622 100 L648 100 L668 84 L688 100 H1200" />
-        <path className="spark" pathLength={1} d="M0 100 H470 L500 100 L520 70 L540 100 L560 100 L578 18 L600 182 L622 100 L648 100 L668 84 L688 100 H1200" />
-      </svg>
-
-      <div className="stage">
-        <div className="mark">
-          <span className="ring r1" /><span className="ring r2" />
-          <span className="halo" />
-          <img src="/brand/nt-mark.webp" alt="" width={136} height={136} decoding="async" fetchPriority="high" />
-        </div>
-        <div className="word">
-          {word.split("").map((ch, i) => <span key={`a${i}`} style={{ animationDelay: `${0.62 + i * 0.045}s` }}>{ch}</span>)}
-          <span className="sp" />
-          {word2.split("").map((ch, i) => <span key={`b${i}`} className="tr" style={{ animationDelay: `${0.8 + i * 0.045}s` }}>{ch}</span>)}
-        </div>
-        <div className="tag">Learn <i>·</i> Practice <i>·</i> Achieve</div>
-        <div className="bar"><span /></div>
+      <div className="sky" />
+      <div className="aur a1" /><div className="aur a2" /><div className="aur a3" />
+      <div className="stars">
+        {STARS.map((s, i) => (
+          <i key={i} style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.s, height: s.s, animationDelay: `${s.d}s`, animationDuration: `${s.t}s` }} />
+        ))}
       </div>
+      <div className="vig" />
 
-      <div className="credit">
-        <small>Crafted by</small>
-        <b>Akmal<em>, MBBS</em></b>
-        <svg className="sig" viewBox="0 0 160 14" aria-hidden="true"><path pathLength={1} d="M4 9 C 30 2, 52 13, 80 7 S 132 3, 156 8" /></svg>
+      <div className="scene">
+        <svg className="ecg" viewBox="0 0 1200 200" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="ntx-ecg" x1="0" x2="1">
+              <stop offset="0" stopColor="#38BDF8" stopOpacity="0" />
+              <stop offset=".3" stopColor="#38BDF8" />
+              <stop offset=".7" stopColor="#5EEAD4" />
+              <stop offset="1" stopColor="#34D399" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path className="line" pathLength={1} d={ECG} />
+          <path className="spark" pathLength={1} d={ECG} />
+        </svg>
+
+        <div className="logo">
+          <div className="rays" />
+          <div className="flash" />
+          <span className="ring r1" /><span className="ring r2" /><span className="ring r3" />
+          <div className="orbit">
+            <svg viewBox="0 0 300 300">
+              <defs>
+                <linearGradient id="ntx-orb" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stopColor="#7DD3FC" stopOpacity=".05" />
+                  <stop offset=".5" stopColor="#7DD3FC" stopOpacity=".9" />
+                  <stop offset="1" stopColor="#34D399" stopOpacity=".1" />
+                </linearGradient>
+              </defs>
+              <ellipse cx="150" cy="150" rx="138" ry="46" fill="none" stroke="url(#ntx-orb)" strokeWidth="1.6" />
+            </svg>
+            <b className="dot" />
+          </div>
+          <div className="mark3d">
+            <div className="glow3d"><img className="mark" src="/brand/nt-mark.webp" alt="" width={168} height={168} decoding="async" fetchPriority="high" /></div>
+            <span className="shine" />
+          </div>
+        </div>
+
+        <div className="word">
+          {wm.map((ch, i) =>
+            ch === " " ? <span key={i} className="sp" /> : (
+              <span key={i} className={i > 4 ? "tr" : ""} style={{ animationDelay: `${1.62 + i * 0.055}s` }}>{ch}</span>
+            ),
+          )}
+        </div>
+        <div className="tag"><span>Learn</span><i /><span>Practice</span><i /><span>Achieve</span></div>
+
+        <div className="credit">
+          <div className="cby"><em /><span>Created by</span><em /></div>
+          <svg className="sig" viewBox="-8 -6 225 112">
+            <defs>
+              <linearGradient id="ntx-gold" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stopColor="#FFF1C1" />
+                <stop offset=".45" stopColor="#F5C451" />
+                <stop offset="1" stopColor="#C8892B" />
+              </linearGradient>
+            </defs>
+            <path className="name-stroke" pathLength={1} d={AKMAL_SIGNATURE_PATH} />
+            <path className="name-fill" d={AKMAL_SIGNATURE_PATH} />
+            <path className="swash" pathLength={1} d="M38 100 C 80 108, 150 107, 196 94 C 202 92, 206 90, 209 86" />
+          </svg>
+          <div className="deg">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6" /></svg>
+            MBBS
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
+const ECG = "M0 100 H460 L492 100 L512 74 L532 100 L552 100 L574 14 L600 186 L626 100 L652 100 L672 82 L694 100 H1200";
+
 const INTRO_CSS = `
 html[data-intro="seen"] #nt-splash{display:none!important}
-#nt-splash{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;cursor:pointer;
-  font-family:'Poppins',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#EAF2FF;
-  -webkit-tap-highlight-color:transparent;
-  animation:ntx-exit .42s cubic-bezier(.7,0,.3,1) 1.53s both}
-#nt-splash.out{animation:ntx-exit .36s cubic-bezier(.7,0,.3,1) both}
-#nt-splash .bg{position:absolute;inset:0;background:
-  radial-gradient(520px 380px at 50% 42%,rgba(37,99,235,.38),transparent 70%),
-  radial-gradient(420px 320px at 50% 100%,rgba(16,185,129,.18),transparent 70%),
-  radial-gradient(700px 500px at 50% 0%,rgba(14,165,233,.12),transparent 70%),#010B26}
-#nt-splash .grid{position:absolute;inset:0;opacity:.35;background-image:linear-gradient(rgba(148,178,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(148,178,255,.07) 1px,transparent 1px);background-size:32px 32px;
-  -webkit-mask-image:radial-gradient(closest-side at 50% 45%,#000,transparent);mask-image:radial-gradient(closest-side at 50% 45%,#000,transparent);animation:ntx-fade .5s ease-out both}
+#nt-splash{position:fixed;inset:0;z-index:2147483000;overflow:hidden;cursor:pointer;color:#EAF2FF;-webkit-tap-highlight-color:transparent;
+  font-family:'Poppins',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  animation:ntx-iris .65s cubic-bezier(.76,0,.24,1) 4.6s both}
+#nt-splash.out{animation:ntx-iris .5s cubic-bezier(.76,0,.24,1) both}
+#nt-splash *{box-sizing:border-box}
 
-/* ECG sweep */
-#nt-splash .ecg{position:absolute;left:0;top:calc(50% - 86px);width:100%;height:120px;overflow:visible}
+#nt-splash .sky{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 38%,#0A1F5C 0%,#041033 45%,#010718 100%)}
+#nt-splash .aur{position:absolute;border-radius:50%;filter:blur(46px);opacity:0;will-change:transform,opacity}
+#nt-splash .a1{width:70vmax;height:42vmax;left:-20vmax;top:6%;background:radial-gradient(closest-side,rgba(37,99,235,.55),transparent);animation:ntx-in 1.2s ease-out .05s both,ntx-drift1 6s ease-in-out infinite alternate}
+#nt-splash .a2{width:60vmax;height:40vmax;right:-22vmax;top:30%;background:radial-gradient(closest-side,rgba(20,184,166,.38),transparent);animation:ntx-in 1.4s ease-out .2s both,ntx-drift2 7s ease-in-out infinite alternate}
+#nt-splash .a3{width:56vmax;height:34vmax;left:10%;bottom:-16vmax;background:radial-gradient(closest-side,rgba(124,58,237,.32),transparent);animation:ntx-in 1.4s ease-out .35s both,ntx-drift1 8s ease-in-out infinite alternate-reverse}
+#nt-splash .stars i{position:absolute;border-radius:50%;background:#DCEBFF;box-shadow:0 0 6px rgba(186,230,253,.9);opacity:0;animation-name:ntx-twinkle;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+#nt-splash .vig{position:absolute;inset:0;background:radial-gradient(closest-side at 50% 45%,transparent 60%,rgba(0,3,12,.75))}
+
+#nt-splash .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:4vh}
+#nt-splash .ecg{position:absolute;left:0;top:calc(50% - 168px);width:100%;height:120px;overflow:visible}
 #nt-splash .ecg path{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-#nt-splash .ecg .line{stroke:url(#nt-ecg-g);stroke-width:2.4;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(56,189,248,.8));
-  animation:ntx-draw .6s cubic-bezier(.45,0,.2,1) .04s both,ntx-ecgout .22s ease-in .56s both}
-#nt-splash .ecg .spark{stroke:#fff;stroke-width:3.4;stroke-dasharray:.035 1;stroke-dashoffset:.035;filter:drop-shadow(0 0 8px #7DD3FC) drop-shadow(0 0 16px #38BDF8);
-  animation:ntx-spark .6s cubic-bezier(.45,0,.2,1) .04s both}
+#nt-splash .ecg .line{stroke:url(#ntx-ecg);stroke-width:2.6;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 7px rgba(56,189,248,.85));
+  animation:ntx-draw .95s cubic-bezier(.5,0,.2,1) .3s both,ntx-ecgout .35s ease-in 1.12s both}
+#nt-splash .ecg .spark{stroke:#fff;stroke-width:3.6;stroke-dasharray:.03 1;stroke-dashoffset:.03;filter:drop-shadow(0 0 8px #BAE6FD) drop-shadow(0 0 18px #38BDF8);
+  animation:ntx-spark .95s cubic-bezier(.5,0,.2,1) .3s both}
 
-/* logo */
-#nt-splash .stage{display:flex;flex-direction:column;align-items:center;margin-top:-28px}
-#nt-splash .mark{position:relative;width:136px;height:136px;display:grid;place-items:center}
-#nt-splash .mark img{position:relative;width:136px;height:136px;filter:drop-shadow(0 6px 22px rgba(37,99,235,.55));
-  animation:ntx-logo .55s cubic-bezier(.2,1.25,.3,1) .42s both}
-#nt-splash .halo{position:absolute;inset:-26px;border-radius:50%;background:radial-gradient(closest-side,rgba(56,189,248,.45),rgba(37,99,235,.15) 55%,transparent);
-  animation:ntx-halo .7s ease-out .42s both}
-#nt-splash .ring{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px;border-radius:50%;border:1.5px solid rgba(125,211,252,.7);opacity:0}
-#nt-splash .r1{animation:ntx-ring .8s cubic-bezier(.2,.7,.3,1) .45s both}
-#nt-splash .r2{animation:ntx-ring .8s cubic-bezier(.2,.7,.3,1) .6s both;border-color:rgba(52,211,153,.6)}
+#nt-splash .logo{position:relative;width:168px;height:168px;display:grid;place-items:center;perspective:700px}
+#nt-splash .rays{position:absolute;left:50%;top:50%;width:440px;height:440px;margin:-220px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(125,211,252,.16) 0deg 4deg,transparent 4deg 18deg);
+  -webkit-mask-image:radial-gradient(closest-side,#000 20%,transparent 72%);mask-image:radial-gradient(closest-side,#000 20%,transparent 72%);
+  opacity:0;animation:ntx-raysin .9s ease-out 1.05s both,ntx-spin 18s linear 1.05s infinite}
+#nt-splash .flash{position:absolute;left:50%;top:50%;width:260px;height:260px;margin:-130px;border-radius:50%;
+  background:radial-gradient(closest-side,#fff 0%,rgba(186,230,253,.85) 18%,rgba(56,189,248,.35) 45%,transparent 72%);opacity:0;
+  animation:ntx-flash .7s ease-out 1.0s both}
+#nt-splash .ring{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px;border-radius:50%;border:1.5px solid rgba(125,211,252,.75);opacity:0}
+#nt-splash .r1{animation:ntx-ring 1.1s cubic-bezier(.2,.7,.3,1) 1.02s both}
+#nt-splash .r2{animation:ntx-ring 1.1s cubic-bezier(.2,.7,.3,1) 1.2s both;border-color:rgba(94,234,212,.65)}
+#nt-splash .r3{animation:ntx-ring 1.1s cubic-bezier(.2,.7,.3,1) 1.38s both;border-color:rgba(167,139,250,.5)}
+#nt-splash .orbit{position:absolute;left:50%;top:50%;width:300px;height:300px;margin:-150px;transform:rotate(-16deg);opacity:0;animation:ntx-in .8s ease-out 1.5s both}
+#nt-splash .orbit svg{width:100%;height:100%;overflow:visible}
+#nt-splash .orbit .dot{position:absolute;left:0;top:0;width:9px;height:9px;border-radius:50%;background:#E0F2FE;box-shadow:0 0 10px #7DD3FC,0 0 22px #38BDF8;
+  offset-path:path("M 12 150 A 138 46 0 1 1 288 150 A 138 46 0 1 1 12 150");offset-rotate:0deg;animation:ntx-orbit 3.2s linear 1.5s infinite}
+#nt-splash .mark3d{position:relative;width:168px;height:168px;animation:ntx-turn 1.15s cubic-bezier(.16,1,.3,1) 1.0s both}
+#nt-splash .glow3d{position:absolute;inset:0;filter:drop-shadow(0 10px 30px rgba(37,99,235,.6)) drop-shadow(0 0 2px rgba(186,230,253,.6))}
+#nt-splash .mark{width:100%;height:100%;display:block;animation:ntx-reveal .75s cubic-bezier(.6,0,.2,1) 1.02s both}
+#nt-splash .shine{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.95) 48%,rgba(255,255,255,.2) 54%,transparent 62%);background-size:260% 100%;background-position:130% 0;
+  -webkit-mask:url(/brand/nt-mark.webp) center/contain no-repeat;mask:url(/brand/nt-mark.webp) center/contain no-repeat;mix-blend-mode:screen;
+  animation:ntx-shine 1s ease-in-out 1.75s both,ntx-shine2 .9s ease-in-out 3.9s both}
 
-/* wordmark */
-#nt-splash .word{margin-top:18px;display:flex;align-items:baseline;font-weight:800;font-size:36px;letter-spacing:-.5px;line-height:1}
-#nt-splash .word span{display:inline-block;opacity:0;transform:translateY(16px);animation:ntx-up .42s cubic-bezier(.2,.9,.25,1) both}
-#nt-splash .word .sp{width:10px}
-#nt-splash .word .tr{background:linear-gradient(100deg,#38BDF8 0%,#2DD4BF 40%,#ffffff 50%,#34D399 60%,#34D399 100%);background-size:300% 100%;background-position:100% 0;
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:ntx-up .42s cubic-bezier(.2,.9,.25,1) both,ntx-shine .7s ease-in-out 1.05s both}
-#nt-splash .tag{margin-top:10px;font-size:11.5px;font-weight:600;letter-spacing:3.2px;text-transform:uppercase;color:#93A8D6;
-  animation:ntx-tag .5s ease-out .95s both}
-#nt-splash .tag i{font-style:normal;color:#2DD4BF;margin:0 2px}
-#nt-splash .bar{margin-top:20px;width:132px;height:3px;border-radius:3px;background:rgba(148,178,255,.15);overflow:hidden;animation:ntx-fade .3s ease-out .5s both}
-#nt-splash .bar span{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#38BDF8,#2DD4BF,#34D399);transform-origin:left;
-  animation:ntx-load 1s cubic-bezier(.4,0,.2,1) .5s both;box-shadow:0 0 10px rgba(45,212,191,.7)}
+#nt-splash .word{position:relative;margin-top:22px;display:flex;align-items:baseline;font-weight:800;font-size:40px;letter-spacing:-.6px;line-height:1.05;padding:2px 6px}
+#nt-splash .word span{display:inline-block;opacity:0;transform:translateY(26px) scale(.9);filter:blur(8px);color:#F4F8FF;animation:ntx-letter .62s cubic-bezier(.16,1,.3,1) both}
+#nt-splash .word .sp{width:12px;animation:none;opacity:1;filter:none;transform:none}
+#nt-splash .word .tr{background:linear-gradient(180deg,#7DD3FC 0%,#38BDF8 40%,#2DD4BF 75%,#34D399 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+#nt-splash .tag{margin-top:12px;display:flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#A9BCE6;
+  animation:ntx-track .8s cubic-bezier(.16,1,.3,1) 2.2s both}
+#nt-splash .tag i{width:4px;height:4px;border-radius:50%;background:#2DD4BF;box-shadow:0 0 8px #2DD4BF}
 
-/* credit */
-#nt-splash .credit{position:absolute;left:0;right:0;bottom:calc(34px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:3px;
-  animation:ntx-tag .5s ease-out 1s both}
-#nt-splash .credit small{font-size:10px;font-weight:600;letter-spacing:2.6px;text-transform:uppercase;color:#6F84B3}
-#nt-splash .credit b{font-size:16px;font-weight:700;letter-spacing:.3px;color:#F1F6FF}
-#nt-splash .credit em{font-style:normal;font-weight:600;color:#5EEAD4}
-#nt-splash .sig{width:120px;height:12px;margin-top:-1px}
-#nt-splash .sig path{fill:none;stroke:#2DD4BF;stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:ntx-draw .5s ease-out 1.12s both}
+#nt-splash .credit{margin-top:34px;display:flex;flex-direction:column;align-items:center}
+#nt-splash .cby{display:flex;align-items:center;gap:12px;font-size:10.5px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#E9C46A;
+  animation:ntx-fadeup .6s ease-out 2.6s both}
+#nt-splash .cby em{display:block;width:44px;height:1px;background:linear-gradient(90deg,transparent,#E9C46A);transform-origin:right;animation:ntx-line .6s cubic-bezier(.16,1,.3,1) 2.6s both}
+#nt-splash .cby em:last-child{background:linear-gradient(90deg,#E9C46A,transparent);transform-origin:left}
+#nt-splash .sig{width:206px;height:102px;margin-top:4px;overflow:visible}
+#nt-splash .sig .name-stroke{fill:none;stroke:#FCE3A0;stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(245,196,81,.6));
+  animation:ntx-write 1.2s cubic-bezier(.45,0,.3,1) 2.75s both,ntx-out .45s ease 3.8s both}
+#nt-splash .sig .name-fill{fill:url(#ntx-gold);opacity:0;filter:drop-shadow(0 2px 10px rgba(245,196,81,.45));animation:ntx-in .6s ease-out 3.35s both}
+#nt-splash .sig .swash{fill:none;stroke:url(#ntx-gold);stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:ntx-draw .55s ease-out 3.5s both}
+#nt-splash .deg{margin-top:6px;display:inline-flex;align-items:center;gap:7px;padding:6px 15px 6px 11px;border-radius:999px;font-size:14px;font-weight:800;letter-spacing:3px;color:#1B1404;
+  background:linear-gradient(135deg,#FFF1C1,#F5C451 45%,#D99A2B);box-shadow:0 6px 20px -6px rgba(245,196,81,.7),inset 0 1px 0 rgba(255,255,255,.6);
+  animation:ntx-pop .55s cubic-bezier(.34,1.56,.64,1) 3.55s both}
+#nt-splash .deg svg{width:17px;height:17px;fill:none;stroke:#1B1404;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 
-@keyframes ntx-fade{from{opacity:0}}
+@keyframes ntx-in{from{opacity:0}to{opacity:1}}
+@keyframes ntx-out{to{opacity:0}}
+@keyframes ntx-drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(6vmax,3vmax) scale(1.12)}}
+@keyframes ntx-drift2{from{transform:translate(0,0) scale(1.05)}to{transform:translate(-7vmax,-2vmax) scale(.95)}}
+@keyframes ntx-twinkle{0%,100%{opacity:0;transform:scale(.6)}50%{opacity:.9;transform:scale(1)}}
 @keyframes ntx-draw{to{stroke-dashoffset:0}}
-@keyframes ntx-spark{0%{stroke-dashoffset:.035;opacity:1}90%{opacity:1}100%{stroke-dashoffset:-.965;opacity:0}}
-@keyframes ntx-ecgout{to{opacity:0;transform:scaleY(.2)}}
-@keyframes ntx-logo{0%{opacity:0;transform:scale(.45) rotate(-8deg);filter:blur(10px) drop-shadow(0 6px 22px rgba(37,99,235,.55))}100%{opacity:1;transform:none;filter:blur(0) drop-shadow(0 6px 22px rgba(37,99,235,.55))}}
-@keyframes ntx-halo{0%{opacity:0;transform:scale(.3)}45%{opacity:1}100%{opacity:.75;transform:scale(1)}}
-@keyframes ntx-ring{0%{opacity:0;transform:scale(.55)}12%{opacity:.9}100%{opacity:0;transform:scale(2.3)}}
-@keyframes ntx-up{to{opacity:1;transform:none}}
-@keyframes ntx-shine{from{background-position:100% 0}to{background-position:0 0}}
-@keyframes ntx-tag{from{opacity:0;transform:translateY(8px);letter-spacing:6px}to{opacity:1;transform:none}}
-@keyframes ntx-load{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes ntx-exit{0%{clip-path:circle(150% at 50% 46%);opacity:1}70%{opacity:1}100%{clip-path:circle(0% at 50% 46%);opacity:0;visibility:hidden;pointer-events:none}}
-@media (min-width:768px){#nt-splash .word{font-size:46px}#nt-splash .mark,#nt-splash .mark img{width:160px;height:160px}#nt-splash .ecg{top:calc(50% - 96px)}}
+@keyframes ntx-spark{0%{stroke-dashoffset:.03;opacity:1}88%{opacity:1}100%{stroke-dashoffset:-.97;opacity:0}}
+@keyframes ntx-ecgout{to{opacity:0;transform:scaleY(.1)}}
+@keyframes ntx-flash{0%{opacity:0;transform:scale(.2)}30%{opacity:1}100%{opacity:0;transform:scale(1.9)}}
+@keyframes ntx-ring{0%{opacity:0;transform:scale(.5)}12%{opacity:.9}100%{opacity:0;transform:scale(2.4)}}
+@keyframes ntx-raysin{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes ntx-spin{to{rotate:360deg}}
+@keyframes ntx-orbit{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes ntx-turn{0%{transform:rotateY(-62deg) rotateX(14deg) scale(.6);opacity:0}25%{opacity:1}100%{transform:none;opacity:1}}
+@keyframes ntx-reveal{0%{clip-path:inset(-20% 100% -20% -20%);filter:brightness(2.4) blur(4px)}100%{clip-path:inset(-20% -20% -20% -20%);filter:brightness(1) blur(0)}}
+@keyframes ntx-shine{from{background-position:130% 0}to{background-position:-30% 0}}
+@keyframes ntx-shine2{from{background-position:130% 0}to{background-position:-30% 0}}
+@keyframes ntx-letter{to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes ntx-track{from{opacity:0;letter-spacing:12px;filter:blur(4px)}to{opacity:1;letter-spacing:4px;filter:blur(0)}}
+@keyframes ntx-fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes ntx-line{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ntx-write{to{stroke-dashoffset:0}}
+@keyframes ntx-pop{from{opacity:0;transform:scale(.4) translateY(6px)}to{opacity:1;transform:none}}
+@keyframes ntx-iris{0%{clip-path:circle(150% at 50% 42%)}100%{clip-path:circle(0% at 50% 42%);visibility:hidden;pointer-events:none}}
+
+@media (min-width:768px){
+  #nt-splash .logo,#nt-splash .mark3d,#nt-splash .mark{width:196px;height:196px}
+  #nt-splash .word{font-size:54px}
+  #nt-splash .tag{font-size:13px}
+  #nt-splash .ecg{top:calc(50% - 190px)}
+  #nt-splash .sig{width:240px;height:119px}
+}
+@media (max-height:640px){#nt-splash .credit{margin-top:18px}#nt-splash .logo,#nt-splash .mark3d,#nt-splash .mark{width:136px;height:136px}}
 @media (prefers-reduced-motion:reduce){
-  #nt-splash,#nt-splash *{animation-duration:.01s!important;animation-delay:0s!important}
-  #nt-splash{animation:ntx-fadeout .5s ease .9s both!important}
-  @keyframes ntx-fadeout{to{opacity:0;visibility:hidden;pointer-events:none}}
+  #nt-splash *,#nt-splash *::before,#nt-splash *::after{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+  #nt-splash{animation:ntx-rmout .6s ease 1.6s both!important}
+  @keyframes ntx-rmout{to{opacity:0;visibility:hidden;pointer-events:none}}
 }
 `;
