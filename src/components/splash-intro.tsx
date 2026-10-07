@@ -14,7 +14,7 @@ export const INTRO_HEAD_SCRIPT = `try{if(sessionStorage.getItem('nt-intro')){doc
 /** Google Font used by the intro wordmark. Added to the root <head>. */
 export const INTRO_FONTS_HREF = "https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap";
 
-const TOTAL_MS = 5250;
+const TOTAL_MS = 1800;
 const NAME_X = +((280 - CREDIT_NAME.width) / 2).toFixed(1);
 const DEG_X = +((280 - CREDIT_DEGREE.width) / 2).toFixed(1);
 
@@ -161,8 +161,8 @@ const INTRO_CSS = `
 html[data-intro="seen"] #nt-splash{display:none!important}
 #nt-splash{position:fixed;inset:0;z-index:2147483000;overflow:hidden;cursor:pointer;color:#EAF2FF;-webkit-tap-highlight-color:transparent;
   font-family:'Poppins',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  animation:ntx-iris .65s cubic-bezier(.76,0,.24,1) 4.6s both}
-#nt-splash.out{animation:ntx-iris .5s cubic-bezier(.76,0,.24,1) both}
+  animation:ntx-iris .45s cubic-bezier(.76,0,.24,1) 1.35s both}
+#nt-splash.out{animation:ntx-iris .45s cubic-bezier(.76,0,.24,1) both}
 #nt-splash *{box-sizing:border-box}
 
 #nt-splash .sky{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 38%,#0A1F5C 0%,#041033 45%,#010718 100%)}
