@@ -1,5 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X, LogOut, Sun, Moon, User, Search, LayoutDashboard, Zap, Wrench, Sparkles, Trophy, Users, Crown, GraduationCap } from "lucide-react";
+import {
+  Menu, X, LogOut, Sun, Moon, User, Search, LayoutDashboard, Zap, Trophy, Crown, ArrowRight, ChevronRight,
+  LayoutList, History, Timer, SlidersHorizontal, Infinity as InfinityIcon, NotebookPen, Highlighter, Layers, Atom,
+  RotateCcw, Bookmark, Route as RouteIcon, Gauge, Swords, Gift, Handshake,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,111 +25,187 @@ function ThemeToggle() {
   );
 }
 
-type Item = { to: string; label: string; icon?: React.ComponentType<{ className?: string }> };
-type Group = { label: string; to?: string; icon?: React.ComponentType<{ className?: string }>; items?: Item[] };
+type Tone = "sky" | "emerald" | "amber" | "pink" | "violet";
+type Item = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; match?: string[] };
+type Section = { label: string; tone: Tone; items: Item[] };
 
-const GROUPS: Group[] = [
-  { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+const SECTIONS: Section[] = [
   {
-    label: "Quick Practice",
-    icon: Zap,
+    label: "Practice",
+    tone: "sky",
     items: [
-      { to: "/daily", label: "DPP HUB" },
-      { to: "/dpp", label: "ALL DPP" },
-      { to: "/subjects/Physics", label: "Physics DPP" },
-      { to: "/subjects/Chemistry", label: "Chemistry DPP" },
-      { to: "/subjects/Zoology", label: "Zoology DPP" },
-      { to: "/subjects/Botany", label: "Botany DPP" },
+      { to: "/daily", label: "Daily DPP", icon: Zap },
+      { to: "/dpp", label: "Subject DPPs", icon: LayoutList, match: ["/subjects/"] },
+      { to: "/pyqs", label: "PYQs", icon: History },
+      { to: "/mocks", label: "Mock Tests", icon: Timer },
+      { to: "/generate", label: "Custom Test", icon: SlidersHorizontal },
+      { to: "/infinite-run", label: "Infinite Run", icon: InfinityIcon },
     ],
   },
   {
-    label: "Study Tools",
-    icon: Wrench,
+    label: "Study",
+    tone: "emerald",
     items: [
-      { to: "/short-notes", label: "Short Notes" },
-      { to: "/flashcards", label: "Flashcards" },
-      { to: "/ncert-highlights", label: "NCERT Highlights" },
-      { to: "/highlighted-ncert", label: "Highlighted NCERT" },
-      { to: "/neetlab", label: "NEETLab 3D" },
-      { to: "/mocks", label: "Mock Tests" },
-      { to: "/bookmarks", label: "Bookmarks" },
-      { to: "/mistakes", label: "My Mistakes" },
+      { to: "/short-notes", label: "Short Notes", icon: NotebookPen, match: ["/notes/"] },
+      { to: "/highlighted-ncert", label: "NCERT Highlights", icon: Highlighter },
+      { to: "/flashcards", label: "Flashcards", icon: Layers },
+      { to: "/neetlab", label: "NEETLab 3D", icon: Atom },
     ],
   },
   {
-    label: "Smart Tools",
-    icon: Sparkles,
+    label: "Improve",
+    tone: "amber",
     items: [
-      { to: "/generate", label: "Custom Test" },
-      { to: "/ai-path", label: "Study Path" },
-      { to: "/score-predictor", label: "Score Predictor" },
+      { to: "/mistakes", label: "My Mistakes", icon: RotateCcw },
+      { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+      { to: "/ai-path", label: "Study Path", icon: RouteIcon },
+      { to: "/score-predictor", label: "Score Predictor", icon: Gauge },
     ],
   },
   {
-    label: "Earn & Compete",
-    icon: Trophy,
+    label: "Compete",
+    tone: "pink",
     items: [
-      { to: "/contests", label: "Cash Contests" },
-      { to: "/battlegrounds", label: "Battlegrounds (1v1)" },
+      { to: "/contests", label: "Contests", icon: Trophy, match: ["/contest/"] },
+      { to: "/battlegrounds", label: "1v1 Battles", icon: Swords, match: ["/battle/"] },
+      { to: "/leaderboard", label: "Leaderboard", icon: Crown },
+      { to: "/referrals", label: "Refer & Earn", icon: Gift },
     ],
   },
-  { label: "Refer & Earn", to: "/referrals", icon: Users },
-  { label: "Leaderboard", to: "/leaderboard", icon: Crown },
+  {
+    label: "Work with us",
+    tone: "violet",
+    items: [{ to: "/collaborators", label: "Collaborate with NEET Track", icon: Handshake }],
+  },
 ];
 
-function NavLinks({ path, onNavigate }: { path: string; onNavigate?: () => void }) {
+const TONE: Record<Tone, string> = {
+  sky: "bg-sky-500/12 text-sky-600 dark:bg-sky-400/12 dark:text-sky-300",
+  emerald: "bg-emerald-500/12 text-emerald-600 dark:bg-emerald-400/12 dark:text-emerald-300",
+  amber: "bg-amber-500/12 text-amber-600 dark:bg-amber-400/12 dark:text-amber-300",
+  pink: "bg-pink-500/12 text-pink-600 dark:bg-pink-400/12 dark:text-pink-300",
+  violet: "bg-violet-500/12 text-violet-600 dark:bg-violet-400/12 dark:text-violet-300",
+};
+
+const isActive = (path: string, i: Item) =>
+  path === i.to || path.startsWith(i.to + "/") || !!i.match?.some((m) => path.startsWith(m));
+
+/** Gold card that opens the personal mentorship page. */
+function MentorshipCard({ onNavigate, compact }: { onNavigate?: () => void; compact?: boolean }) {
   return (
-    <nav className="flex flex-col gap-0.5">
-      {GROUPS.map((g) => {
-        if (g.to) {
-          const active = (path || "").startsWith(g.to);
-          const Icon = g.icon;
-          return (
-            <Link
-              key={g.label}
-              to={g.to}
-              onClick={onNavigate}
-              className={cn(
-                "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition-colors",
-                active
-                  ? "bg-gradient-to-r from-teal-500/15 to-emerald-500/15 text-foreground ring-1 ring-teal-500/30"
-                  : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
-              )}
-            >
-              {Icon && <Icon className={cn("h-4 w-4", active ? "text-teal-600 dark:text-teal-400" : "")} />}
-              <span>{g.label}</span>
-            </Link>
-          );
-        }
-        return (
-          <div key={g.label} className="mt-3">
-            <div className="flex items-center gap-1.5 px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/70">
-              {g.icon && <g.icon className="h-3 w-3" />}
-              {g.label}
-            </div>
-            <div className="flex flex-col gap-0.5">
-              {g.items!.map((i) => {
-                const active = path === i.to || (i.to.startsWith("/subjects/") && path === i.to);
-                return (
-                  <Link
-                    key={i.label}
-                    to={i.to}
-                    onClick={onNavigate}
-                    className={cn(
-                      "rounded-lg px-3 py-1.5 pl-8 text-xs font-medium transition-colors",
-                      active
-                        ? "bg-secondary text-foreground"
-                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
-                    )}
-                  >
-                    {i.label}
-                  </Link>
-                );
-              })}
-            </div>
+    <Link
+      to="/mentorship"
+      onClick={onNavigate}
+      className={cn(
+        "group relative block overflow-hidden rounded-2xl border border-amber-500/45 bg-gradient-to-br from-amber-100 via-amber-50 to-background dark:from-[#2A1E06] dark:via-[#16120A] dark:to-card",
+        compact ? "p-3.5" : "p-[18px]",
+      )}
+    >
+      <span className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-amber-400/20 blur-2xl" aria-hidden="true" />
+      <span className="relative block text-[11px] font-bold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-400">Personal mentorship</span>
+      <span className={cn("relative mt-1.5 block font-bold text-foreground", compact ? "text-[15px]" : "text-lg")}>1-on-1 with Akmal, MBBS</span>
+      {!compact && (
+        <span className="relative mt-1 block text-sm leading-snug text-muted-foreground">
+          Your own study plan, daily doubt support and progress reviews.
+        </span>
+      )}
+      <span className={cn(
+        "relative inline-flex items-center gap-1 font-bold",
+        compact ? "mt-1.5 text-xs text-amber-700 dark:text-amber-400" : "mt-3.5 rounded-xl bg-amber-400 px-4 py-2 text-sm text-amber-950",
+      )}>
+        Know more <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </Link>
+  );
+}
+
+function DashboardLink({ path, onNavigate, big }: { path: string; onNavigate?: () => void; big?: boolean }) {
+  const active = path.startsWith("/dashboard");
+  return (
+    <Link
+      to="/dashboard"
+      onClick={onNavigate}
+      className={cn(
+        "flex items-center gap-3 rounded-2xl border font-bold transition-colors",
+        big ? "px-4 py-3.5 text-base" : "px-3 py-2.5 text-[15px]",
+        active
+          ? "border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 to-emerald-500/[0.03]"
+          : "border-border bg-card hover:border-emerald-500/40",
+      )}
+    >
+      <span className={cn("flex h-8 w-8 items-center justify-center rounded-[10px]", TONE.emerald)}>
+        <LayoutDashboard className="h-[18px] w-[18px]" />
+      </span>
+      Dashboard
+    </Link>
+  );
+}
+
+/** Phone menu: sections of two-column tiles. */
+function MobileNav({ path, onNavigate }: { path: string; onNavigate: () => void }) {
+  return (
+    <nav aria-label="Main">
+      {SECTIONS.map((s) => (
+        <div key={s.label}>
+          <h4 className="mx-1 mb-2.5 mt-6 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">{s.label}</h4>
+          <div className={cn("grid gap-2", s.items.length > 1 ? "grid-cols-2" : "grid-cols-1")}>
+            {s.items.map((i) => {
+              const active = isActive(path, i);
+              return (
+                <Link
+                  key={i.to}
+                  to={i.to}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex min-h-[54px] items-center gap-2.5 rounded-[14px] border px-3 py-2.5 text-[15px] font-semibold leading-tight transition-colors",
+                    active ? "border-primary/50 bg-primary/10" : "border-border bg-card active:bg-secondary",
+                  )}
+                >
+                  <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]", TONE[s.tone])}>
+                    <i.icon className="h-[17px] w-[17px]" />
+                  </span>
+                  {i.label}
+                </Link>
+              );
+            })}
           </div>
-        );
-      })}
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+/** Desktop sidebar: same sections as a list. */
+function SidebarNav({ path }: { path: string }) {
+  return (
+    <nav aria-label="Main">
+      {SECTIONS.map((s) => (
+        <div key={s.label} className="mt-5">
+          <div className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">{s.label}</div>
+          <div className="flex flex-col gap-0.5">
+            {s.items.map((i) => {
+              const active = isActive(path, i);
+              return (
+                <Link
+                  key={i.to}
+                  to={i.to}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-sm font-medium transition-colors",
+                    active ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+                  )}
+                >
+                  <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-lg", TONE[s.tone])}>
+                    <i.icon className="h-4 w-4" />
+                  </span>
+                  <span className="truncate">{s.label === "Work with us" ? "Collaborate" : i.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 }
@@ -167,7 +247,9 @@ export function SiteHeader() {
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 pb-4">
-          <NavLinks path={path} />
+          <DashboardLink path={path} />
+          <div className="mt-3"><MentorshipCard compact /></div>
+          <SidebarNav path={path} />
         </div>
 
         {/* Sidebar bottom actions */}
@@ -268,40 +350,44 @@ export function SiteHeader() {
                 <Link
                   to="/profile"
                   onClick={() => setOpen(false)}
-                  className="mb-3 flex items-center gap-2 rounded-full border border-border bg-secondary/60 py-1 pl-1 pr-3"
+                  className="flex items-center gap-3 rounded-[20px] border border-border bg-card p-3.5"
                 >
                   {avatar ? (
-                    <img src={avatar} alt={displayName || "Profile"} className="h-7 w-7 rounded-full object-cover" />
+                    <img src={avatar} alt="" className="h-12 w-12 rounded-full border-2 border-primary/40 object-cover" />
                   ) : (
-                    <User className="h-4 w-4" />
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary"><User className="h-5 w-5" /></span>
                   )}
-                  <span className="truncate text-xs font-semibold">{displayName || "Profile"}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[17px] font-bold">{displayName || "Your profile"}</span>
+                    <span className="block text-[13px] text-muted-foreground">View profile · Settings</span>
+                  </span>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </Link>
               )}
               {isAdmin && (
                 <Link
                   to="/admin"
                   onClick={() => setOpen(false)}
-                  className="mb-3 flex items-center justify-between rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent px-3.5 py-2.5 text-xs font-bold text-amber-600 shadow-2xs hover:bg-amber-500/20 dark:text-amber-400"
+                  className="mt-2.5 flex items-center gap-2 rounded-[14px] border border-amber-500/40 px-3.5 py-2.5 text-sm font-semibold text-amber-700 dark:text-amber-400"
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-                    Admin Control Panel
-                  </span>
-                  <span className="text-[10px] uppercase tracking-wider font-mono">Open →</span>
+                  <span className="h-2 w-2 rounded-full bg-amber-500" />
+                  Admin Control Panel
+                  <span className="ml-auto text-xs opacity-80">Open →</span>
                 </Link>
               )}
-              <NavLinks path={path} onNavigate={() => setOpen(false)} />
+              <div className="mt-3.5"><MentorshipCard onNavigate={() => setOpen(false)} /></div>
+              <div className="mt-3.5"><DashboardLink path={path} big onNavigate={() => setOpen(false)} /></div>
+              <MobileNav path={path} onNavigate={() => setOpen(false)} />
               {user ? (
                 <Button
                   variant="ghost"
                   onClick={() => signOut()}
-                  className="mt-3 h-9 w-full rounded-xl text-xs text-muted-foreground hover:text-foreground"
+                  className="mt-6 h-11 w-full rounded-xl text-[15px] text-muted-foreground hover:text-foreground"
                 >
                   <LogOut className="h-4 w-4" /> Log out
                 </Button>
               ) : (
-                <Button asChild size="sm" className="mt-3 h-9 w-full rounded-xl bg-primary text-xs font-bold text-primary-foreground">
+                <Button asChild size="lg" className="mt-6 h-12 w-full rounded-xl bg-primary text-[15px] font-bold text-primary-foreground">
                   <Link to="/login" onClick={() => setOpen(false)}>Log in / Get started</Link>
                 </Button>
               )}
