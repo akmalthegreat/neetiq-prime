@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
+import { BottomNav } from "./bottom-nav";
 
 export function PageShell({
   eyebrow,
@@ -20,7 +21,7 @@ export function PageShell({
     <div className="flex min-h-screen flex-col lg:flex-row bg-background page-enter">
       <SiteHeader />
       <div className="flex-1 min-w-0 lg:pl-64 flex flex-col">
-        <main className="flex-1">
+        <main className="flex-1 pb-[calc(88px+env(safe-area-inset-bottom))] lg:pb-0">
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
             {hasHeader && (
               <div className="animate-fade-in-up mb-8">
@@ -40,6 +41,7 @@ export function PageShell({
         </main>
         {showFooter && <SiteFooter />}
       </div>
+      <BottomNav />
     </div>
   );
 }
@@ -64,8 +66,9 @@ export function FullBleedShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col lg:flex-row bg-background page-enter">
       <SiteHeader />
       <div className="flex-1 min-w-0 lg:pl-64 flex flex-col">
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-[calc(88px+env(safe-area-inset-bottom))] lg:pb-0">{children}</main>
       </div>
+      <BottomNav />
     </div>
   );
 }

@@ -96,7 +96,7 @@ export function SupportWidget() {
   function onPointerDown(e: React.PointerEvent) {
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     const startX = pos?.x ?? window.innerWidth - FAB - 16;
-    const startY = pos?.y ?? window.innerHeight - FAB - 80;
+    const startY = pos?.y ?? window.innerHeight - FAB - 96;
     dragRef.current = { active: true, moved: false, dx: e.clientX - startX, dy: e.clientY - startY };
   }
   function onPointerMove(e: React.PointerEvent) {
@@ -133,7 +133,7 @@ export function SupportWidget() {
           style={fabStyle}
           className={cn(
             "fixed z-[90] select-none",
-            !pos && "bottom-20 right-4 sm:bottom-6",
+            !pos && "bottom-[calc(96px+env(safe-area-inset-bottom))] right-4 lg:bottom-6",
           )}
         >
           {/* remove button */}
