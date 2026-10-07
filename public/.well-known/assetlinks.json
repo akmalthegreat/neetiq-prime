@@ -5,9 +5,9 @@
     ],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.neetiq.prime",
+      "package_name": "com.neettrack.app",
       "sha256_cert_fingerprints": [
-        "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00"
+        "EA:03:2E:41:14:2E:44:0C:1E:17:AE:23:06:73:0F:2F:46:59:73:C3:5C:91:1A:62:4D:D3:B8:DD:7F:D8:12:81"
       ]
     }
   }
