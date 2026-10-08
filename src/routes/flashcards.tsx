@@ -10,7 +10,7 @@ import { PageShell } from "@/components/page-shell";
 import { listFlashcardDecks, getFlashcards, recordFlashcardReview, getMyFlashcardProgress, type Flashcard, type FlashcardDeck } from "@/lib/flashcards.functions";
 import { accessStudyFeature } from "@/lib/feature-gate.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { RichText } from "@/components/rich-text";
+import { CardText } from "@/components/card-text";
 import { FeatureLock } from "@/components/feature-lock";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -349,7 +349,7 @@ function Study({ session, onRated, onExit, onRestart }: {
                   <Level d={card.difficulty} />
                 </div>
                 <div className="flex flex-1 items-center justify-center py-6">
-                  <div className="text-center text-xl font-bold leading-snug sm:text-2xl"><RichText>{card.front}</RichText></div>
+                  <div className="text-center text-xl font-bold leading-snug sm:text-2xl"><CardText>{card.front}</CardText></div>
                 </div>
                 <div className="flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground"><Eye className="h-3.5 w-3.5" />Tap to reveal the answer</div>
               </div>
@@ -358,12 +358,12 @@ function Study({ session, onRated, onExit, onRestart }: {
                   <span className="fc-tag fc-tag-ok">Answer</span>
                   <span className="truncate text-[11px] font-medium text-muted-foreground">{card.tags?.[0]}</span>
                 </div>
-                <div className="mt-2 line-clamp-2 text-left text-[13px] font-semibold text-muted-foreground"><RichText>{card.front}</RichText></div>
+                <div className="mt-2 line-clamp-2 text-left text-[13px] font-semibold text-muted-foreground"><CardText>{card.front}</CardText></div>
                 <div className="flex flex-1 items-center py-4">
-                  <div className="fc-answer w-full text-left text-[17px] leading-relaxed sm:text-lg"><RichText>{card.back}</RichText></div>
+                  <div className="fc-answer w-full text-left text-[17px] leading-relaxed sm:text-lg"><CardText>{card.back}</CardText></div>
                 </div>
                 {card.hint && (
-                  <div className="fc-hint"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0" /><span><RichText>{card.hint}</RichText></span></div>
+                  <div className="fc-hint"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0" /><span><CardText>{card.hint}</CardText></span></div>
                 )}
               </div>
             </button>
@@ -377,7 +377,7 @@ function Study({ session, onRated, onExit, onRestart }: {
                 </button>
               ) : <span />}
               <button type="button" onClick={() => setFlipped(true)} className="fc-cta h-12 justify-center text-base">Show answer</button>
-              {hint && card.hint && <div className="fc-hint col-span-2"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0" /><span><RichText>{card.hint}</RichText></span></div>}
+              {hint && card.hint && <div className="fc-hint col-span-2"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0" /><span><CardText>{card.hint}</CardText></span></div>}
             </div>
           ) : (
             <div className="mt-4">
