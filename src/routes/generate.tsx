@@ -6,6 +6,7 @@ import { TestBuilder } from "@/components/home/test-builder";
 import { useConsultData } from "@/components/consult/consult-ui";
 import { DrAkzaLoader } from "@/components/dr-akza-loader";
 import { useAuth } from "@/hooks/use-auth";
+import { FeatureLock } from "@/components/feature-lock";
 
 type Search = { start?: "weak" | "pyq" };
 
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/generate")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: GeneratePage,
+  component: () => (<FeatureLock feature="generate_test"><GeneratePage /></FeatureLock>),
 });
 
 const STATS: { v: string; l: string; c: string }[] = [

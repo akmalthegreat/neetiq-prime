@@ -11,6 +11,7 @@ import { RichText } from "@/components/rich-text";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { FeatureLock } from "@/components/feature-lock";
 
 type Tab = "saved" | "mistakes" | "analytics";
 export const Route = createFileRoute("/improve")({
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/improve")({
     tab: s.tab === "mistakes" || s.tab === "analytics" || s.tab === "saved" ? (s.tab as Tab) : undefined,
   }),
   head: () => ({ meta: [{ title: "Improvement Zone — NEET Track" }] }),
-  component: ImprovePage,
+  component: () => (<FeatureLock feature="improvement_zone"><ImprovePage /></FeatureLock>),
 });
 
 const db = supabase as any;

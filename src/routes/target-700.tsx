@@ -123,7 +123,7 @@ function Target700Hub() {
               <Crown className="h-5 w-5 shrink-0 text-amber-300" />
               <div className="min-w-0 flex-1 text-sm">
                 <div className="font-bold text-amber-100">
-                  {free.t700.length >= free.t700Limit ? "Your free tests are used" : `Free plan: ${free.t700Limit - free.t700.length} of ${free.t700Limit} free tests left`}
+                  {free.t700Limit === 0 ? "Your 21-day free access has ended" : free.t700.length >= free.t700Limit ? "Your free tests are used" : `Free plan: ${free.t700Limit - free.t700.length} of ${free.t700Limit} free tests left`}
                 </div>
                 <div className="text-xs text-white/70">Premium unlocks all {T700.totalTests} tests with solutions and analysis.</div>
               </div>

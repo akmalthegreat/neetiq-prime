@@ -7,6 +7,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useAccess } from "@/hooks/use-access";
 import type { ConsultData } from "@/components/consult/consult-ui";
 
 type Snap = ConsultData["snapshot"];
@@ -43,6 +44,8 @@ const Tick = () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" s
  */
 export function TestBuilder({ snapshot, page = false, start }: { snapshot?: Snap; page?: boolean; start?: "weak" | "pyq" }) {
   const { user } = useAuth();
+  const { hasFeature, loading: accessLoading } = useAccess();
+  const locked = !!user && !accessLoading && !hasFeature("generate_test");
   const nav = useNavigate();
   const [open, setOpen] = useState(page);
   const [step, setStep] = useState(1);
@@ -106,6 +109,7 @@ export function TestBuilder({ snapshot, page = false, start }: { snapshot?: Snap
 
   async function generate() {
     if (!user || busy) return;
+    if (locked) { toast.message("Generate Test is a Premium feature", { description: "Your 21-day free access has ended." }); await nav({ to: "/premium" }); return; }
     setBusy(true);
     try {
       const subjOf = new Map(chapters.map((c) => [c.id, c.subject_id]));
@@ -221,7 +225,17 @@ export function TestBuilder({ snapshot, page = false, start }: { snapshot?: Snap
         <div className="paper" aria-hidden="true"><i /><i /><i><span className="q" /><span /><span style={{ width: "80%" }} /><span className="q" style={{ width: "45%" }} /><span /><span className="tick" /></i></div>
       </div>
 
-      {!open && (
+      {!open && locked && !page && (
+        <>
+          <div className="steps-mini">{STEP_NAMES.map((n, i) => <div key={n}><b>{i + 1}</b>{n}</div>)}</div>
+          <Link to="/premium" className="cta-main" style={{ background: "linear-gradient(90deg,#F59E0B,#FBBF24)", color: "#1C1206" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>Unlock with Premium
+          </Link>
+          <p style={{ marginTop: 8, fontSize: 12, color: "var(--mute)", textAlign: "center" }}>Your 21-day free access has ended. Everything else stays free.</p>
+        </>
+      )}
+
+      {!open && !locked && (
         <>
           <div className="steps-mini">{STEP_NAMES.map((n, i) => <div key={n}><b>{i + 1}</b>{n}</div>)}</div>
           <button type="button" className="cta-main" onClick={() => openWith()}>

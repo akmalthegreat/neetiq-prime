@@ -474,7 +474,7 @@ function SubjectPage() {
   const [access, setAccess] = useState<Awaited<ReturnType<typeof getFreeAccess>> | null>(null);
   const [premiumPrompt, setPremiumPrompt] = useState(false);
   useEffect(() => { if (user) accessFn().then(setAccess).catch(() => {}); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
-  const freePlan = access && !access.premium ? access : null;
+  const freePlan = access && !access.premium && (access as { chapterGate?: boolean }).chapterGate !== false ? access : null;
   const chapterLocked = (id: string) => !!freePlan && !freePlan.chapters.includes(id) && freePlan.chapters.length >= freePlan.chapterLimit;
 
   const startChapter = async (chapter: Chapter) => {

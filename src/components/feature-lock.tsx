@@ -31,14 +31,14 @@ export function FeatureLock({ feature, children }: { feature: string; children: 
             <h2 className="text-lg font-bold">{label} is locked</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {trialActive
-                ? "This feature isn't part of your trial. Purchase a batch to unlock it."
-                : "Your trial has ended. Purchase a batch to continue using NEET Track."}
+                ? "This is part of a paid plan. Purchase a batch to unlock it."
+                : "Your 21-day free access has ended. This is a Premium feature. Everything else on NEET Track stays free."}
             </p>
           </div>
           <Button asChild className="w-full bg-gradient-to-r from-primary to-fuchsia-500 text-white">
             <Link to="/premium">
               <Crown className="mr-2 h-4 w-4" />
-              Unlock with a batch
+              Unlock with Premium
             </Link>
           </Button>
         </CardContent>
