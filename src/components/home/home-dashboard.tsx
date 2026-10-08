@@ -154,17 +154,17 @@ export function HomeDashboard({ top }: { top?: ReactNode }) {
       <div className="nth-grid">
         {top ? <div className="full">{top}</div> : null}
         <Welcome firstName={firstName} targetYear={targetYear} today={today} dailyGoal={dailyGoal} streak={streak} weekly={ex?.weekly} todo={todo} />
-        <MegaQuizCard />
         <AzkaStrip tips={(consult.data?.recommendations ?? []).map((r) => (r.detail.length <= 110 ? r.detail : r.title))} />
         <Banner banners={ex?.banners ?? []} showBuiltIn={ex?.showBuiltInSlides ?? true} nextContest={ex?.nextContest ?? null} />
         <QuickPractice counts={counts} snapshot={snap} />
         <Improvement snapshot={snap} prediction={consult.data?.prediction} wrongThisWeek={ex?.wrongThisWeek ?? 0} bookmarks={ex?.bookmarks ?? 0} />
-        <Leaderboard weekly={ex?.weekly} loading={extras.isLoading} />
+        <Tools />
         <ExamSimulation mocksTaken={ex?.mocksTaken ?? 0} lastMock={snap?.mocks.last ?? null} />
         <TestBuilder snapshot={snap} />
-        <Tools />
         <Contest contest={ex?.nextContest ?? null} loading={extras.isLoading} />
         <Mentorship />
+        <MegaQuizCard />
+        <Leaderboard weekly={ex?.weekly} loading={extras.isLoading} />
       </div>
     </div>
   );
@@ -176,6 +176,26 @@ const WRAP_CSS = `
 @media (min-width:640px){.nth.nth-wrap{margin:-2.5rem -1.5rem}}
 @media (min-width:1024px){.nth.nth-wrap{margin:-2.5rem -2rem}}
 .nth .nth-grid{max-width:1180px;margin:0 auto}
+.nth .fcx{position:absolute;right:-6px;top:14px;width:128px;height:170px;perspective:700px}
+.nth .fcx-glow{position:absolute;left:10px;top:30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(closest-side,rgba(244,114,182,.55),transparent);filter:blur(10px);animation:nth-bob 3s ease-in-out infinite}
+.nth .fcx-card,.nth .fcx-flip{position:absolute;left:18px;top:18px;width:88px;height:118px;border-radius:14px}
+.nth .fcx-card{display:flex;align-items:flex-end;justify-content:flex-start;padding:8px;border:1px solid rgba(255,255,255,.35);box-shadow:0 14px 26px -12px rgba(0,0,0,.55)}
+.nth .fcx-card i{font:800 9px var(--display);letter-spacing:1.5px;font-style:normal;color:rgba(255,255,255,.85)}
+.nth .fcx-card.c3{background:linear-gradient(150deg,#A855F7,#6D28D9);transform:translate(16px,10px) rotate(12deg)}
+.nth .fcx-card.c2{background:linear-gradient(150deg,#10B981,#047857);transform:translate(8px,4px) rotate(5deg)}
+.nth .fcx-flip{transform:rotate(-6deg)}
+.nth .fcx-in{position:absolute;inset:0;transform-style:preserve-3d;animation:nth-fcflip 4.4s cubic-bezier(.6,0,.3,1) infinite}
+.nth .fcx-face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;padding:10px;gap:6px;box-shadow:0 18px 30px -14px rgba(0,0,0,.6)}
+.nth .fcx-face.f{background:linear-gradient(160deg,#FFFFFF,#EDE9FE);border:1px solid #fff}
+.nth .fcx-face.f em{font:800 22px/1 var(--display);font-style:normal;background:linear-gradient(135deg,#7C3AED,#DB2777);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px}
+.nth .fcx-face.f .l{display:block;height:6px;border-radius:4px;background:#C4B5FD}
+.nth .fcx-face.f .l.s{width:70%;background:#DDD6FE}
+.nth .fcx-face.b{transform:rotateY(180deg);align-items:center;justify-content:center;background:linear-gradient(150deg,#22C55E,#0EA5E9);border:1px solid rgba(255,255,255,.5)}
+.nth .fcx-face.b b{font:800 12px var(--display);color:#fff}
+.nth .fcx-chip{position:absolute;right:2px;bottom:6px;padding:4px 8px;border-radius:999px;font:800 9.5px var(--display);color:#052E16;background:#86EFAC;box-shadow:0 8px 16px -8px rgba(0,0,0,.5);animation:nth-fcchip 4.4s ease-in-out infinite}
+@keyframes nth-fcflip{0%,30%{transform:rotateY(0)}45%,80%{transform:rotateY(180deg)}95%,100%{transform:rotateY(360deg)}}
+@keyframes nth-fcchip{0%,42%{opacity:0;transform:translateY(6px)}52%,78%{opacity:1;transform:none}90%,100%{opacity:0;transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.nth .fcx-in,.nth .fcx-chip{animation:none}}
 .nth .quick .quick-link{height:32px;padding:0 11px;border-radius:10px;font:600 11.5px var(--display);color:#BFD4FF;background:rgba(59,130,246,.1);border:1px solid rgba(96,165,250,.3);display:inline-flex;align-items:center}
 .nth .full:empty{display:none}
 @media (min-width:900px){.nth .nth-grid > .azka,.nth .nth-grid > section[aria-label="Quick practice"],.nth .nth-grid > section[aria-label="Exam simulation"],.nth .nth-grid > section[aria-label="1-on-1 mentorship"]{grid-column:1/-1}}
@@ -307,6 +327,18 @@ function Banner({ banners, showBuiltIn, nextContest }: { banners: HomeExtras["ba
     art: b.imageUrl ? <img className="azka-art" src={b.imageUrl} alt="" style={{ width: 140, borderRadius: 16 }} /> : <div className="ray" />,
   }));
   const builtIn: Slide[] = [
+        { id: "flashcards", tag: "NEW · FLASHCARDS", title: "4,200+ NEET Flashcards", sub: "All 81 chapters of PCB. Revise NCERT in 10 minutes a day.", cta: "Start revising", href: "/flashcards",
+          mesh: "conic-gradient(from 200deg at 55% 45%,#4C1D95,#C026D3,#7C3AED,#0EA5E9,#4C1D95)",
+          art: <div className="fcx" aria-hidden="true">
+            <span className="fcx-glow" />
+            <span className="fcx-card c3"><i>BIO</i></span>
+            <span className="fcx-card c2"><i>CHEM</i></span>
+            <span className="fcx-flip"><span className="fcx-in">
+              <span className="fcx-face f"><em>Q</em><span className="l" /><span className="l s" /><span className="l" /></span>
+              <span className="fcx-face b"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7" /></svg><b>Know it</b></span>
+            </span></span>
+            <span className="fcx-chip">+1 mastered</span>
+          </div> },
         { id: "consult", tag: "NEW · NEET MENTOR", title: "Dr. Azka Consult is live", sub: "Predicted score, 12-hour study plan and your full report.", cta: "Consult now", href: "/consult", mesh: meshes[0], art: <img className="azka-art" src={AZKA_IMG} alt="" /> },
         { id: "mocks", tag: "MOCK SERIES", title: "Target 700 Full Mocks", sub: "NTA-style CBT, 720 marks and an all-India rank after every paper.", cta: "Start a mock", href: "/mocks", mesh: meshes[1], art: <><div className="ray" /><div className="badge3d"><b>700</b><small>TARGET</small></div></> },
         { id: "neetlab", tag: "3D STUDY TOOLS", title: "See biology in 3D", sub: "Explore models and simulations in NEETLab.", cta: "Open NEETLab", href: "/neetlab", mesh: meshes[2], art: <div className="helix">{Array.from({ length: 11 }, (_, i) => <span key={i} style={{ top: i * 17 + 4, animationDelay: `${-i * 0.27}s`, background: "linear-gradient(90deg,rgba(165,243,252,.75),rgba(253,230,138,.75))" }} />)}</div> },
