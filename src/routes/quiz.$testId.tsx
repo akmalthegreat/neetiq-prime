@@ -347,7 +347,10 @@ function QuizPlayer() {
             .order("started_at", { ascending: false })
             .limit(1);
           const prev = existingAttempts?.[0];
-          if (prev) {
+          // Resume ONLY an unfinished attempt. If the latest attempt was already
+          // submitted ("completed"), a reattempt must start clean: no options
+          // pre-selected, and a fresh in-progress row gets created on first answer.
+          if (prev && prev.status === "in_progress") {
             setAttemptId(prev.id);
             if (prev.answers && typeof prev.answers === "object")
               setAnswers(prev.answers as Record<string, number>);
