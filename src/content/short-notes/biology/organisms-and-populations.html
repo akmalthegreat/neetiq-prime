@@ -1,0 +1,182 @@
+<!--meta {"title":"Organisms and Populations","cls":12,"no":11,"unit":"Ecology","tagline":"Population attributes with worked birth/death rates, age pyramids, Nt+1 equation, exponential (J) vs logistic (S) growth with r values, life history, and every interaction (+/–/0) with NEET’s favourite examples"} -->
+<section class="sn-sec" data-title="Population attributes">
+  <h2><span class="sn-num">11.1</span> Populations — attributes</h2>
+  <div class="sn-box sn-def"><b class="sn-tag">Definition</b><mark>A <b>population</b> is a group of individuals of the <b>same species</b> living in a well-defined geographical area, sharing or competing for similar resources, and <b>potentially interbreeding</b>.</mark></div>
+  <p>A population has attributes that an individual does not: birth rate, death rate, sex ratio and age distribution.</p>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Attribute</th><th>NCERT example</th></tr></thead><tbody>
+    <tr><td><b>Birth rate</b> (per capita)</td><td><mark>Pond had <b>20 lotus</b> plants; <b>8</b> new added → birth rate = 8/20 = <b>0.4 offspring per lotus per year</b></mark></td></tr>
+    <tr><td><b>Death rate</b> (per capita)</td><td><mark><b>4</b> of <b>40 fruitflies</b> died in a week → death rate = 4/40 = <b>0.1 individuals per fruitfly per week</b></mark></td></tr>
+    <tr><td><b>Sex ratio</b></td><td><mark>e.g. <b>60% females, 40% males</b></mark></td></tr>
+    <tr><td><b>Age distribution</b></td><td><mark>Plotted as an <b>age pyramid</b>; for humans, males and females in one diagram</mark></td></tr>
+  </tbody></table></div>
+
+  <figure class="sn-fig"><svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Age pyramids: expanding with broad base, stable bell-shaped, declining urn-shaped with narrow base; layers are pre-reproductive, reproductive and post-reproductive">
+    <g font-family="Inter, sans-serif">
+      <g stroke="#14182B" stroke-width="1.5">
+        <polygon points="40,180 180,180 155,135 65,135" fill="#E8F8F1"/><polygon points="65,135 155,135 130,90 90,90" fill="#EEF4FF"/><polygon points="90,90 130,90 110,50" fill="#FFF6E5"/>
+        <polygon points="250,180 370,180 375,135 245,135" fill="#E8F8F1"/><polygon points="245,135 375,135 360,90 260,90" fill="#EEF4FF"/><polygon points="260,90 360,90 310,50" fill="#FFF6E5"/>
+        <polygon points="480,180 560,180 580,135 460,135" fill="#E8F8F1"/><polygon points="460,135 580,135 590,90 450,90" fill="#EEF4FF"/><polygon points="450,90 590,90 520,50" fill="#FFF6E5"/>
+      </g>
+      <text x="110" y="205" text-anchor="middle" font-size="14" font-weight="700" fill="#059669">Expanding</text>
+      <text x="310" y="205" text-anchor="middle" font-size="14" font-weight="700" fill="#2563EB">Stable</text>
+      <text x="520" y="205" text-anchor="middle" font-size="14" font-weight="700" fill="#BE123C">Declining</text>
+      <text x="110" y="223" text-anchor="middle" font-size="11" font-weight="600" fill="#6B7391">broad base (triangular)</text>
+      <text x="310" y="223" text-anchor="middle" font-size="11" font-weight="600" fill="#6B7391">bell shaped</text>
+      <text x="520" y="223" text-anchor="middle" font-size="11" font-weight="600" fill="#6B7391">narrow base (urn)</text>
+      <g font-size="11" font-weight="700" text-anchor="middle"><text x="200" y="24" fill="#059669">■ Pre-reproductive (bottom)</text><text x="370" y="24" fill="#2563EB">■ Reproductive</text><text x="520" y="24" fill="#D97706">■ Post-reproductive (top)</text></g>
+    </g>
+  </svg><figcaption><b>Fig.</b> Age pyramids reflect whether a population is growing, stable or declining.</figcaption></figure>
+  <div class="sn-box sn-key"><b class="sn-tag">Population density (N)</b><mark>Population size is technically called <b>population density (N)</b>. Number is not always the best measure: with <b>200 <i>Parthenium</i></b> plants and <b>one huge banyan tree</b>, <b>per cent cover or biomass</b> is more meaningful. <b>Relative density</b> may be enough, e.g. <b>number of fish caught per trap</b>. <b>Tiger census</b> uses <b>pug marks and fecal pellets</b> (indirect estimation).</mark></div>
+</section>
+
+<section class="sn-sec" data-title="Population growth">
+  <h2><span class="sn-num">11.1.2</span> Population growth</h2>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Increase density</th><th>Decrease density</th></tr></thead><tbody>
+    <tr><td><mark><b>Natality (B)</b>: births added in a period</mark></td><td><mark><b>Mortality (D)</b>: deaths in a period</mark></td></tr>
+    <tr><td><mark><b>Immigration (I)</b>: individuals of the same species coming in</mark></td><td><mark><b>Emigration (E)</b>: individuals leaving</mark></td></tr>
+  </tbody></table></div>
+  <div class="sn-box sn-def"><b class="sn-tag">Equation</b><mark><b>N<sub>t+1</sub> = N<sub>t</sub> + [(B + I) – (D + E)]</b>. Density increases if (B + I) &gt; (D + E).</mark></div>
+  <p><mark>Normally <b>births and deaths</b> matter most; immigration matters more when a <b>new habitat is being colonised</b>.</mark></p>
+
+  <h3>11.1.3 Growth models</h3>
+  <figure class="sn-fig"><svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Population growth curves: exponential J-shaped curve rising steeply; logistic S-shaped curve levelling off at carrying capacity K">
+    <g font-family="Inter, sans-serif">
+      <line x1="60" y1="220" x2="600" y2="220" stroke="#6B7391" stroke-width="2"/>
+      <line x1="60" y1="220" x2="60" y2="20" stroke="#6B7391" stroke-width="2"/>
+      <path d="M62 216 C 220 214, 300 190, 340 120 S 380 30, 390 22" fill="none" stroke="#BE123C" stroke-width="4"/>
+      <path d="M62 216 C 200 214, 230 190, 300 140 S 420 80, 590 78" fill="none" stroke="#059669" stroke-width="4"/>
+      <line x1="60" y1="78" x2="600" y2="78" stroke="#059669" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="598" y="70" text-anchor="end" font-size="14" font-weight="800" fill="#059669">Carrying capacity (K)</text>
+      <text x="400" y="34" font-size="14" font-weight="700" fill="#BE123C">a: Exponential (J) — dN/dt = rN</text>
+      <text x="330" y="176" font-size="14" font-weight="700" fill="#059669">b: Logistic (S) — dN/dt = rN(K–N)/K</text>
+      <text x="330" y="246" text-anchor="middle" font-size="14" font-weight="600" fill="#6B7391">Time (t) →</text>
+      <text x="30" y="120" text-anchor="middle" font-size="14" font-weight="600" fill="#6B7391" transform="rotate(-90 30 120)">Population density (N)</text>
+    </g>
+  </svg><figcaption><b>Fig.</b> Exponential (J-shaped) and logistic (S-shaped) population growth.</figcaption></figure>
+  <div class="sn-grid">
+    <div class="sn-card"><h4>Exponential growth</h4><ul><li><mark>When resources (food, space) are <b>unlimited</b></mark></li><li><mark><b>dN/dt = (b – d) × N = rN</b></mark></li><li><mark><b>r</b> = <b>intrinsic rate of natural increase</b></mark></li><li><mark>Integral form: <b>N<sub>t</sub> = N<sub>0</sub> e<sup>rt</sup></b> (e = 2.71828)</mark></li><li><mark><b>J-shaped</b> curve</mark></li><li>Darwin showed even a slow-growing <b>elephant</b> could reach enormous numbers without checks</li></ul></div>
+    <div class="sn-card"><h4>Logistic growth</h4><ul><li><mark>Resources <b>limited</b> → competition; maximum number = <b>carrying capacity (K)</b></mark></li><li><mark>Lag → acceleration → deceleration → <b>asymptote</b> at K</mark></li><li><mark><b>Verhulst-Pearl Logistic Growth</b>: <b>dN/dt = rN[(K – N)/K]</b></mark></li><li><mark><b>Sigmoid (S-shaped)</b> curve</mark></li><li><mark>Considered <b>more realistic</b></mark></li></ul></div>
+  </div>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Organism</th><th>r value</th></tr></thead><tbody>
+    <tr><td><b>Norway rat</b></td><td><mark><b>0.015</b></mark></td></tr>
+    <tr><td><b>Flour beetle</b></td><td><mark><b>0.12</b></mark></td></tr>
+    <tr><td><b>Human population in India (1981)</b></td><td><mark><b>0.0205</b></mark></td></tr>
+  </tbody></table></div>
+  <div class="sn-box sn-ex"><b class="sn-tag">Trap</b>Exponential = <b>J</b>, unlimited resources; logistic = <b>S</b>, limited resources with K. r = b – d (per capita rates). When N = K, dN/dt = <b>0</b>.</div>
+
+  <h3>11.1.4 Life history variation</h3>
+  <ul>
+    <li><mark>Populations evolve to maximise <b>reproductive (Darwinian) fitness</b> (high r).</mark></li>
+  </ul>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Strategy</th><th>Examples (NCERT)</th></tr></thead><tbody>
+    <tr><td><mark>Breed <b>only once</b> in a lifetime</mark></td><td><mark><b>Pacific salmon fish, bamboo</b></mark></td></tr>
+    <tr><td><mark>Breed <b>many times</b></mark></td><td><mark>Most <b>birds and mammals</b></mark></td></tr>
+    <tr><td><mark><b>Many small</b> offspring</mark></td><td><mark><b>Oysters, pelagic fishes</b></mark></td></tr>
+    <tr><td><mark><b>Few large</b> offspring</mark></td><td><mark><b>Birds, mammals</b></mark></td></tr>
+  </tbody></table></div>
+</section>
+
+<section class="sn-sec" data-title="Population interactions">
+  <h2><span class="sn-num">11.1.5</span> Population interactions</h2>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Interaction</th><th>Species A</th><th>Species B</th></tr></thead><tbody>
+    <tr><td><b>Mutualism</b></td><td>+</td><td>+</td></tr>
+    <tr><td><b>Competition</b></td><td>–</td><td>–</td></tr>
+    <tr><td><b>Predation</b></td><td>+</td><td>–</td></tr>
+    <tr><td><b>Parasitism</b></td><td>+</td><td>–</td></tr>
+    <tr><td><b>Commensalism</b></td><td>+</td><td>0</td></tr>
+    <tr><td><b>Amensalism</b></td><td>–</td><td>0</td></tr>
+  </tbody></table></div>
+  <div class="sn-box sn-key"><b class="sn-tag">Key idea</b><mark>Predation, parasitism and commensalism share a feature: the interacting species <b>live closely together</b>.</mark></div>
+</section>
+
+<section class="sn-sec" data-title="Predation">
+  <h2><span class="sn-num">11.1.5</span> Predation</h2>
+  <ul>
+    <li><mark>Nature’s way of transferring energy fixed by plants to <b>higher trophic levels</b>. A sparrow eating a seed is also a predator; herbivores are ecologically similar to predators.</mark></li>
+    <li><mark>Predators <b>keep prey populations under control</b>; exotic species become <b>invasive</b> without natural predators.</mark></li>
+    <li><mark><b>Prickly pear cactus</b> introduced into <b>Australia (early 1920s)</b> spread over millions of hectares; controlled only after a <b>cactus-feeding moth</b> was introduced.</mark></li>
+    <li><mark>Predators maintain <b>species diversity</b> by reducing competition among prey: removing starfish <b><i>Pisaster</i></b> from rocky intertidal communities of the <b>American Pacific Coast</b> led to extinction of <b>more than 10 invertebrate species</b> within a year.</mark></li>
+    <li><mark>Over-efficient predators would drive prey and then themselves extinct → predators are <b>‘prudent’</b>.</mark></li>
+  </ul>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Prey defence</th><th>Examples (NCERT)</th></tr></thead><tbody>
+    <tr><td><b>Camouflage</b> (cryptic colouring)</td><td><mark>Some <b>insects and frogs</b></mark></td></tr>
+    <tr><td><b>Distastefulness</b></td><td><mark><b>Monarch butterfly</b> — distasteful to birds due to a chemical acquired in its <b>caterpillar stage</b> by feeding on a <b>poisonous weed</b></mark></td></tr>
+    <tr><td><b>Morphological (plants)</b></td><td><mark><b>Thorns</b> — <i>Acacia</i>, cactus</mark></td></tr>
+    <tr><td><b>Chemical (plants)</b></td><td><mark><b><i>Calotropis</i></b> makes highly poisonous <b>cardiac glycosides</b> (cattle and goats avoid it); <b>nicotine, caffeine, quinine, strychnine, opium</b> are defences against grazers</mark></td></tr>
+  </tbody></table></div>
+  <p><mark>Nearly <b>25%</b> of all insects are <b>phytophagous</b> (feed on plant sap and parts).</mark></p>
+</section>
+
+<section class="sn-sec" data-title="Competition">
+  <h2><span class="sn-num">11.1.5</span> Competition</h2>
+  <ul>
+    <li><mark>Unrelated species can compete: in some shallow <b>South American lakes</b>, visiting <b>flamingoes</b> and resident <b>fishes</b> compete for <b>zooplankton</b>.</mark></li>
+    <li><mark>Resources need not be limiting: in <b>interference competition</b>, one species’ feeding efficiency drops due to the inhibitory presence of another even when resources are abundant.</mark></li>
+    <li><mark>Best defined as a process in which the <b>fitness (r)</b> of one species is significantly lower in the presence of another.</mark></li>
+  </ul>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Evidence / concept</th><th>Detail (NCERT)</th></tr></thead><tbody>
+    <tr><td><b>Abingdon tortoise</b></td><td><mark><b>Galapagos</b>; extinct within a decade after <b>goats</b> were introduced (greater browsing efficiency)</mark></td></tr>
+    <tr><td><b>Competitive release</b></td><td><mark>A restricted species expands its range when the superior competitor is removed. <b>Connell</b>: on rocky coasts of <b>Scotland</b>, larger barnacle <b><i>Balanus</i></b> excludes smaller <b><i>Chathamalus</i></b> from the intertidal zone.</mark></td></tr>
+    <tr><td><b>Gause’s Competitive Exclusion Principle</b></td><td><mark>Two closely related species competing for the same resources <b>cannot co-exist indefinitely</b>; the inferior one is eliminated — true if resources are limiting</mark></td></tr>
+    <tr><td><b>Resource partitioning</b></td><td><mark>Avoiding competition by different feeding times or foraging patterns. <b>MacArthur</b>: <b>five closely related warblers</b> on the same tree co-exist by behavioural differences in foraging.</mark></td></tr>
+  </tbody></table></div>
+  <div class="sn-box sn-hl"><b class="sn-tag">NEET Highlight</b><mark><b>Herbivores and plants</b> are more adversely affected by competition than <b>carnivores</b>.</mark></div>
+  <div class="sn-box sn-ex"><b class="sn-tag">Trap</b><i>Balanus</i> (larger) wins over <i>Chathamalus</i> (smaller). MacArthur = <b>warblers</b> (resource partitioning). Flamingoes and fish are <b>unrelated</b> competitors.</div>
+</section>
+
+<section class="sn-sec" data-title="Parasitism">
+  <h2><span class="sn-num">11.1.5</span> Parasitism</h2>
+  <ul>
+    <li><mark>Free lodging and meals. Many parasites are <b>host-specific</b> and <b>co-evolve</b> with their hosts.</mark></li>
+    <li><mark>Adaptations: <b>loss of unnecessary sense organs</b>, <b>adhesive organs or suckers</b>, <b>loss of digestive system</b>, <b>high reproductive capacity</b>.</mark></li>
+    <li><mark>Complex life cycles: <b>human liver fluke</b> (trematode) needs <b>two intermediate hosts — snail and fish</b>; the <b>malarial parasite</b> needs a <b>vector (mosquito)</b>.</mark></li>
+    <li>Parasites may reduce host survival, growth, reproduction and population density, and make hosts vulnerable to predation.</li>
+  </ul>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Type</th><th>Examples (NCERT)</th></tr></thead><tbody>
+    <tr><td><b>Ectoparasites</b> (external surface)</td><td><mark><b>Lice</b> on humans, <b>ticks</b> on dogs, <b>copepods</b> on marine fish; <b><i>Cuscuta</i></b> on hedge plants (lost <b>chlorophyll and leaves</b>)</mark></td></tr>
+    <tr><td><b>Endoparasites</b> (inside host)</td><td><mark>Live in liver, kidney, lungs, RBCs; more complex life cycles; simplified morphology, high reproductive potential</mark></td></tr>
+    <tr><td><b>Brood parasitism</b></td><td><mark>Parasitic bird lays eggs in the host’s nest; eggs evolved to resemble the host’s in size and colour. <b>Cuckoo (koel)</b> and <b>crow</b>, spring to summer</mark></td></tr>
+  </tbody></table></div>
+  <div class="sn-box sn-ex"><b class="sn-tag">Trap</b>The <b>female mosquito is not considered a parasite</b>, though it needs our blood. <i>Cuscuta</i> is an <b>ectoparasite</b> without chlorophyll.</div>
+</section>
+
+<section class="sn-sec" data-title="Commensalism and mutualism">
+  <h2><span class="sn-num">11.1.5</span> Commensalism (+, 0)</h2>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Benefits</th><th>Unaffected</th><th>How</th></tr></thead><tbody>
+    <tr><td><mark><b>Orchid</b> (epiphyte)</mark></td><td><mark><b>Mango</b> branch</mark></td><td>Grows on it</td></tr>
+    <tr><td><mark><b>Barnacles</b></mark></td><td><mark><b>Whale</b></mark></td><td>Grow on its back</td></tr>
+    <tr><td><mark><b>Cattle egret</b></mark></td><td><mark><b>Grazing cattle</b></mark></td><td><mark>Cattle stir up and flush out insects for egrets</mark></td></tr>
+    <tr><td><mark><b>Clown fish</b></mark></td><td><mark><b>Sea anemone</b></mark></td><td><mark>Fish gets protection among stinging tentacles</mark></td></tr>
+  </tbody></table></div>
+
+  <h2><span class="sn-num">11.1.5</span> Mutualism (+, +)</h2>
+  <div class="sn-tw"><table class="sn-tbl"><thead><tr><th>Example</th><th>Detail (NCERT)</th></tr></thead><tbody>
+    <tr><td><b>Lichens</b></td><td><mark><b>Fungus</b> + photosynthesising <b>algae or cyanobacteria</b></mark></td></tr>
+    <tr><td><b>Mycorrhizae</b></td><td><mark>Fungi help roots absorb nutrients; plant gives <b>carbohydrates</b></mark></td></tr>
+    <tr><td><b>Pollination and seed dispersal</b></td><td><mark>Rewards: <b>pollen, nectar</b>, juicy fruits; must be safeguarded against <b>‘cheaters’</b>; <b>co-evolution</b> of flower and pollinator</mark></td></tr>
+    <tr><td><b>Fig and wasp</b></td><td><mark><b>One-to-one</b> relationship; female wasp uses the fruit for <b>oviposition</b> and developing seeds to nourish larvae; pollinates the fig inflorescence while searching for egg-laying sites</mark></td></tr>
+    <tr><td><b>Orchid <i>Ophrys</i></b> (Mediterranean)</td><td><mark><b>Sexual deceit</b>: a petal resembles a <b>female bee</b>; the male bee <b>‘pseudocopulates’</b> and carries pollen to another flower. If the female bee’s colour pattern changes, the orchid must <b>co-evolve</b>.</mark></td></tr>
+  </tbody></table></div>
+  <div class="sn-box sn-ex"><b class="sn-tag">Trap</b>Orchid on mango = <b>commensalism</b>, but lichen and mycorrhiza = <b>mutualism</b>. Clown fish–anemone = <b>commensalism</b> (anemone gets no benefit).</div>
+</section>
+
+<section class="sn-sec sn-rev" data-title="Quick revision">
+  <h2><span class="sn-num">★</span> Quick revision</h2>
+  <ol>
+    <li>Population: same species, defined area, shared resources, potential interbreeding.</li>
+    <li>Birth rate 8/20 = 0.4 per lotus per year; death rate 4/40 = 0.1 per fruitfly per week; sex ratio; age pyramids (expanding, stable, declining).</li>
+    <li>Density N; per cent cover or biomass (banyan vs Parthenium); relative density (fish per trap); tiger census by pug marks and fecal pellets.</li>
+    <li>Natality and immigration increase; mortality and emigration decrease; N<sub>t+1</sub> = N<sub>t</sub> + [(B + I) – (D + E)].</li>
+    <li>Exponential: dN/dt = rN, N<sub>t</sub> = N<sub>0</sub>e<sup>rt</sup>, J-shaped, unlimited resources.</li>
+    <li>r: Norway rat 0.015, flour beetle 0.12, India 1981 0.0205.</li>
+    <li>Logistic (Verhulst-Pearl): dN/dt = rN(K – N)/K, sigmoid, carrying capacity K, more realistic.</li>
+    <li>Life history: breed once (Pacific salmon, bamboo); many small offspring (oysters, pelagic fish); few large (birds, mammals).</li>
+    <li>Interactions: mutualism +/+, competition –/–, predation and parasitism +/–, commensalism +/0, amensalism –/0.</li>
+    <li>Predation: prickly pear in Australia controlled by moth; <i>Pisaster</i> removal → 10+ species extinct; prudent predators.</li>
+    <li>Defences: camouflage, monarch butterfly (poisonous weed chemical), thorns (<i>Acacia</i>, cactus), <i>Calotropis</i> cardiac glycosides, nicotine, caffeine, quinine, strychnine, opium; 25% insects phytophagous.</li>
+    <li>Competition: flamingoes vs fish (zooplankton); interference competition; Abingdon tortoise vs goats; Connell: <i>Balanus</i> excludes <i>Chathamalus</i>; Gause’s exclusion; MacArthur’s warblers (resource partitioning).</li>
+    <li>Parasites: host-specific, co-evolve, lose sense organs and digestive system, suckers, high reproduction; liver fluke (snail + fish); ectoparasites lice, ticks, copepods, <i>Cuscuta</i>; brood parasitism (koel–crow).</li>
+    <li>Commensalism: orchid on mango, barnacles on whale, cattle egret–cattle, clown fish–sea anemone.</li>
+    <li>Mutualism: lichens, mycorrhizae, fig–wasp, <i>Ophrys</i> (sexual deceit, pseudocopulation), co-evolution.</li>
+  </ol>
+</section>
