@@ -40,6 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from("user_roles").select("role").eq("user_id", userId),
     ]);
     setProfile(prof as Profile | null);
+    // Remember who signed in on this device so the login page can say "Welcome back, <name>".
+    try {
+      const p = prof as { full_name?: string | null; avatar_url?: string | null; email?: string | null } | null;
+      const first = p?.full_name?.trim().split(/\s+/)[0];
+      if (first) localStorage.setItem("nt-last-user", JSON.stringify({ name: first.slice(0, 24), avatar: p?.avatar_url ?? null, email: p?.email ?? null }));
+    } catch { /* storage unavailable */ }
     setIsAdmin(!!roles?.some((r: { role: string }) => r.role === "admin"));
   };
 
