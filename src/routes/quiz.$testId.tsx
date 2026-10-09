@@ -26,7 +26,19 @@ export const Route = createFileRoute("/quiz/$testId")({
   component: QuizPlayer,
 });
 
+/** "NEET 2023", "JEE Main 2021"… for previous-year questions. */
+function pyqLabel(q?: { is_pyq?: boolean | null; tag?: string | null; year?: number | null } | null): string | null {
+  if (!q?.is_pyq || !q.year) return null;
+  const t = (q.tag ?? "").toUpperCase().replace(/\s/g, "");
+  const exam = t === "" || t.startsWith("NEET") ? "NEET" : t === "AIPMT" ? "AIPMT" : t === "AIIMS" ? "AIIMS" : t === "KCET" || t === "KECT" ? "KCET"
+    : t.includes("EAMCET") ? "TS EAMCET" : t === "MHTCET" ? "MHT CET" : t.startsWith("JEE") ? "JEE Main" : (q.tag ?? "").trim();
+  return `${exam} ${q.year}`;
+}
+
 type Question = {
+  is_pyq?: boolean | null;
+  tag?: string | null;
+  year?: number | null;
   id: string;
   text: string;
   options: string[];
@@ -1168,7 +1180,7 @@ function QuizPlayer() {
                 </div>
               )}
               <div className="flex items-center justify-between gap-2 bg-[#e8590c] px-4 py-2.5 text-white">
-                <span className="text-lg font-bold">Question {idx + 1}<span className="text-sm font-semibold opacity-80"> / {total}</span></span>
+                <span className="flex items-center gap-2 text-lg font-bold">Question {idx + 1}<span className="text-sm font-semibold opacity-80"> / {total}</span>{pyqLabel(q) && <span className="rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold">{pyqLabel(q)}</span>}</span>
                 <span className="flex items-center gap-2 text-sm font-semibold">
                   <span className="hidden sm:inline">Time:</span>
                   <span className={cn("rounded-[3px] px-2.5 py-1 font-mono text-sm font-bold tabular-nums", lowTime ? "animate-pulse bg-[#c92a2a] text-white" : "bg-white text-[#c2410c]")}>{hh}:{mm}:{ss}</span>
@@ -1338,6 +1350,7 @@ function QuizPlayer() {
               </div>
               <span className="text-muted-foreground/50">•</span>
               <span>Q {idx + 1} / {total}</span>
+              {pyqLabel(q) && <span className={cn("rounded-full px-2 py-0.5 text-[10.5px] font-extrabold", pyqLabel(q)!.startsWith("NEET") ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300" : "bg-amber-500/15 text-amber-700 dark:text-amber-300")}>{pyqLabel(q)}</span>}
             </div>
           </div>
           <div className="flex items-center gap-1">

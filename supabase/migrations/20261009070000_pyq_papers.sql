@@ -34,3 +34,17 @@ RETURNS text[] LANGUAGE sql STABLE SECURITY INVOKER AS $$
 $$;
 
 GRANT EXECUTE ON FUNCTION public.pyq_exam(text), public.pyq_summary(), public.pyq_paper_ids(text, int) TO authenticated;
+
+-- Chapter-wise PYQs (all exams combined, newest first).
+CREATE OR REPLACE FUNCTION public.pyq_chapter_summary(p_since int DEFAULT 2010)
+RETURNS TABLE(chapter_id text, subject_id text, total bigint, neet bigint, min_year int, max_year int)
+LANGUAGE sql STABLE SECURITY INVOKER AS $$
+  SELECT q.chapter_id, lower(q.subject_id), count(*), count(*) FILTER (WHERE public.pyq_exam(q.tag) = 'NEET'), min(q.year), max(q.year)
+  FROM public.questions q WHERE q.is_pyq AND q.year >= p_since AND q.chapter_id IS NOT NULL GROUP BY 1, 2;
+$$;
+CREATE OR REPLACE FUNCTION public.pyq_chapter_ids(p_chapter text, p_neet_only boolean DEFAULT false, p_since int DEFAULT 2010)
+RETURNS text[] LANGUAGE sql STABLE SECURITY INVOKER AS $$
+  SELECT coalesce(array_agg(id ORDER BY year DESC, id), '{}') FROM public.questions
+  WHERE is_pyq AND chapter_id = p_chapter AND year >= p_since AND (NOT p_neet_only OR public.pyq_exam(tag) = 'NEET');
+$$;
+GRANT EXECUTE ON FUNCTION public.pyq_chapter_summary(int), public.pyq_chapter_ids(text, boolean, int) TO authenticated;

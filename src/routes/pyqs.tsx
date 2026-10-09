@@ -27,6 +27,7 @@ function PyqPage() {
   const [rows, setRows] = useState<Sum[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [showOther, setShowOther] = useState(false);
+  const [view, setView] = useState<"year" | "chapter">("year");
 
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
   useEffect(() => {
@@ -86,7 +87,12 @@ function PyqPage() {
         </div>
       </section>
 
-      {rows === null ? <DrAzkaLoader size="sm" message="Loading previous year papers" className="py-12" /> : (
+      <div className="py-tabs">
+        <button type="button" className={cn(view === "year" && "on")} onClick={() => setView("year")}>Year-wise papers</button>
+        <button type="button" className={cn(view === "chapter" && "on")} onClick={() => setView("chapter")}>Chapter-wise PYQs</button>
+      </div>
+
+      {view === "chapter" ? <ChapterWise /> : rows === null ? <DrAzkaLoader size="sm" message="Loading previous year papers" className="py-12" /> : (
         <>
           <h2 className="py-h"><FileText className="h-4 w-4" />NEET papers</h2>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -144,6 +150,97 @@ function PyqPage() {
   );
 }
 
+const SINCE = new Date().getFullYear() - 15;
+const SET = 50;
+const SUBJ = [["physics", "Physics", "#3B82F6"], ["chemistry", "Chemistry", "#10B981"], ["biology", "Biology", "#A855F7"]] as const;
+type ChSum = { chapter_id: string; subject_id: string; total: number; neet: number; min_year: number; max_year: number; name: string; cls: number | null; order: number };
+
+/** Every PYQ of a chapter from the last 15 years, all exams combined (each question shows its exam and year). */
+function ChapterWise() {
+  const { user } = useAuth();
+  const nav = useNavigate();
+  const [list, setList] = useState<ChSum[] | null>(null);
+  const [subj, setSubj] = useState<string>("biology");
+  const [neetOnly, setNeetOnly] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    Promise.all([db.rpc("pyq_chapter_summary", { p_since: SINCE }), db.from("chapters").select("id,name,class,order_index")]).then(([a, b]: any[]) => {
+      const ch = new Map<string, any>(((b.data ?? []) as any[]).map((c) => [String(c.id), c]));
+      setList(((a.data ?? []) as any[]).map((r) => {
+        const c = ch.get(String(r.chapter_id));
+        return { ...r, total: Number(r.total), neet: Number(r.neet), name: c?.name ?? "Chapter", cls: c?.class ?? null, order: c?.order_index ?? 0 };
+      }));
+    });
+  }, []);
+
+  const shown = (list ?? []).filter((c) => c.subject_id === subj && (neetOnly ? c.neet > 0 : c.total > 0))
+    .sort((a, b) => (a.cls ?? 0) - (b.cls ?? 0) || a.name.localeCompare(b.name));
+
+  async function open(c: ChSum, set: number, mode: "quiz" | "cbt") {
+    if (!user) return;
+    const key = `${c.chapter_id}-${set}-${mode}`;
+    setBusy(key);
+    try {
+      const { data, error } = await db.rpc("pyq_chapter_ids", { p_chapter: c.chapter_id, p_neet_only: neetOnly, p_since: SINCE });
+      if (error) throw new Error(error.message);
+      const ids = ((data ?? []) as string[]).slice(set * SET, set * SET + SET);
+      if (!ids.length) throw new Error("No PYQs here yet");
+      const sets = Math.ceil((neetOnly ? c.neet : c.total) / SET);
+      const { data: t, error: e2 } = await supabase.from("tests").insert({
+        title: `${c.name} · PYQs${neetOnly ? " (NEET)" : ""}${sets > 1 ? ` · Set ${set + 1}` : ""}`, type: "custom", difficulty: "medium",
+        duration_min: Math.max(10, Math.round((ids.length * 200) / 180)), total_questions: ids.length,
+        question_ids: ids, created_by: user.id, source: "PYQ", marks_correct: 4, marks_wrong: -1,
+      } as never).select("id").maybeSingle();
+      if (e2 || !t) throw new Error(e2?.message ?? "Could not start");
+      nav({ to: "/quiz/$testId", params: { testId: (t as { id: string }).id }, search: { mode } as never });
+    } catch (e: any) { toast.error(e?.message ?? "Could not start"); }
+    finally { setBusy(null); }
+  }
+
+  if (list === null) return <DrAzkaLoader size="sm" message="Loading chapter-wise PYQs" className="py-12" />;
+  return (
+    <div>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {SUBJ.map(([k, l, c]) => (
+          <button key={k} type="button" onClick={() => setSubj(k)} className="py-sub" style={subj === k ? { background: c, color: "#fff", borderColor: "transparent" } : undefined}>{l}</button>
+        ))}
+        <label className="ml-auto inline-flex items-center gap-2 text-xs font-bold">
+          <input type="checkbox" checked={neetOnly} onChange={(e) => setNeetOnly(e.target.checked)} className="h-4 w-4 accent-emerald-500" />NEET only
+        </label>
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">Last 15 years ({SINCE}–{new Date().getFullYear()}), newest first. {neetOnly ? "NEET papers only." : "NEET, AIPMT, AIIMS, JEE Main and state CET questions combined; each question shows its exam and year."}</p>
+      <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+        {shown.map((c, i) => {
+          const n = neetOnly ? c.neet : c.total, sets = Math.ceil(n / SET);
+          return (
+            <div key={c.chapter_id} className="py-card" style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-[10.5px] font-extrabold uppercase tracking-wider text-muted-foreground">Class {c.cls ?? "—"}</div>
+                  <div className="text-[15px] font-extrabold leading-snug">{c.name}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">{n} PYQs · {c.min_year}–{c.max_year}</div>
+                </div>
+                {!neetOnly && <span className="py-neet">{c.neet} NEET</span>}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {Array.from({ length: sets }, (_, s) => (
+                  <span key={s} className="inline-flex overflow-hidden rounded-xl border">
+                    <button type="button" disabled={!!busy} onClick={() => open(c, s, "quiz")} className="px-3 py-2 text-xs font-extrabold hover:bg-secondary">
+                      {busy === `${c.chapter_id}-${s}-quiz` ? "…" : sets > 1 ? `Set ${s + 1}` : "Practice"} <span className="font-semibold text-muted-foreground">({Math.min(SET, n - s * SET)})</span>
+                    </button>
+                    <button type="button" disabled={!!busy} onClick={() => open(c, s, "cbt")} className="border-l px-2.5 py-2 text-[11px] font-extrabold text-primary hover:bg-secondary">CBT</button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ExamRow({ exam, note, years, examKey, busy, onStart }: {
   exam: string; note: string; years: Sum[]; examKey: string; busy: string | null;
   onStart: (exam: string, years: number[], part: number, mode: "quiz" | "cbt", label: string) => void;
@@ -193,6 +290,11 @@ const PY_CSS = `
 .py-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.18em;color:#93C5FD}
 .py-eyebrow span{width:7px;height:7px;border-radius:50%;background:#22D3EE}
 .py-grad{background:linear-gradient(90deg,#60A5FA,#C084FC);-webkit-background-clip:text;background-clip:text;color:transparent}
+.py-tabs{position:sticky;top:0;z-index:10;display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:14px;padding:5px;border-radius:16px;border:1px solid var(--border);background:color-mix(in oklab,var(--card) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.py-tabs button{height:40px;border-radius:12px;font-size:13.5px;font-weight:800;color:var(--muted-foreground)}
+.py-tabs button.on{color:#fff;background:linear-gradient(90deg,#3B82F6,#7C3AED)}
+.py-sub{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:var(--card);font-size:13px;font-weight:800}
+.py-neet{flex:none;border-radius:999px;padding:3px 9px;font-size:10.5px;font-weight:800;color:#059669;background:rgba(16,185,129,.14)}
 .py-h{display:flex;align-items:center;gap:8px;margin:20px 0 10px;font-size:15px;font-weight:800}
 .py-card{border-radius:20px;padding:14px;border:1px solid var(--border);background:var(--card);animation:py-up .4s cubic-bezier(.2,.8,.2,1) both}
 @keyframes py-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
