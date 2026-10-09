@@ -204,6 +204,25 @@ const WRAP_CSS = `
 @keyframes nth-fcflip{0%,30%{transform:rotateY(0)}45%,80%{transform:rotateY(180deg)}95%,100%{transform:rotateY(360deg)}}
 @keyframes nth-fcchip{0%,42%{opacity:0;transform:translateY(6px)}52%,78%{opacity:1;transform:none}90%,100%{opacity:0;transform:translateY(-4px)}}
 @media (prefers-reduced-motion:reduce){.nth .fcx-in,.nth .fcx-chip{animation:none}}
+.nth .tl-wide{grid-column:1/-1;min-height:118px}
+.nth .gems{position:relative;display:block;width:64px;height:58px}
+.nth .gems i{position:absolute;transform:rotate(45deg);border-radius:7px;background:linear-gradient(135deg,#FEF3C7,#F59E0B);box-shadow:0 0 16px rgba(251,191,36,.6);animation:nth-bob 3s ease-in-out infinite}
+.nth .gems i:nth-child(1){left:20px;top:4px;width:26px;height:26px}
+.nth .gems i:nth-child(2){left:2px;top:30px;width:18px;height:18px;background:linear-gradient(135deg,#A7F3D0,#059669);animation-delay:-1s}
+.nth .gems i:nth-child(3){left:44px;top:32px;width:15px;height:15px;background:linear-gradient(135deg,#BFDBFE,#2563EB);animation-delay:-2s}
+.nth .mt-sm{padding:14px}
+.nth .mt-sm h3{font-size:16.5px}
+.nth .mt-sm .mt-line{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:#A7F3D0}
+.nth .mt-sm .perks{margin-top:8px;gap:5px 8px}
+.nth .mt-sm .perks li{font-size:11.5px}
+.nth .mt-sm .btn-wa{margin-top:10px;height:42px;font-size:14px}
+@media (max-width:899px){
+  .nth .sx .info{padding:12px 0 12px 14px}
+  .nth .sx h3{font-size:19px}
+  .nth .sx .mbar{margin-top:7px}
+  .nth .sx .go2{margin-top:10px;height:30px;padding:0 12px;font-size:12px}
+  .nth .sx .art{width:118px;transform:scale(.8)}
+}
 .nth .quick .quick-link{height:32px;padding:0 11px;border-radius:10px;font:600 11.5px var(--display);color:#BFD4FF;background:rgba(59,130,246,.1);border:1px solid rgba(96,165,250,.3);display:inline-flex;align-items:center}
 .nth .full:empty{display:none}
 @media (min-width:900px){.nth .nth-grid > .azka,.nth .nth-grid > section[aria-label="Quick practice"],.nth .nth-grid > section[aria-label="Exam simulation"],.nth .nth-grid > section[aria-label="1-on-1 mentorship"]{grid-column:1/-1}}
@@ -619,7 +638,10 @@ function Tools() {
         <Link to="/neetlab" className="tl" style={{ background: "linear-gradient(160deg,#083344,#061A26)", borderColor: "rgba(34,211,238,.4)", color: "#E6FBFF" }}>
           <span className="glowc" style={{ background: "#22D3EE" }} /><span className="art"><span className="scene"><span className="cube"><i /><i /><i /><i /><i /><i /></span></span></span>
           <b>3D Models</b><small>Models and simulations</small><span className="pill2" style={{ color: "#A5F3FC" }}>NEETLab</span></Link>
-        <Link to="/community" className="tl" style={{ background: "linear-gradient(160deg,#4A0D2E,#200A18)", borderColor: "rgba(236,72,153,.4)", color: "#FFEAF5" }}>
+        <Link to="/nuggets" className="tl" style={{ background: "linear-gradient(160deg,#064E3B,#062019)", borderColor: "rgba(52,211,153,.42)", color: "#ECFDF5" }}>
+          <span className="glowc" style={{ background: "#10B981" }} /><span className="art"><span className="gems"><i /><i /><i /></span></span>
+          <b>NCERT Nuggets</b><small>Read key lines, then solve</small><span className="pill2" style={{ color: "#A7F3D0" }}>New · Biology</span></Link>
+        <Link to="/community" className="tl tl-wide" style={{ background: "linear-gradient(160deg,#4A0D2E,#200A18)", borderColor: "rgba(236,72,153,.4)", color: "#FFEAF5" }}>
           <span className="glowc" style={{ background: "#EC4899" }} /><span className="art"><span className="bub"><span>Doubt?</span><span>Solved!</span></span></span>
           <b>Community</b><small>Ask doubts, help others</small><span className="pill2" style={{ color: "#FBCFE8" }}>Ask &amp; answer</span></Link>
       </div>
@@ -675,22 +697,17 @@ function Contest({ contest, loading }: { contest: HomeExtras["nextContest"]; loa
 
 function Mentorship() {
   return (
-    <section className="mt rv" aria-label="1-on-1 mentorship">
+    <section className="mt mt-sm rv" aria-label="1-on-1 mentorship">
       <div className="mt-head">
         <div className="mt-av">DR<span className="vf"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round"><path d="m5 12 5 5L20 7" /></svg></span></div>
-        <div style={{ flex: 1, minWidth: 0 }}><span className="wa" style={{ marginBottom: 4 }}>{Ico.wa}1-ON-1 ON WHATSAPP</span><h3>A personal mentor, one message away</h3></div>
+        <div style={{ flex: 1, minWidth: 0 }}><span className="wa" style={{ marginBottom: 4 }}>{Ico.wa}1-ON-1 MENTORSHIP</span><h3>Get mentored by this year's toppers</h3></div>
       </div>
-      <div className="chat" aria-label="Example conversation">
-        <div className="msg me">Sir, I keep getting Rotational Motion wrong<time>9:41 PM ✓✓</time></div>
-        <div className="msg them">Send me your last 5 mistakes. We'll fix the concept tonight.<time>9:42 PM</time></div>
-        <div className="msg them">Then do 20 Qs from today's DPP. I'll check them.<time>9:42 PM</time></div>
-        <div className="typing3"><i /><i /><i /></div>
-      </div>
+      <p className="mt-line">Students who cracked NEET this year guide you personally on WhatsApp: doubts, strategy and mock analysis.</p>
       <ul className="perks">
-        <li>{Ico.check}Doubts cleared daily on WhatsApp</li>
-        <li>{Ico.check}Strategy built on your weak chapters</li>
+        <li>{Ico.check}Daily doubt solving</li>
+        <li>{Ico.check}Plan for weak chapters</li>
         <li>{Ico.check}Weekly progress review</li>
-        <li>{Ico.check}Mock analysis with your mentor</li>
+        <li>{Ico.check}Mock analysis</li>
       </ul>
       <Link to="/mentorship" className="btn-wa">{Ico.wa}Get my mentor</Link>
     </section>
