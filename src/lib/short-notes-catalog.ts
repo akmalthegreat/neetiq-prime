@@ -37,7 +37,7 @@ export const NOTE_CHAPTERS: Record<NoteSubject, NoteChapter[]> = {
     bio(11, 17, "Locomotion and Movement", "Human Physiology", "locomotion-and-movement", true),
     bio(11, 18, "Neural Control and Coordination", "Human Physiology", "neural-control-and-coordination", true),
     bio(11, 19, "Chemical Coordination and Integration", "Human Physiology", "chemical-coordination-and-integration", true),
-    bio(12, 1, "Sexual Reproduction in Flowering Plants", "Reproduction", "sexual-reproduction-in-flowering-plants"),
+    bio(12, 1, "Sexual Reproduction in Flowering Plants", "Reproduction", "sexual-reproduction-in-flowering-plants", true),
     bio(12, 2, "Human Reproduction", "Reproduction", "human-reproduction"),
     bio(12, 3, "Reproductive Health", "Reproduction", "reproductive-health"),
     bio(12, 4, "Principles of Inheritance and Variation", "Genetics and Evolution", "principles-of-inheritance-and-variation"),
