@@ -216,7 +216,7 @@ function MentorshipPurchasePage() {
               <img
                 src={akmalImage}
                 alt={AKMAL.name}
-                className="h-24 w-24 rounded-2xl object-cover object-top shadow-[0_0_30px_-6px_rgba(245,158,11,.7)] ring-2 ring-amber-400/80 ring-offset-2 ring-offset-background sm:h-40 sm:w-40"
+                className="h-24 w-24 rounded-2xl border-4 border-background object-cover shadow-lg sm:h-40 sm:w-40"
               />
               <div className="min-w-0">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 sm:text-xs">
