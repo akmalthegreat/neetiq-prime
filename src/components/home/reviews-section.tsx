@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Star, Loader2, PenLine, Quote, BadgeCheck, ChevronDown, Globe } from "lucide-react";
+import { Star, Loader2, PenLine, Quote, BadgeCheck, ChevronDown, Globe, Send, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
@@ -63,9 +63,13 @@ function ReviewCard({ r, className = "" }: { r: PublicReview; className?: string
         </button>
       )}
       <figcaption className="mt-auto flex items-center gap-3 pt-4">
-        <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br ${tint} text-sm font-bold text-white`}>
-          {r.name.charAt(0).toUpperCase()}
-        </span>
+        {r.avatar ? (
+          <img src={r.avatar} alt="" loading="lazy" referrerPolicy="no-referrer" className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-background" />
+        ) : (
+          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br ${tint} text-sm font-bold text-white`}>
+            {r.name.charAt(0).toUpperCase()}
+          </span>
+        )}
         <span className="min-w-0">
           <span className="flex items-center gap-1 truncate text-sm font-semibold">
             {r.name} <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-label="Signed-in student" />
@@ -79,49 +83,65 @@ function ReviewCard({ r, className = "" }: { r: PublicReview; className?: string
   );
 }
 
+/* ───────── shared: my review status ───────── */
+
+export function useMyReview() {
+  const { user } = useAuth();
+  const fetchMine = useServerFn(getMyReview);
+  return useQuery({
+    queryKey: ["my-review", user?.id ?? "anon"],
+    queryFn: () => fetchMine(),
+    enabled: !!user,
+    staleTime: 10 * 60_000,
+  });
+}
+
+const MOODS = ["", "😞", "😕", "🙂", "😊", "🤩"];
+const CHIPS = ["Short notes", "Mock tests", "PYQ practice", "Important NEET questions", "Flashcards", "Explanations", "Progress tracking"];
+
 /* ───────── write / edit dialog ───────── */
 
-export function ReviewDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+export function ReviewDialog({ open, onOpenChange, initialRating = 0, greeting }: {
+  open: boolean; onOpenChange: (v: boolean) => void; initialRating?: number; greeting?: string;
+}) {
   const router = useRouter();
-  const fetchMine = useServerFn(getMyReview);
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const mine = useMyReview();
   const save = useServerFn(submitReview);
-  const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
-  const [name, setName] = useState("");
   const [body, setBody] = useState("");
-  const [existing, setExisting] = useState<{ hidden: boolean } | null>(null);
+
+  const existing = mine.data?.review ?? null;
+  const name = mine.data?.name ?? "";
 
   useEffect(() => {
     if (!open) return;
-    let alive = true;
-    setLoading(true);
-    fetchMine()
-      .then((res) => {
-        if (!alive) return;
-        if (res.review) {
-          setRating(res.review.rating); setBody(res.review.body); setName(res.review.display_name);
-          setExisting({ hidden: res.review.status === "hidden" });
-        } else {
-          setName((n) => n || res.suggestedName); setExisting(null);
-        }
-      })
-      .catch(() => {})
-      .finally(() => alive && setLoading(false));
-    return () => { alive = false; };
+    setDone(false);
+    if (existing) { setRating(initialRating || existing.rating); setBody(existing.body); }
+    else { setRating(initialRating); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, existing?.updated_at]);
+
+  function addChip(c: string) {
+    setBody((b) => {
+      if (b.toLowerCase().includes(c.toLowerCase())) return b;
+      const t = b.trim();
+      return t ? `${t}${/[.!?]$/.test(t) ? "" : ","} ${c.toLowerCase()}` : `I really like the ${c.toLowerCase()}`;
+    });
+  }
 
   async function onSave() {
     if (!rating) return toast.error("Tap a star to rate");
     if (body.trim().length < 10) return toast.error("Please write at least 10 characters");
-    if (!name.trim()) return toast.error("Please add the name to show");
     setBusy(true);
     try {
-      await save({ data: { rating, body: body.trim(), displayName: name.trim() } });
-      toast.success(existing ? "Your review was updated" : "Thank you! Your review is live on the home page.");
-      onOpenChange(false);
+      await save({ data: { rating, body: body.trim() } });
+      setDone(true);
+      qc.invalidateQueries({ queryKey: ["my-review"] });
       router.invalidate();
     } catch (e: any) {
       toast.error(e?.message ?? "Could not save your review");
@@ -129,52 +149,229 @@ export function ReviewDialog({ open, onOpenChange }: { open: boolean; onOpenChan
   }
 
   const shown = hover || rating;
+  const avatar = (user?.user_metadata as { avatar_url?: string } | undefined)?.avatar_url;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{existing ? "Edit your review" : "Rate NEET Track"}</DialogTitle>
-          <DialogDescription>Your rating and review will be shown on the NEET Track home page to help other NEET students.</DialogDescription>
-        </DialogHeader>
-        {loading ? (
-          <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+      <DialogContent className="max-h-[92vh] max-w-md overflow-y-auto border-0 p-0">
+        <div className="relative overflow-hidden rounded-t-lg bg-gradient-to-br from-violet-600 via-indigo-600 to-emerald-500 px-6 pb-6 pt-7 text-white">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/15 blur-2xl" aria-hidden="true" />
+          <DialogHeader className="relative space-y-1 text-left">
+            <DialogTitle className="text-xl font-bold text-white">
+              {done ? "Thank you! 💜" : greeting ?? (existing ? "Update your review" : "How is NEET Track for you?")}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-white/85">
+              {done
+                ? "Your review has been sent. It will appear on the NEET Track home page once it is approved."
+                : "Your rating helps us improve and helps other NEET students choose the right app."}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        {done ? (
+          <div className="flex flex-col items-center gap-3 px-6 pb-6 pt-5 text-center">
+            <div className="grid h-16 w-16 place-items-center rounded-full bg-emerald-500/15 text-emerald-500"><CheckCircle2 className="h-9 w-9" /></div>
+            <StarRow value={rating} size="h-6 w-6" />
+            <p className="text-sm text-muted-foreground">Keep practising — we're rooting for your NEET rank!</p>
+            <Button className="mt-1 w-full" onClick={() => onOpenChange(false)}>Done</Button>
+          </div>
+        ) : mine.isLoading ? (
+          <div className="flex justify-center py-12"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
         ) : (
-          <div className="space-y-4">
-            <div className="flex flex-col items-center gap-1.5 rounded-2xl bg-muted/50 py-4">
+          <div className="space-y-5 px-6 pb-6 pt-5">
+            <div className="flex flex-col items-center gap-1">
+              <div className="h-9 text-3xl leading-none transition-transform" aria-hidden="true">{MOODS[shown] || "⭐"}</div>
               <div className="flex gap-1" onMouseLeave={() => setHover(0)}>
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button key={n} type="button" aria-label={`${n} star${n > 1 ? "s" : ""}`}
                     onClick={() => setRating(n)} onMouseEnter={() => setHover(n)}
-                    className="rounded-md p-0.5 transition-transform hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    <Star className={cn("h-9 w-9 transition-colors", shown >= n ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30")} />
+                    className="rounded-md p-0.5 transition-transform hover:scale-110 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <Star className={cn("h-10 w-10 transition-colors", shown >= n ? "fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,.45)]" : "text-muted-foreground/30")} />
                   </button>
                 ))}
               </div>
-              <div className="h-4 text-xs font-semibold text-muted-foreground">{LABELS[shown]}</div>
+              <div className="h-4 text-xs font-semibold text-muted-foreground">{shown ? LABELS[shown] : "Tap a star"}</div>
             </div>
+
+            <div>
+              <div className="mb-2 text-xs font-medium text-muted-foreground">What do you like? <span className="font-normal">(tap to add)</span></div>
+              <div className="flex flex-wrap gap-1.5">
+                {CHIPS.map((c) => {
+                  const on = body.toLowerCase().includes(c.toLowerCase());
+                  return (
+                    <button key={c} type="button" onClick={() => addChip(c)}
+                      className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                        on ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-secondary")}>
+                      {on ? "✓ " : "+ "}{c}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <label className="text-xs font-medium" htmlFor="rv-body">Your review</label>
-              <Textarea id="rv-body" value={body} onChange={(e) => setBody(e.target.value)} rows={5} maxLength={600}
-                placeholder="What helped you most — short notes, mock tests, PYQs, flashcards…?" className="resize-none" />
-              <div className="text-right text-[11px] text-muted-foreground">{body.length}/600</div>
+              <Textarea id="rv-body" value={body} onChange={(e) => setBody(e.target.value)} rows={4} maxLength={600}
+                placeholder="Share your experience — what helped you the most?" className="resize-none" />
+              <div className="flex justify-between text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1"><Globe className="h-3 w-3" /> Shown on the home page after approval</span>
+                <span>{body.length}/600</span>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium" htmlFor="rv-name">Name to show</label>
-              <Input id="rv-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={40} placeholder="e.g. Riya S." />
+
+            <div className="flex items-center gap-2.5 rounded-xl bg-muted/60 px-3 py-2.5">
+              {avatar ? <img src={avatar} alt="" className="h-8 w-8 rounded-full object-cover" referrerPolicy="no-referrer" />
+                : <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-emerald-500 text-sm font-bold text-white">{(name || "S").charAt(0).toUpperCase()}</span>}
+              <div className="min-w-0 text-xs">
+                <div className="text-muted-foreground">Posting as</div>
+                <div className="truncate font-semibold">{name || "NEET Track Student"}</div>
+              </div>
+              {existing && (
+                <span className={cn("ml-auto rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                  existing.status === "published" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "bg-amber-500/15 text-amber-600 dark:text-amber-400")}>
+                  {existing.status === "published" ? "Live" : "Awaiting approval"}
+                </span>
+              )}
             </div>
-            {existing?.hidden && (
-              <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
-                Your review text is currently not shown publicly. Your star rating still counts.
-              </p>
-            )}
-            <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><Globe className="h-3 w-3" /> Public. Please don't include phone numbers or links.</p>
-            <Button className="h-11 w-full bg-gradient-primary text-[15px] font-semibold" onClick={onSave} disabled={busy}>
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : existing ? "Update review" : "Post review"}
+
+            <Button className="h-12 w-full bg-gradient-primary text-[15px] font-semibold shadow-elegant" onClick={onSave} disabled={busy}>
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="mr-2 h-4 w-4" />{existing ? "Update review" : "Submit review"}</>}
             </Button>
           </div>
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+/* ───────── dashboard card ───────── */
+
+export function RateUsCard() {
+  const { user } = useAuth();
+  const mine = useMyReview();
+  const [open, setOpen] = useState(false);
+  const [pick, setPick] = useState(0);
+  const [hover, setHover] = useState(0);
+  if (!user) return null;
+  const r = mine.data?.review ?? null;
+
+  return (
+    <div className="relative overflow-hidden rounded-[20px] border border-amber-300/25 bg-gradient-to-br from-[#2A1B4A] via-[#1E1B4B] to-[#0B3B33] p-4 text-white shadow-lg sm:p-5">
+      <div className="pointer-events-none absolute -right-8 -top-10 h-36 w-36 rounded-full bg-amber-400/25 blur-2xl" aria-hidden="true" />
+      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-300">Rate NEET Track</div>
+          {r ? (
+            <>
+              <div className="mt-1 flex items-center gap-2 text-base font-bold">
+                You rated us <StarRow value={r.rating} />
+              </div>
+              <div className="mt-0.5 text-xs text-white/70">
+                {r.status === "published" ? "Your review is live on the home page. Thank you! 💜" : "Thanks! Your review is awaiting approval."}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mt-1 text-base font-bold sm:text-lg">How's your experience with NEET Track?</div>
+              <div className="mt-0.5 text-xs text-white/70">Tap a star — your review helps other NEET students.</div>
+            </>
+          )}
+        </div>
+        {r ? (
+          <button type="button" onClick={() => { setPick(0); setOpen(true); }}
+            style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.22)" }}
+            className="inline-flex h-9 shrink-0 items-center self-start rounded-xl px-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:self-auto">
+            <PenLine className="mr-1.5 h-3.5 w-3.5" /> Edit review
+          </button>
+        ) : (
+          <div className="flex shrink-0 gap-1" onMouseLeave={() => setHover(0)}>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button key={n} type="button" aria-label={`Rate ${n} star${n > 1 ? "s" : ""}`}
+                onMouseEnter={() => setHover(n)} onClick={() => { setPick(n); setOpen(true); }}
+                className="rounded-md p-0.5 transition-transform hover:scale-110 active:scale-90">
+                <Star className={cn("h-8 w-8 transition-colors", hover >= n ? "fill-amber-400 text-amber-400" : "text-white/35")} />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <ReviewDialog open={open} onOpenChange={setOpen} initialRating={pick} />
+    </div>
+  );
+}
+
+/* ───────── friendly reminder (max 4 times a day, until the student reviews) ───────── */
+
+const PROMPT_PAGES = [
+  "/dashboard", "/progress", "/short-notes", "/notes", "/flashcards", "/analytics", "/profile", "/leaderboard",
+  "/subjects", "/bookmarks", "/mistakes", "/improve", "/todo", "/nuggets", "/highlighted-ncert", "/ncert-highlights",
+];
+const MAX_PER_DAY = 4;
+const MIN_GAP_MS = 2 * 60 * 60_000; // at least 2 hours between reminders
+const SHOW_AFTER_MS = 25_000;       // let the student settle in first
+
+export function RatePrompt() {
+  const { user, profile } = useAuth();
+  const mine = useMyReview();
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const [open, setOpen] = useState(false);
+  const [rateOpen, setRateOpen] = useState(false);
+  const [pick, setPick] = useState(0);
+  const [hover, setHover] = useState(0);
+
+  const eligible = !!user && mine.isSuccess && mine.data?.ready !== false && !mine.data?.review
+    && PROMPT_PAGES.some((p) => path === p || path.startsWith(p + "/"));
+
+  useEffect(() => {
+    if (!eligible || open || rateOpen) return;
+    const key = `nt-rate-prompt:${user!.id}`;
+    const today = new Date().toLocaleDateString("en-CA");
+    let st = { day: today, count: 0, last: 0 };
+    try { const raw = localStorage.getItem(key); if (raw) { const j = JSON.parse(raw); if (j.day === today) st = j; } } catch { /* storage blocked */ }
+    if (st.count >= MAX_PER_DAY || Date.now() - st.last < MIN_GAP_MS) return;
+    const t = setTimeout(() => {
+      setOpen(true);
+      try { localStorage.setItem(key, JSON.stringify({ day: today, count: st.count + 1, last: Date.now() })); } catch { /* ignore */ }
+    }, SHOW_AFTER_MS);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eligible, path]);
+
+  if (!user) return null;
+  const first = profile?.full_name?.trim().split(/\s+/)[0] || "dear student";
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-sm overflow-hidden border-0 p-0">
+          <div className="relative bg-gradient-to-br from-violet-600 via-indigo-600 to-emerald-500 px-6 pb-5 pt-7 text-center text-white">
+            <div className="pointer-events-none absolute -left-8 -top-8 h-32 w-32 rounded-full bg-white/15 blur-2xl" aria-hidden="true" />
+            <div className="relative mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-3xl backdrop-blur">👋</div>
+            <DialogHeader className="relative mt-3 space-y-1 text-center sm:text-center">
+              <DialogTitle className="text-xl font-bold text-white">Hey {first}! How's it going?</DialogTitle>
+              <DialogDescription className="text-sm text-white/85">
+                How is your experience with NEET Track so far? Please rate us and tell us what you think.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="px-6 pb-6 pt-5 text-center">
+            <div className="h-9 text-3xl leading-none" aria-hidden="true">{MOODS[hover] || "⭐"}</div>
+            <div className="flex justify-center gap-1.5" onMouseLeave={() => setHover(0)}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button key={n} type="button" aria-label={`Rate ${n} star${n > 1 ? "s" : ""}`}
+                  onMouseEnter={() => setHover(n)}
+                  onClick={() => { setPick(n); setOpen(false); setRateOpen(true); }}
+                  className="rounded-md p-0.5 transition-transform hover:scale-110 active:scale-90">
+                  <Star className={cn("h-10 w-10 transition-colors", hover >= n ? "fill-amber-400 text-amber-400" : "text-amber-400/40")} />
+                </button>
+              ))}
+            </div>
+            <div className="mt-1 h-4 text-xs text-muted-foreground">{hover ? LABELS[hover] : "Tap a star to rate"}</div>
+            <Button variant="ghost" className="mt-4 w-full text-muted-foreground" onClick={() => setOpen(false)}>Maybe later</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <ReviewDialog open={rateOpen} onOpenChange={setRateOpen} initialRating={pick} greeting={`Thanks, ${first}! Tell us a little more`} />
+    </>
   );
 }
 

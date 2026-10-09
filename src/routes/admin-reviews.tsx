@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronLeft, Eye, EyeOff, Loader2, RotateCcw, Star, Trash2 } from "lucide-react";
+import { Check, ChevronLeft, EyeOff, Loader2, RotateCcw, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,6 +25,7 @@ function AdminReviews() {
   const nav = useNavigate();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [tab, setTab] = useState<"pending" | "posted">("pending");
   const fnList = useServerFn(adminListReviews);
   const fnSet = useServerFn(adminSetReviewStatus);
   const fnDel = useServerFn(adminDeleteReview);
@@ -52,7 +53,7 @@ function AdminReviews() {
   }
 
   async function remove(r: Row) {
-    if (!confirm(`Delete ${r.display_name}'s review permanently? Its rating will also be removed. This cannot be undone.`)) return;
+    if (!confirm(`Delete ${r.display_name}'s review permanently? This cannot be undone.`)) return;
     setBusy(r.id);
     try {
       await fnDel({ data: { id: r.id } });
@@ -62,8 +63,10 @@ function AdminReviews() {
     finally { setBusy(null); }
   }
 
-  const list = rows ?? [];
-  const avg = list.length ? (list.reduce((a, r) => a + r.rating, 0) / list.length).toFixed(1) : "—";
+  const all = rows ?? [];
+  const pending = all.filter((r) => r.status === "hidden");
+  const posted = all.filter((r) => r.status === "published");
+  const list = tab === "pending" ? pending : posted;
 
   return (
     <PageShell>
@@ -75,18 +78,25 @@ function AdminReviews() {
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Admin</div>
         <h1 className="mt-1 text-2xl font-bold tracking-tight">Public reviews</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Reviews shown on the home page. Hide keeps the star rating but removes the text from the home page. Delete removes the review and its rating completely.
+          New reviews wait here until you approve them. Only approved reviews (and their ratings) appear on the home page.
         </p>
-        <p className="mt-2 text-sm"><b>{list.length}</b> reviews · avg <b>{avg}</b> ★ · <b>{list.filter((r) => r.status === "hidden").length}</b> hidden</p>
+      </div>
+      <div className="mb-4 inline-flex rounded-xl border border-border bg-muted/40 p-1">
+        {([["pending", `Pending (${pending.length})`], ["posted", `Posted (${posted.length})`]] as const).map(([k, label]) => (
+          <button key={k} type="button" onClick={() => setTab(k)}
+            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors ${tab === k ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+            {label}
+          </button>
+        ))}
       </div>
       {rows === null ? (
         <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
       ) : !list.length ? (
-        <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">No public reviews yet.</CardContent></Card>
+        <Card><CardContent className="p-10 text-center text-sm text-muted-foreground">{tab === "pending" ? "No reviews waiting for approval." : "No reviews posted yet."}</CardContent></Card>
       ) : (
         <div className="space-y-3">
           {list.map((r) => (
-            <Card key={r.id} className={r.status === "hidden" ? "opacity-60" : ""}>
+            <Card key={r.id}>
               <CardContent className="p-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex">{[1, 2, 3, 4, 5].map((n) => (
@@ -94,7 +104,7 @@ function AdminReviews() {
                   ))}</span>
                   <span className="font-semibold">{r.display_name}</span>
                   {r.target_year && <span className="text-xs text-muted-foreground">NEET {r.target_year}</span>}
-                  <Badge variant={r.status === "published" ? "default" : "secondary"}>{r.status}</Badge>
+                  <Badge variant={r.status === "published" ? "default" : "secondary"}>{r.status === "published" ? "Posted" : "Pending"}</Badge>
                   <span className="ml-auto text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("en-IN")}</span>
                 </div>
                 <p className="mt-2 whitespace-pre-line text-sm">{r.body}</p>
@@ -105,10 +115,11 @@ function AdminReviews() {
                     className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-500/10">
                     <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete
                   </Button>
-                  <Button size="sm" variant="outline" disabled={busy === r.id} onClick={() => toggle(r)}>
+                  <Button size="sm" variant={r.status === "published" ? "outline" : "default"} disabled={busy === r.id} onClick={() => toggle(r)}
+                    className={r.status === "published" ? "" : "bg-emerald-600 text-white hover:bg-emerald-700"}>
                     {busy === r.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : r.status === "published"
-                      ? <><EyeOff className="mr-1.5 h-3.5 w-3.5" /> Hide text</>
-                      : <><Eye className="mr-1.5 h-3.5 w-3.5" /> Publish</>}
+                      ? <><EyeOff className="mr-1.5 h-3.5 w-3.5" /> Unpost</>
+                      : <><Check className="mr-1.5 h-3.5 w-3.5" /> Approve &amp; post</>}
                   </Button>
                   </div>
                 </div>

@@ -1,3 +1,4 @@
+import { RateUsCard } from "./reviews-section";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -158,6 +159,7 @@ export function HomeDashboard({ top }: { top?: ReactNode }) {
         <div className="full"><TourEntry /></div>
         <AzkaStrip tips={(consult.data?.recommendations ?? []).map((r) => (r.detail.length <= 110 ? r.detail : r.title))} />
         <Banner banners={ex?.banners ?? []} showBuiltIn={ex?.showBuiltInSlides ?? true} nextContest={ex?.nextContest ?? null} />
+        <div className="full"><RateUsCard /></div>
         <QuickPractice counts={counts} snapshot={snap} />
         <Improvement snapshot={snap} prediction={consult.data?.prediction} wrongThisWeek={ex?.wrongThisWeek ?? 0} bookmarks={ex?.bookmarks ?? 0} />
         <Tools />

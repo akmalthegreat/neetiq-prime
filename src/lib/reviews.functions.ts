@@ -14,24 +14,22 @@ export type MyReview = {
 
 const SPAM = /(https?:\/\/|www\.|\.com\b|@[a-z0-9-]+\.|(?:\+?91[\s-]?)?\b[6-9]\d{9}\b|t\.me\/|telegram|whatsapp)/i;
 
-/** "Mohd Akmal" -> "Mohd A." — used only as a default the student can change. */
-function shortName(full: string | null | undefined): string {
-  const parts = (full ?? "").trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return "";
-  const first = parts[0].slice(0, 24);
-  return parts.length > 1 ? `${first} ${parts[parts.length - 1][0].toUpperCase()}.` : first;
+/** The student's real profile name, used as the public review name. */
+function realName(full: string | null | undefined): string {
+  const n = (full ?? "").trim().replace(/\s+/g, " ");
+  return n ? n.slice(0, 40) : "NEET Track Student";
 }
 
 /** The signed-in student's own review (any status) plus a suggested display name. */
 export const getMyReview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ review: MyReview; suggestedName: string; ready: boolean }> => {
+  .handler(async ({ context }): Promise<{ review: MyReview; name: string; ready: boolean }> => {
     const db = supabaseAdmin as any;
     const [{ data: prof }, r] = await Promise.all([
       db.from("profiles").select("full_name").eq("id", context.userId).maybeSingle(),
       db.from("site_reviews").select("rating,body,display_name,status,updated_at").eq("user_id", context.userId).maybeSingle(),
     ]);
-    return { review: (r.data as MyReview) ?? null, suggestedName: shortName(prof?.full_name), ready: !r.error };
+    return { review: (r.data as MyReview) ?? null, name: realName(prof?.full_name), ready: !r.error };
   });
 
 export const submitReview = createServerFn({ method: "POST" })
@@ -40,26 +38,24 @@ export const submitReview = createServerFn({ method: "POST" })
     z.object({
       rating: z.number().int().min(1).max(5),
       body: z.string().trim().min(10, "Please write at least 10 characters").max(600),
-      displayName: z.string().trim().min(1, "Please add a name").max(40),
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const clean = (t: string) => t.replace(/neet\s?track(\.com)?/gi, "");
-    if (SPAM.test(clean(data.body)) || SPAM.test(clean(data.displayName))) {
+    if (SPAM.test(clean(data.body))) {
       throw new Error("Please remove links, phone numbers or contact details from your review.");
     }
     const db = supabaseAdmin as any;
-    const { data: prof } = await db.from("profiles").select("target_year").eq("id", context.userId).maybeSingle();
-    const { data: existing } = await db.from("site_reviews").select("status").eq("user_id", context.userId).maybeSingle();
+    const { data: prof } = await db.from("profiles").select("full_name,target_year").eq("id", context.userId).maybeSingle();
     const row = {
       user_id: context.userId,
       rating: data.rating,
       body: data.body.replace(/\s+\n/g, "\n").replace(/\n{3,}/g, "\n\n"),
-      display_name: data.displayName.replace(/\s+/g, " "),
+      display_name: realName(prof?.full_name),
       target_year: prof?.target_year ?? null,
       updated_at: new Date().toISOString(),
-      // An admin-hidden review stays hidden after edits.
-      status: existing?.status === "hidden" ? "hidden" : "published",
+      // Every new or edited review waits for admin approval ("hidden" = pending) before it goes on the home page.
+      status: "hidden",
     };
     const { error } = await db.from("site_reviews").upsert(row, { onConflict: "user_id" });
     if (error) {

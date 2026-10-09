@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 import { BottomNav } from "./bottom-nav";
+import { RatePrompt } from "./home/reviews-section";
 
 export function PageShell({
   eyebrow,
@@ -42,6 +43,7 @@ export function PageShell({
         {showFooter && <SiteFooter />}
       </div>
       <BottomNav />
+      <RatePrompt />
     </div>
   );
 }
@@ -69,6 +71,7 @@ export function FullBleedShell({ children }: { children: ReactNode }) {
         <main className="flex-1 pb-[calc(88px+env(safe-area-inset-bottom))] lg:pb-0">{children}</main>
       </div>
       <BottomNav />
+      <RatePrompt />
     </div>
   );
 }

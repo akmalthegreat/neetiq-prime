@@ -6,6 +6,7 @@ export type PublicReview = {
   rating: number;
   body: string;
   name: string;
+  avatar: string | null;
   targetYear: number | null;
   date: string;
 };
@@ -24,8 +25,8 @@ export type HomeStats = {
 
 /**
  * Public numbers + published reviews for the landing page.
- * Rating = one rating per student: their public review if they wrote one, otherwise their latest
- * in-app feedback rating (the private feedback text itself is never exposed).
+ * Rating = one rating per student: their approved public review if they have one, otherwise their latest
+ * in-app feedback rating (the private feedback text itself is never exposed). Pending reviews don't count.
  */
 export const getHomeStats = createServerFn({ method: "GET" }).handler(async (): Promise<HomeStats> => {
   const db = supabaseAdmin as any;
@@ -51,8 +52,15 @@ export const getHomeStats = createServerFn({ method: "GET" }).handler(async (): 
     target_year: number | null; created_at: string; status: string;
   }>;
   const published = reviewRows.filter((x) => x.status === "published");
-  // Moderation hides only the text of a review; every student's star rating still counts.
-  for (const x of reviewRows) perUser.set(x.user_id, x.rating);
+  // Only reviews the admin has approved (published) count publicly.
+  for (const x of published) perUser.set(x.user_id, x.rating);
+
+  const top = published.slice(0, 12);
+  let avatars: Record<string, string | null> = {};
+  if (top.length) {
+    const { data: pa } = await db.from("profiles").select("id,avatar_url").in("id", top.map((x) => x.user_id));
+    avatars = Object.fromEntries((pa ?? []).map((x: any) => [x.id, x.avatar_url ?? null]));
+  }
 
   const ratings = [...perUser.values(), ...anon];
   const bars = [5, 4, 3, 2, 1].map((s) => ratings.filter((v) => v === s).length) as HomeStats["ratingBars"];
@@ -65,11 +73,12 @@ export const getHomeStats = createServerFn({ method: "GET" }).handler(async (): 
     ratingCount: ratings.length,
     ratingBars: bars,
     reviewCount: published.length,
-    reviews: published.slice(0, 12).map((x) => ({
+    reviews: top.map((x) => ({
       id: x.id,
       rating: x.rating,
       body: x.body,
       name: x.display_name,
+      avatar: avatars[x.user_id] ?? null,
       targetYear: x.target_year,
       date: x.created_at,
     })),
