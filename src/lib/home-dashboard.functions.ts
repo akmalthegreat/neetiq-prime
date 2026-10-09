@@ -59,8 +59,18 @@ export const getHomeExtras = createServerFn({ method: "GET" })
     const nextWeek = new Date(thisWeek.getTime() + 7 * 86400_000);
 
     const [weekRes, bmRes, mockRes, contestRes, bannerRes] = await Promise.all([
-      db.from("attempts").select("user_id,correct_count,wrong_count,submitted_at")
-        .eq("status", "completed").gte("submitted_at", lastWeek.toISOString()).limit(50000),
+      (async () => {
+        // Page past the 1,000-row API cap so the weekly board counts every attempt.
+        const out: any[] = [];
+        for (let off = 0; off < 200000; off += 1000) {
+          const { data, error } = await db.from("attempts").select("user_id,correct_count,wrong_count,submitted_at")
+            .eq("status", "completed").gte("submitted_at", lastWeek.toISOString()).order("submitted_at").range(off, off + 999);
+          if (error) return { data: out, error };
+          out.push(...(data ?? []));
+          if (!data || data.length < 1000) break;
+        }
+        return { data: out, error: null };
+      })(),
       db.from("bookmarks").select("id", { count: "exact", head: true }).eq("user_id", uid),
       db.from("attempts").select("id,tests:test_id!inner(type)", { count: "exact", head: true })
         .eq("user_id", uid).eq("status", "completed").eq("tests.type", "mock"),
