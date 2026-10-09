@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
  * Cinematic opening intro, shown once per browser session when the site/app is opened.
  * Pure CSS + SVG, server-rendered, so it starts on the very first paint and never delays loading.
  * Timeline (3.5 s): aurora + stars → heartbeat sweep → light burst → 3D logo reveal with chrome
- * shine, rays and orbit → wordmark → tagline → "Created by Akmal · MBBS" signature line → iris out.
+ * shine, rays and orbit → wordmark → tagline → "Created by Akmal MBBS" signature line → iris out.
  * A tap skips it. Repeat loads in the same session are hidden before paint by INTRO_HEAD_SCRIPT.
  */
 
@@ -113,7 +113,6 @@ export function SplashIntro() {
           <em className="cl" />
           <span className="cby">Created by</span>
           <span className="cn">Akmal</span>
-          <i className="cdot" />
           <span className="cd">MBBS</span>
           <em className="cl cr" />
         </div>
