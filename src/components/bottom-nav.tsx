@@ -6,7 +6,7 @@ import { useEffect, useState, type ComponentType } from "react";
 import { createPortal } from "react-dom";
 import {
   Home, ClipboardCheck, BookOpen, Sparkles, GraduationCap, X, Trophy, Target, SlidersHorizontal, Zap, LayoutList,
-  History, Layers, NotebookPen, Gauge, ListChecks, Route as RouteIcon, RotateCcw, Atom,
+  History, Layers, Gem, NotebookPen, Gauge, ListChecks, Route as RouteIcon, RotateCcw, Atom,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +28,7 @@ const GROUPS: Group[] = [
   {
     key: "study", label: "Study", title: "Study Material", blurb: "Revise faster with crisp notes and active recall.", icon: BookOpen,
     items: [
+      { to: "/nuggets", label: "NCERT Nuggets", sub: "Read lines, solve Qs", icon: Gem, tint: "#10B981", badge: "NEW" },
       { to: "/short-notes", label: "Short Notes", sub: "NCERT, chapter by chapter", icon: NotebookPen, tint: "#0EA5E9", match: ["/notes/"] },
       { to: "/flashcards", label: "Flashcards", sub: "Quick active recall", icon: Layers, tint: "#8B5CF6" },
     ],

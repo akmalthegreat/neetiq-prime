@@ -176,6 +176,13 @@ const WRAP_CSS = `
 @media (min-width:640px){.nth.nth-wrap{margin:-2.5rem -1.5rem}}
 @media (min-width:1024px){.nth.nth-wrap{margin:-2.5rem -2rem}}
 .nth .nth-grid{max-width:1180px;margin:0 auto}
+.nth .ngx{position:absolute;right:0;top:18px;width:124px;height:160px}
+.nth .ngx i{position:absolute;transform:rotate(45deg);border-radius:12px;background:linear-gradient(135deg,#FEF3C7,#F59E0B);box-shadow:0 0 26px rgba(251,191,36,.7),inset 0 1px 0 rgba(255,255,255,.7);animation:nth-bob 3s ease-in-out infinite}
+.nth .ngx i:nth-child(1){left:38px;top:14px;width:54px;height:54px}
+.nth .ngx i:nth-child(2){left:6px;top:78px;width:34px;height:34px;background:linear-gradient(135deg,#A7F3D0,#059669);box-shadow:0 0 22px rgba(16,185,129,.7);animation-delay:-1s}
+.nth .ngx i:nth-child(3){left:84px;top:86px;width:28px;height:28px;background:linear-gradient(135deg,#BFDBFE,#2563EB);animation-delay:-2s}
+.nth .ngx b{position:absolute;left:30px;top:128px;font:800 10px var(--display);letter-spacing:3px;color:#FDE68A}
+.nth .ngx-chk{position:absolute;right:-2px;top:60px;padding:4px 8px;border-radius:999px;font:800 10px var(--display);color:#052E16;background:#86EFAC;box-shadow:0 8px 16px -8px rgba(0,0,0,.5);animation:nth-fcchip 4.4s ease-in-out infinite}
 .nth .fcx{position:absolute;right:-6px;top:14px;width:128px;height:170px;perspective:700px}
 .nth .fcx-glow{position:absolute;left:10px;top:30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(closest-side,rgba(244,114,182,.55),transparent);filter:blur(10px);animation:nth-bob 3s ease-in-out infinite}
 .nth .fcx-card,.nth .fcx-flip{position:absolute;left:18px;top:18px;width:88px;height:118px;border-radius:14px}
@@ -327,6 +334,9 @@ function Banner({ banners, showBuiltIn, nextContest }: { banners: HomeExtras["ba
     art: b.imageUrl ? <img className="azka-art" src={b.imageUrl} alt="" style={{ width: 140, borderRadius: 16 }} /> : <div className="ray" />,
   }));
   const builtIn: Slide[] = [
+        { id: "nuggets", tag: "NEW · NCERT NUGGETS", title: "NCERT Nuggets are live", sub: "Read the NCERT lines NEET asks, then solve questions on them. All 32 Biology chapters.", cta: "Start a nugget", href: "/nuggets",
+          mesh: "conic-gradient(from 160deg at 55% 45%,#064E3B,#10B981,#CA8A04,#047857,#064E3B)",
+          art: <div className="ngx" aria-hidden="true"><i /><i /><i /><b>NCERT</b><span className="ngx-chk">✓ 5/5</span></div> },
         { id: "flashcards", tag: "NEW · FLASHCARDS", title: "4,200+ NEET Flashcards", sub: "All 81 chapters of PCB. Revise NCERT in 10 minutes a day.", cta: "Start revising", href: "/flashcards",
           mesh: "conic-gradient(from 200deg at 55% 45%,#4C1D95,#C026D3,#7C3AED,#0EA5E9,#4C1D95)",
           art: <div className="fcx" aria-hidden="true">
@@ -360,7 +370,7 @@ function Banner({ banners, showBuiltIn, nextContest }: { banners: HomeExtras["ba
     const measure = () => { const el = trackRef.current?.firstElementChild as HTMLElement | null; if (el) setSlideW(el.getBoundingClientRect().width + 10); };
     measure(); window.addEventListener("resize", measure); return () => window.removeEventListener("resize", measure);
   }, [slides.length]);
-  useEffect(() => { const t = setTimeout(() => setCur((c) => (c + 1) % slides.length), 5500); return () => clearTimeout(t); }, [cur, slides.length]);
+  useEffect(() => { const t = setTimeout(() => setCur((c) => (c + 1) % slides.length), 2500); return () => clearTimeout(t); }, [cur, slides.length]);
   const sx = useRef<number | null>(null);
 
   return (
