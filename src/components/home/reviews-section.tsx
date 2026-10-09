@@ -395,14 +395,14 @@ export function ReviewsSection({ stats }: { stats: HomeStats | null }) {
   );
 
   return (
-    <section id="reviews" className="relative mx-auto w-full max-w-6xl scroll-mt-20 px-5 py-14 sm:px-6 sm:py-16">
+    <section id="reviews" className="relative mx-auto w-full max-w-6xl scroll-mt-20 overflow-x-clip px-5 py-14 sm:px-6 sm:py-16">
       <div className="mb-8 flex flex-col items-center text-center lg:mb-10">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Student ratings &amp; reviews</p>
         <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">What NEET students say about us</h2>
         <p className="mt-2 max-w-lg text-sm text-muted-foreground">Ratings and reviews from signed-in NEET Track students.</p>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
         {/* summary */}
         <div className="h-fit rounded-3xl border border-border bg-card p-6 shadow-sm lg:sticky lg:top-24">
           {hasRating ? (
@@ -444,7 +444,7 @@ export function ReviewsSection({ stats }: { stats: HomeStats | null }) {
 
         {/* reviews */}
         {reviews.length ? (
-          <div>
+          <div className="min-w-0">
             <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
               {reviews.map((r, i) => <ReviewCard key={r.id} r={r} className={!more && i >= 4 ? "sm:hidden" : ""} />)}
             </div>
