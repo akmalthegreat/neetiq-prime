@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminCollaboratorsRouteImport } from './routes/admin-collaborators'
+import { Route as AdminReviewsRouteImport } from './routes/admin-reviews'
 import { Route as AiPathRouteImport } from './routes/ai-path'
 import { Route as ConsultRouteImport } from './routes/consult'
 import { Route as ShortNotesRouteImport } from './routes/short-notes'
@@ -101,6 +102,11 @@ const AdminRoute = AdminRouteImport.update({
 const AdminCollaboratorsRoute = AdminCollaboratorsRouteImport.update({
   id: '/admin-collaborators',
   path: '/admin-collaborators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin-reviews',
+  path: '/admin-reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiPathRoute = AiPathRouteImport.update({
@@ -492,6 +498,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin-collaborators': typeof AdminCollaboratorsRoute
+  '/admin-reviews': typeof AdminReviewsRoute
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
@@ -572,6 +579,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin-collaborators': typeof AdminCollaboratorsRoute
+  '/admin-reviews': typeof AdminReviewsRoute
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
@@ -653,6 +661,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin-collaborators': typeof AdminCollaboratorsRoute
+  '/admin-reviews': typeof AdminReviewsRoute
   '/ai-path': typeof AiPathRoute
   '/consult': typeof ConsultRoute
   '/short-notes': typeof ShortNotesRoute
@@ -735,6 +744,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin-collaborators'
+    | '/admin-reviews'
     | '/ai-path'
     | '/consult'
     | '/short-notes'
@@ -815,6 +825,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin-collaborators'
+    | '/admin-reviews'
     | '/ai-path'
     | '/consult'
     | '/short-notes'
@@ -895,6 +906,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin-collaborators'
+    | '/admin-reviews'
     | '/ai-path'
     | '/consult'
     | '/short-notes'
@@ -976,6 +988,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   AdminCollaboratorsRoute: typeof AdminCollaboratorsRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
   AiPathRoute: typeof AiPathRoute
   ConsultRoute: typeof ConsultRoute
   ShortNotesRoute: typeof ShortNotesRoute
@@ -1067,6 +1080,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-collaborators'
       fullPath: '/admin-collaborators'
       preLoaderRoute: typeof AdminCollaboratorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-reviews': {
+      id: '/admin-reviews'
+      path: '/admin-reviews'
+      fullPath: '/admin-reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai-path': {
@@ -1642,6 +1662,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   AdminCollaboratorsRoute: AdminCollaboratorsRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
   AiPathRoute: AiPathRoute,
   ConsultRoute: ConsultRoute,
   ShortNotesRoute: ShortNotesRoute,

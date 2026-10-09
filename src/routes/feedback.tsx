@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { submitFeedback } from "@/lib/feedback.functions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ReviewDialog } from "@/components/home/reviews-section";
 
 export const Route = createFileRoute("/feedback")({
   head: () => ({ meta: [{ title: "Feedback — NEET Track" }] }),
@@ -34,6 +35,7 @@ function FeedbackPage() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
   const submit = useServerFn(submitFeedback);
 
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
@@ -81,6 +83,16 @@ function FeedbackPage() {
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Send us feedback</h1>
           <p className="mt-1 text-xs text-muted-foreground">Bug, idea, or just a thought — every message reaches the founders.</p>
         </div>
+
+        <button type="button" onClick={() => setReviewOpen(true)}
+          className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-amber-400/40 bg-amber-400/10 p-4 text-left transition-colors hover:bg-amber-400/15">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-400 text-white"><Star className="h-5 w-5 fill-current" /></div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-semibold">Rate &amp; review NEET Track publicly</div>
+            <div className="text-xs text-muted-foreground">Your review appears on our home page and helps other NEET students.</div>
+          </div>
+        </button>
+        <ReviewDialog open={reviewOpen} onOpenChange={setReviewOpen} />
 
         <Card className="border-0 shadow-elegant">
           <CardContent className="space-y-5 p-5">

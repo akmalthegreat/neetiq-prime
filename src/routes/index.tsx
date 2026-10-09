@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { getHomeStats, type HomeStats } from "@/lib/home-stats.functions";
+import { ReviewsSection } from "@/components/home/reviews-section";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -78,16 +79,19 @@ function LandingPage() {
             </div>
 
             {rated && (
-              <div className="mt-7 flex items-center justify-center gap-3 text-sm text-muted-foreground lg:justify-start">
+              <a href="#reviews" className="mt-7 flex items-center justify-center gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground lg:justify-start">
                 <Stars value={rated.ratingAvg} />
-                <span><b className="font-semibold text-foreground">{rated.ratingAvg.toFixed(1)}</b> from student ratings</span>
-              </div>
+                <span><b className="font-semibold text-foreground">{rated.ratingAvg.toFixed(1)}</b> from {rated.ratingCount} student ratings · <span className="font-semibold text-primary underline-offset-2 hover:underline">Read reviews</span></span>
+              </a>
             )}
           </div>
 
           <HeroPreview />
         </div>
       </section>
+
+      {/* ───────── RATINGS & REVIEWS (kept high on the page) ───────── */}
+      <ReviewsSection stats={stats} />
 
       {/* ───────── NUMBERS ───────── */}
       <section className="border-y border-border/70 bg-card/40">
@@ -146,10 +150,10 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* ───────── RESULTS + RATINGS ───────── */}
+      {/* ───────── RESULTS ───────── */}
       <section className="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6 sm:pb-24">
-        <div className="grid gap-4 lg:grid-cols-5">
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-8 sm:p-10 lg:col-span-3">
+        <div className="grid gap-4">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-8 sm:p-10">
             <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-amber-400/10 blur-3xl" aria-hidden="true" />
             <div className="relative">
               <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-500">
@@ -169,37 +173,6 @@ function LandingPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-border bg-card p-8 sm:p-10 lg:col-span-2">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Student ratings</div>
-            {rated ? (
-              <>
-                <div className="mt-6 flex items-center gap-4">
-                  <span className="text-6xl font-bold leading-none tracking-tight">{rated.ratingAvg.toFixed(1)}</span>
-                  <div>
-                    <Stars value={rated.ratingAvg} size="h-5 w-5" />
-                    <div className="mt-1 text-sm text-muted-foreground">from {rated.ratingCount} in-app ratings</div>
-                  </div>
-                </div>
-                <div className="mt-6 space-y-2">
-                  {rated.ratingBars.map((n, i) => {
-                    const pct = rated.ratingCount ? (n / rated.ratingCount) * 100 : 0;
-                    return (
-                      <div key={i} className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <span className="w-3 text-right tabular-nums">{5 - i}</span>
-                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                          <div className="h-full rounded-full bg-amber-400" style={{ width: `${pct}%` }} />
-                        </div>
-                        <span className="w-6 tabular-nums">{n}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <p className="mt-6 text-sm text-muted-foreground">Ratings from students appear here as they come in.</p>
-            )}
-            <p className="mt-6 text-xs text-muted-foreground">Ratings are submitted by signed-in students from inside the app.</p>
-          </div>
         </div>
       </section>
 

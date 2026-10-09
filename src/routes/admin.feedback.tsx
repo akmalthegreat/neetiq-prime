@@ -109,7 +109,10 @@ function AdminFeedback() {
         <Button asChild variant="ghost" size="sm">
           <Link to="/admin"><ChevronLeft className="mr-1 h-4 w-4" /> Back to admin</Link>
         </Button>
-        <Button variant="outline" size="sm" onClick={load}><RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Refresh</Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm"><Link to="/admin-reviews"><Star className="mr-1.5 h-3.5 w-3.5" /> Public reviews</Link></Button>
+          <Button variant="outline" size="sm" onClick={load}><RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Refresh</Button>
+        </div>
       </div>
 
       <div className="mb-4">
