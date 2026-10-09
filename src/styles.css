@@ -286,3 +286,11 @@
 @utility hl-pink   { background: color-mix(in oklab, var(--hl-pink)   60%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 @utility hl-blue   { background: color-mix(in oklab, var(--hl-blue)   60%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 @utility hl-orange { background: color-mix(in oklab, var(--hl-orange) 65%, transparent); color: var(--foreground); border-radius: 0.25rem; padding: 0 0.15rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+/* ── Bottom bar & floating buttons step aside so they never cover a dialog, the menu or the keyboard ── */
+body[data-nt-overlay] .bn, body[data-nt-menu] .bn, body[data-nt-kb] .bn {
+  transform: translateY(calc(100% + 28px)) !important; opacity: 0 !important; pointer-events: none !important;
+}
+body[data-nt-overlay] [data-support-fab], body[data-nt-menu] [data-support-fab], body[data-nt-kb] [data-support-fab] {
+  opacity: 0 !important; transform: scale(.85) !important; pointer-events: none !important;
+}

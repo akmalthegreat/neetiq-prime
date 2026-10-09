@@ -245,6 +245,12 @@ export function SiteHeader() {
   }, [open]);
   const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { setOpen(false); }, [path]);
+  // Tell the bottom bar / floating buttons to step aside while the full-screen menu is open.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.toggleAttribute("data-nt-menu", open);
+    return () => document.body.removeAttribute("data-nt-menu");
+  }, [open]);
   const { user, profile, isAdmin, signOut } = useAuth();
   const displayName = (profile?.full_name?.trim() || (user?.email ? user.email.split("@")[0] : "")) ?? "";
   const avatar = user ? avatarUrl(displayName || user.id, profile?.avatar_url ?? null) : null;
@@ -369,7 +375,7 @@ export function SiteHeader() {
         {/* Mobile Drawer */}
         {open && (
           <div className="absolute inset-x-0 top-full h-[calc(100dvh-4rem)] border-t border-border bg-background animate-fade-in-up">
-            <div className="h-full overflow-y-auto overscroll-contain px-4 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+            <div className="h-full overflow-y-auto overscroll-contain px-4 pt-3 pb-[calc(2.5rem+env(safe-area-inset-bottom))]">
               {user && (
                 <Link
                   to="/profile"

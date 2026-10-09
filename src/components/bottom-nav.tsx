@@ -58,8 +58,44 @@ const isIn = (path: string, item: Item) => path === item.to || path.startsWith(i
 export function BottomNav() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
+  useOverlayWatch();
   if (!mounted) return null;
   return createPortal(<BottomNavInner />, document.body);
+}
+
+
+/**
+ * Marks <body> while anything should sit above the bar:
+ *  - data-nt-overlay: a dialog / sheet / alert is open (Radix sets data-state="open" on role=dialog)
+ *  - data-nt-kb: the on-screen keyboard is likely up (a text field is focused on a phone)
+ * CSS in styles.css then slides the bar and the support button out of the way.
+ */
+function useOverlayWatch() {
+  useEffect(() => {
+    const body = document.body;
+    const check = () => {
+      const open = !!document.querySelector('[role="dialog"][data-state="open"],[role="alertdialog"][data-state="open"]');
+      body.toggleAttribute("data-nt-overlay", open);
+    };
+    check();
+    const mo = new MutationObserver(check);
+    mo.observe(body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-state"] });
+
+    const isField = (el: EventTarget | null) =>
+      el instanceof HTMLElement && (el.isContentEditable || /^(TEXTAREA|SELECT)$/.test(el.tagName) ||
+        (el.tagName === "INPUT" && !/^(checkbox|radio|button|submit|range|file|color|reset|image)$/i.test((el as HTMLInputElement).type)));
+    const onIn = (e: FocusEvent) => { if (window.innerWidth < 1024 && isField(e.target)) body.setAttribute("data-nt-kb", ""); };
+    const onOut = () => { setTimeout(() => { if (!isField(document.activeElement)) body.removeAttribute("data-nt-kb"); }, 60); };
+    document.addEventListener("focusin", onIn);
+    document.addEventListener("focusout", onOut);
+    return () => {
+      mo.disconnect();
+      document.removeEventListener("focusin", onIn);
+      document.removeEventListener("focusout", onOut);
+      body.removeAttribute("data-nt-overlay");
+      body.removeAttribute("data-nt-kb");
+    };
+  }, []);
 }
 
 function BottomNavInner() {
@@ -73,12 +109,35 @@ function BottomNavInner() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // Slide away while scrolling down to read, come back on any scroll up (and near the top).
+  const [away, setAway] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY, ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY, d = y - last;
+        if (y < 80) setAway(false);
+        else if (d > 8) setAway(true);
+        else if (d < -8) setAway(false);
+        if (Math.abs(d) > 8) last = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  useEffect(() => { setAway(false); }, [path]);
+
   if (HIDE_ON.some((p) => path.startsWith(p))) return null;
 
   const activeGroup = GROUPS.find((g) => g.items.some((i) => isIn(path, i)))?.key ?? null;
   const homeActive = path === "/" || path === "/dashboard";
   const mentorActive = path.startsWith("/mentorship");
   const group = GROUPS.find((g) => g.key === open) ?? null;
+  const groupIdx = (k: Group["key"] | null) => (k ? GROUPS.findIndex((g) => g.key === k) + 1 : -1);
+  const activeIdx = open ? groupIdx(open) : homeActive ? 0 : activeGroup ? groupIdx(activeGroup) : mentorActive ? 4 : -1;
 
   return (
     <>
@@ -116,7 +175,8 @@ function BottomNavInner() {
       </div>
 
       {/* Bar */}
-      <nav className="bn lg:hidden" aria-label="Main">
+      <nav className={cn("bn lg:hidden", away && !open && "away")} aria-label="Main">
+        <span className="bn-ind" aria-hidden="true" style={{ transform: `translateX(${Math.max(activeIdx, 0) * 100}%)`, opacity: activeIdx < 0 ? 0 : 1 }} />
         <Link to="/dashboard" className={cn("bn-btn", homeActive && !open && "on")} aria-current={homeActive ? "page" : undefined}>
           <span className="bn-pill"><Home className="h-[21px] w-[21px]" /></span><span className="bn-lbl">Home</span>
         </Link>
@@ -137,31 +197,44 @@ function BottomNavInner() {
 }
 
 const BN_CSS = `
-.bn{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:57;display:grid;grid-template-columns:repeat(5,1fr);
-  height:64px;padding:0 4px;border-radius:22px;background:color-mix(in oklab,var(--card,#fff) 82%,transparent);
-  -webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px);
-  border:1px solid color-mix(in oklab,var(--border,#e5e7eb) 85%,transparent);box-shadow:0 18px 40px -18px rgba(2,6,23,.55),0 2px 8px -2px rgba(2,6,23,.12)}
-.bn-btn{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted-foreground,#64748b);-webkit-tap-highlight-color:transparent;transition:color .2s}
-.bn-pill{display:grid;place-items:center;width:46px;height:30px;border-radius:999px;transition:background .25s,transform .25s cubic-bezier(.2,.8,.2,1)}
-.bn-lbl{font-size:10.5px;font-weight:600;letter-spacing:.01em;line-height:1}
-.bn-btn:active .bn-pill{transform:scale(.9)}
+.bn{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:45;display:grid;grid-template-columns:repeat(5,1fr);
+  height:64px;padding:0 4px;border-radius:22px;background:color-mix(in oklab,var(--card,#fff) 80%,transparent);
+  -webkit-backdrop-filter:saturate(1.7) blur(20px);backdrop-filter:saturate(1.7) blur(20px);
+  border:1px solid color-mix(in oklab,var(--border,#e5e7eb) 85%,transparent);
+  box-shadow:0 18px 40px -18px rgba(2,6,23,.6),0 2px 8px -2px rgba(2,6,23,.14),inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform .38s cubic-bezier(.2,.9,.25,1),opacity .25s ease;will-change:transform}
+.bn.away{transform:translateY(calc(100% + 28px));opacity:0;pointer-events:none}
+.bn-ind{position:absolute;top:6px;bottom:6px;left:4px;width:calc((100% - 8px) / 5);border-radius:17px;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,color-mix(in oklab,var(--primary,#2563eb) 20%,transparent),color-mix(in oklab,var(--primary,#2563eb) 8%,transparent));
+  box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--primary,#2563eb) 22%,transparent);
+  transition:transform .45s cubic-bezier(.34,1.36,.5,1),opacity .2s}
+.bn-ind::before{content:"";position:absolute;top:-1px;left:50%;width:22px;height:3px;margin-left:-11px;border-radius:0 0 4px 4px;
+  background:var(--primary,#2563eb);box-shadow:0 0 12px var(--primary,#2563eb)}
+.bn-btn{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted-foreground,#64748b);
+  -webkit-tap-highlight-color:transparent;transition:color .25s;outline:none}
+.bn-btn:focus-visible .bn-pill{box-shadow:0 0 0 2px var(--ring,#2563eb)}
+.bn-pill{display:grid;place-items:center;width:44px;height:26px;border-radius:999px;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.bn-lbl{font-size:10.5px;font-weight:600;letter-spacing:.01em;line-height:1;transition:font-weight .2s,letter-spacing .2s}
+.bn-btn:active .bn-pill{transform:scale(.86)}
 .bn-btn.on{color:var(--primary,#2563eb)}
-.bn-btn.on .bn-pill{background:color-mix(in oklab,var(--primary,#2563eb) 15%,transparent)}
+.bn-btn.on .bn-pill{transform:translateY(-1px)}
+.bn-btn.on .bn-pill svg{animation:bn-pop .5s cubic-bezier(.3,1.5,.5,1)}
 .bn-btn.on .bn-lbl{font-weight:800}
-.bn-scrim{position:fixed;inset:0;z-index:55;background:rgba(2,6,23,.45);opacity:0;pointer-events:none;transition:opacity .25s}
+@keyframes bn-pop{0%{transform:scale(.8)}55%{transform:scale(1.18) translateY(-2px)}100%{transform:none}}
+.bn-scrim{position:fixed;inset:0;z-index:43;background:rgba(2,6,23,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .25s}
 .bn-scrim.on{opacity:1;pointer-events:auto}
-.bn-sheet{position:fixed;left:8px;right:8px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:56;max-height:70vh;overflow-y:auto;border-radius:24px;
+.bn-sheet{position:fixed;left:8px;right:8px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:44;max-height:min(70vh,calc(100dvh - 170px));overflow-y:auto;overscroll-behavior:contain;border-radius:24px;
   background:var(--card,#fff);border:1px solid var(--border,#e5e7eb);box-shadow:0 30px 60px -20px rgba(2,6,23,.5);
-  transform:translateY(16px) scale(.98);opacity:0;pointer-events:none;transition:transform .28s cubic-bezier(.2,.9,.2,1),opacity .2s}
+  transform:translateY(16px) scale(.98);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.2,.9,.2,1),opacity .2s}
 .bn-sheet.on{transform:none;opacity:1;pointer-events:auto}
 .bn-grab{width:40px;height:4px;border-radius:99px;background:var(--border,#e5e7eb);margin:10px auto 8px}
 .bn-tile{position:relative;display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;border:1px solid var(--border,#e5e7eb);
-  background:linear-gradient(135deg,color-mix(in oklab,var(--t) 9%,transparent),transparent 70%);animation:bn-up .3s cubic-bezier(.2,.9,.2,1) both}
-.bn-tile:active{transform:scale(.98)}
+  background:linear-gradient(135deg,color-mix(in oklab,var(--t) 9%,transparent),transparent 70%);animation:bn-up .3s cubic-bezier(.2,.9,.2,1) both;transition:transform .15s}
+.bn-tile:active{transform:scale(.97)}
 .bn-tile.on{border-color:color-mix(in oklab,var(--t) 60%,transparent);box-shadow:0 0 0 3px color-mix(in oklab,var(--t) 15%,transparent)}
 .bn-ico{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:#fff;background:linear-gradient(135deg,var(--t),color-mix(in oklab,var(--t) 65%,#000));box-shadow:0 8px 16px -8px var(--t)}
 .bn-badge{position:absolute;top:7px;right:7px;font-style:normal;font-size:8px;font-weight:800;letter-spacing:.06em;padding:2px 5px;border-radius:6px;color:#fff;background:var(--t)}
 @keyframes bn-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.bn-sheet,.bn-tile,.bn-pill{transition:none;animation:none}}
+@media (prefers-reduced-motion:reduce){.bn,.bn-ind,.bn-sheet,.bn-tile,.bn-pill{transition:none;animation:none}.bn-btn.on .bn-pill svg{animation:none}}
 `;
 

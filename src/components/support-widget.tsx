@@ -131,8 +131,9 @@ export function SupportWidget() {
       {!open && (
         <div
           style={fabStyle}
+          data-support-fab=""
           className={cn(
-            "fixed z-[90] select-none",
+            "fixed z-[90] select-none transition-[opacity,transform] duration-300",
             !pos && "bottom-[calc(96px+env(safe-area-inset-bottom))] right-4 lg:bottom-6",
           )}
         >
