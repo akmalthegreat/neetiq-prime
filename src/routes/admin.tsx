@@ -1,5 +1,5 @@
 import { DrAkzaLoader } from "@/components/dr-akza-loader";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -61,7 +61,11 @@ const newQ = (): QDraft => ({ text: "", options: ["", "", "", ""], correct_index
 function AdminPanel() {
   const { user, isAdmin, loading } = useAuth();
   const nav = useNavigate();
+  const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { if (!loading && !user) nav({ to: "/login" }); }, [user, loading, nav]);
+
+  // Sub-pages (/admin/inbox, /admin/feedback, /admin/support) render themselves; they have their own admin checks.
+  if (path.replace(/\/+$/, "") !== "/admin") return <Outlet />;
 
   if (loading) return <DrAkzaLoader fullScreen message="Opening the admin panel" />;
   if (!user) return null;
