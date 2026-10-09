@@ -50,6 +50,7 @@ import { Route as NcertHighlightsRouteImport } from './routes/ncert-highlights'
 import { Route as NeetlabRouteImport } from './routes/neetlab'
 import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
@@ -294,6 +295,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DeleteAccountRoute = DeleteAccountRouteImport.update({
   id: '/delete-account',
   path: '/delete-account',
@@ -536,6 +542,7 @@ export interface FileRoutesByFullPath {
   '/neetlab': typeof NeetlabRoute
   '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/delete-account': typeof DeleteAccountRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -617,6 +624,7 @@ export interface FileRoutesByTo {
   '/neetlab': typeof NeetlabRoute
   '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/delete-account': typeof DeleteAccountRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -699,6 +707,7 @@ export interface FileRoutesById {
   '/neetlab': typeof NeetlabRoute
   '/premium': typeof PremiumRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/delete-account': typeof DeleteAccountRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
@@ -782,6 +791,7 @@ export interface FileRouteTypes {
     | '/neetlab'
     | '/premium'
     | '/privacy'
+    | '/terms'
     | '/delete-account'
     | '/profile'
     | '/progress'
@@ -863,6 +873,7 @@ export interface FileRouteTypes {
     | '/neetlab'
     | '/premium'
     | '/privacy'
+    | '/terms'
     | '/delete-account'
     | '/profile'
     | '/progress'
@@ -944,6 +955,7 @@ export interface FileRouteTypes {
     | '/neetlab'
     | '/premium'
     | '/privacy'
+    | '/terms'
     | '/delete-account'
     | '/profile'
     | '/progress'
@@ -1026,6 +1038,7 @@ export interface RootRouteChildren {
   NeetlabRoute: typeof NeetlabRoute
   PremiumRoute: typeof PremiumRoute
   PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   DeleteAccountRoute: typeof DeleteAccountRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
@@ -1346,6 +1359,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/delete-account': {
@@ -1700,6 +1720,7 @@ const rootRouteChildren: RootRouteChildren = {
   NeetlabRoute: NeetlabRoute,
   PremiumRoute: PremiumRoute,
   PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   DeleteAccountRoute: DeleteAccountRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
