@@ -23,3 +23,6 @@ create policy "Users read own review" on public.site_reviews
 drop policy if exists "Admins manage reviews" on public.site_reviews;
 create policy "Admins manage reviews" on public.site_reviews
   for all to authenticated using (public.has_role(auth.uid(), 'admin')) with check (public.has_role(auth.uid(), 'admin'));
+
+grant select, insert, update, delete on public.site_reviews to service_role;
+grant select on public.site_reviews to anon, authenticated;
