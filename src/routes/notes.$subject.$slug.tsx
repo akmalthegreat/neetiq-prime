@@ -32,7 +32,7 @@ type NoteDoc = {
 
 const xml = (s: string) => s.replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" })[c] as string);
 
-/** Faint diagonal watermark with the student's name, repeated over every page. */
+/** Faint diagonal "NEET Track by AKMAL" watermark, repeated over every page. */
 function watermarkUrl(label: string) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="190"><text x="150" y="100" text-anchor="middle" transform="rotate(-24 150 95)" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="700" fill="#4C1D95">${xml(label)}</text></svg>`;
   return `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}")`;
@@ -131,7 +131,7 @@ function NoteReader() {
   };
 
   const viewer = profile?.full_name?.trim() || user?.email || "NEET Track student";
-  const wm = useMemo(() => watermarkUrl(`NEET Track · ${viewer}`), [viewer]);
+  const wm = useMemo(() => watermarkUrl("NEET Track by AKMAL"), [viewer]);
   const doc = note.data;
   const metaLine = doc ? `Class ${doc.meta.cls} · Ch ${doc.meta.no} · ${doc.meta.title}` : "";
 
