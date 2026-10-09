@@ -108,6 +108,19 @@ function LoginPage() {
     nav({ to: "/dashboard" });
   };
 
+  const onForgot = async () => {
+    const addr = email.trim();
+    if (!addr) return toast.error("Type your email above first, then tap Forgot password.");
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(addr, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message || "Could not send the reset email. Please try again.");
+    // Same message whether or not the email exists, so accounts can't be probed.
+    toast.success("If an account exists for that email, a password reset link is on its way. Check your inbox and spam folder.", { duration: 9000 });
+  };
+
   const onSignup = async (e: React.FormEvent) => {
     e.preventDefault(); setBusy(true);
     // Stash referral BEFORE signup so SIGNED_IN listener can apply it
@@ -241,6 +254,9 @@ function LoginPage() {
                     after={<button type="button" className="lg-eye" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? "Hide password" : "Show password"}>{showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>}>
                     <input id="lp" type={showPw ? "text" : "password"} required autoComplete="current-password" placeholder="Your password" value={password} onChange={(e) => setPassword(e.target.value)} />
                   </Field>
+                  <div className="lg-forgot">
+                    <button type="button" onClick={onForgot} disabled={busy}>Forgot password?</button>
+                  </div>
                   <button type="submit" disabled={busy} className="lg-cta" style={{ animationDelay: ".16s" }}>
                     {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Log in <ArrowRight className="h-4 w-4" /></>}
                   </button>
@@ -425,6 +441,10 @@ const LOGIN_CSS = `
 .lg-cta:disabled{opacity:.75;cursor:default}
 .lg-cta svg{transition:transform .25s}
 .lg-cta:hover svg{transform:translateX(3px)}
+.lg-forgot{margin:-4px 0 0;text-align:right}
+.lg-forgot button{background:none;border:0;padding:4px 2px;font-size:12.5px;font-weight:700;color:#7DD3FC;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.lg-forgot button:hover{color:#fff}
+.lg-forgot button:disabled{opacity:.6;cursor:default}
 .lg-fine{margin:2px 0 0;text-align:center;font-size:11px;color:#6E7A9E}
 .lg-safe{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:#7F8BB0}
 .lg-safe svg{color:#34D399}

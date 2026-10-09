@@ -52,6 +52,7 @@ import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as DeleteAccountRouteImport } from './routes/delete-account'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as PyqsRouteImport } from './routes/pyqs'
@@ -305,6 +306,11 @@ const DeleteAccountRoute = DeleteAccountRouteImport.update({
   path: '/delete-account',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -544,6 +550,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/delete-account': typeof DeleteAccountRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/pyqs': typeof PyqsRoute
@@ -626,6 +633,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/delete-account': typeof DeleteAccountRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/pyqs': typeof PyqsRoute
@@ -709,6 +717,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/delete-account': typeof DeleteAccountRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/pyqs': typeof PyqsRoute
@@ -793,6 +802,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/delete-account'
+    | '/reset-password'
     | '/profile'
     | '/progress'
     | '/pyqs'
@@ -875,6 +885,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/delete-account'
+    | '/reset-password'
     | '/profile'
     | '/progress'
     | '/pyqs'
@@ -957,6 +968,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/delete-account'
+    | '/reset-password'
     | '/profile'
     | '/progress'
     | '/pyqs'
@@ -1040,6 +1052,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   DeleteAccountRoute: typeof DeleteAccountRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   PyqsRoute: typeof PyqsRoute
@@ -1373,6 +1386,13 @@ declare module '@tanstack/react-router' {
       path: '/delete-account'
       fullPath: '/delete-account'
       preLoaderRoute: typeof DeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -1722,6 +1742,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   DeleteAccountRoute: DeleteAccountRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   PyqsRoute: PyqsRoute,
