@@ -7,7 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import {
   LayoutDashboard, Crown, UserSearch, Banknote, Wallet, Package, TicketPercent, Image as ImageIcon, Megaphone, Inbox, Sparkles,
   FilePlus2, ClipboardList, Bot, Trophy, ListChecks, Library, BookOpen, FileUp, Layers, Copy, Trash2, Brain, Highlighter,
-  Swords, Infinity as InfinityIcon, Settings, KeyRound, ChevronDown, Check, Search, Users, UserPlus, Activity, Timer,
+  Swords, Star, Infinity as InfinityIcon, Settings, KeyRound, ChevronDown, Check, Search, Users, UserPlus, Activity, Timer,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +32,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
   { title: "Website", tools: [
     { value: "banners", label: "Home banners", icon: ImageIcon, isNew: true },
     { value: "announce", label: "Announcements", icon: Megaphone, isNew: true },
+    { value: "reviews", label: "Student reviews", icon: Star, isNew: true },
   ] },
   { title: "Tests & quizzes", tools: [
     { value: "create", label: "Create test", icon: FilePlus2 },
