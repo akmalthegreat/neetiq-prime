@@ -8,6 +8,7 @@ import { useConsultData, type ConsultData } from "@/components/consult/consult-u
 import { getHomeExtras, type HomeExtras } from "@/lib/home-dashboard.functions";
 import { HOME_CSS } from "@/components/home/home-styles";
 import { TestBuilder } from "@/components/home/test-builder";
+import { TourEntry } from "@/components/site-tour";
 import { MegaQuizCard } from "@/components/home/mega-quiz-card";
 import type { SectionKey } from "@/lib/insights-engine";
 
@@ -154,6 +155,7 @@ export function HomeDashboard({ top }: { top?: ReactNode }) {
       <div className="nth-grid">
         {top ? <div className="full">{top}</div> : null}
         <Welcome firstName={firstName} targetYear={targetYear} today={today} dailyGoal={dailyGoal} streak={streak} weekly={ex?.weekly} todo={todo} />
+        <div className="full"><TourEntry /></div>
         <AzkaStrip tips={(consult.data?.recommendations ?? []).map((r) => (r.detail.length <= 110 ? r.detail : r.title))} />
         <Banner banners={ex?.banners ?? []} showBuiltIn={ex?.showBuiltInSlides ?? true} nextContest={ex?.nextContest ?? null} />
         <QuickPractice counts={counts} snapshot={snap} />
