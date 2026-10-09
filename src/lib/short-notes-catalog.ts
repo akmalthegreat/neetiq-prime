@@ -44,7 +44,7 @@ export const NOTE_CHAPTERS: Record<NoteSubject, NoteChapter[]> = {
     bio(12, 5, "Molecular Basis of Inheritance", "Genetics and Evolution", "molecular-basis-of-inheritance", true),
     bio(12, 6, "Evolution", "Genetics and Evolution", "evolution", true),
     bio(12, 7, "Human Health and Disease", "Biology and Human Welfare", "human-health-and-disease", true),
-    bio(12, 8, "Microbes in Human Welfare", "Biology and Human Welfare", "microbes-in-human-welfare"),
+    bio(12, 8, "Microbes in Human Welfare", "Biology and Human Welfare", "microbes-in-human-welfare", true),
     bio(12, 9, "Biotechnology: Principles and Processes", "Biotechnology", "biotechnology-principles-and-processes"),
     bio(12, 10, "Biotechnology and its Applications", "Biotechnology", "biotechnology-and-its-applications"),
     bio(12, 11, "Organisms and Populations", "Ecology", "organisms-and-populations"),
