@@ -37,8 +37,8 @@ const SCENES: Scene[] = [
   { k: "compete", tag: "MENTORSHIP · DAILY QUIZ", title: "You're never alone here", glow: "#EAB308", shots: [S("leaderboard")], href: "/mentorship", cta: "Meet a mentor",
     lines: ["You're never alone here.", "Get one-on-one mentorship, join the Daily Mega Quiz every evening at eight-thirty, and climb the weekly all-India leaderboard."] },
   { k: "end", tag: "START TODAY", title: "That white coat will be yours", glow: "#10B981", href: "/dashboard", cta: "Start my journey",
-    lines: ["So that's NEET Track: practice, tests, revision and analysis, all in one place, and free for your first twenty-one days.", "Start today, stay consistent, and that white coat will be yours.", "This app is made with love by Akmal, an MBBS student, for every NEET aspirant.", "All the best, doctors!"],
-    art: <div className="tr-end"><img src="/brand/nt-mark.webp" alt="" /><b>700<sup>+</sup></b><span>Practice · Revise · Fix · Test</span><div className="tr-sign">Made with <i>♥</i> by <strong>Akmal, MBBS</strong></div></div> },
+    lines: ["So that's NEET Track: practice, tests, revision and analysis, all in one place, and free for your first twenty-one days.", "Start today, stay consistent, and that white coat will be yours.", "This app is made with love by Akmal MBBS, for every NEET aspirant.", "All the best, doctors!"],
+    art: <div className="tr-end"><img src="/brand/nt-mark.webp" alt="" /><b>700<sup>+</sup></b><span>Practice · Revise · Fix · Test</span><div className="tr-sign">Made with <i>♥</i> by <strong>Akmal MBBS</strong></div></div> },
 ];
 
 const SPEEDS = [1, 1.25, 1.5, 2];

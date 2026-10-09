@@ -102,7 +102,7 @@ function MentorshipCard({ onNavigate, compact }: { onNavigate?: () => void; comp
     >
       <span className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-amber-400/20 blur-2xl" aria-hidden="true" />
       <span className="relative block text-[11px] font-bold uppercase tracking-[0.16em] text-amber-700 dark:text-amber-400">Personal mentorship</span>
-      <span className={cn("relative mt-1.5 block font-bold text-foreground", compact ? "text-[15px]" : "text-lg")}>1-on-1 with Akmal, MBBS</span>
+      <span className={cn("relative mt-1.5 block font-bold text-foreground", compact ? "text-[15px]" : "text-lg")}>1-on-1 with Akmal MBBS</span>
       {!compact && (
         <span className="relative mt-1 block text-sm leading-snug text-muted-foreground">
           Your own study plan, daily doubt support and progress reviews.
