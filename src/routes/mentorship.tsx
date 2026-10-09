@@ -55,8 +55,8 @@ const MENTOR_FEATURES = [
 
 const AKMAL = {
   name: "Mohd Akmal",
-  title: "3rd Year MBBS · NEET Mentor",
-  bio: "3rd Year MBBS student and a dedicated NEET mentor with years of experience guiding medical aspirants. His inspiring journey — from scoring 30 marks to 655 marks in just 9 months — reflects the power of determination, smart strategy, and consistent effort.",
+  title: "Final-year MBBS · JNMC Aligarh · NEET Mentor",
+  bio: "Akmal knows exactly where you are, because he has been there. He scored just 53% in his boards and only 30 marks in NEET, then rebuilt everything and scored 655 in just 8 months. At Allen Career Institute he was an SRG student and won 10 silver medals, and for the past 3 years he has been a senior mentor at Physics Wallah. Today he is a final-year MBBS student at JNMC, Aligarh, and has personally mentored 2,000+ NEET aspirants, over 1,000 of whom are now in top medical colleges.",
   mission: "To inspire and mentor future doctors by providing practical guidance, motivation, and a clear roadmap to crack NEET.",
   quote: "The only impossible journey is the one you never begin.",
 };
@@ -205,7 +205,7 @@ function MentorshipPurchasePage() {
     <PageShell
       eyebrow="Program"
       title="1-on-1 NEET Mentorship"
-      description="A personal NEET mentor on WhatsApp. Daily doubts, planning, motivation — all handled by Mohd Akmal."
+      description="Get mentored personally by Akmal MBBS: 2,000+ students mentored, 1,000+ now in top medical colleges, 20+ scoring 700+ this batch."
     >
       <div className="space-y-8">
         {/* 1. MENTOR — shown first */}
@@ -229,7 +229,20 @@ function MentorshipPurchasePage() {
                 </div>
               </div>
               <div className="col-span-2 min-w-0">
-                <p className="text-sm text-foreground/90">{AKMAL.bio}</p>
+                <div className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {[["2,000+", "students mentored"], ["1,000+", "in top medical colleges"], ["20+", "scoring 700+ this batch"], ["30 → 655", "his own NEET jump in 8 months"]].map(([v, l]) => (
+                    <div key={l} className="rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/15 to-orange-500/5 p-2.5 text-center">
+                      <div className="text-lg font-extrabold leading-none text-amber-600 dark:text-amber-300 sm:text-2xl">{v}</div>
+                      <div className="mt-1 text-[10.5px] font-semibold leading-tight text-muted-foreground sm:text-xs">{l}</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/90">{AKMAL.bio}</p>
+                <ul className="mt-3 grid gap-1.5 text-sm sm:grid-cols-2">
+                  {["🏅 10 silver medals · Allen Career Institute", "⭐ SRG student at Allen", "🎓 Senior mentor at Physics Wallah (3 years)", "🩺 Final-year MBBS, JNMC Aligarh"].map((t) => (
+                    <li key={t} className="rounded-lg bg-background/60 px-3 py-2 font-medium">{t}</li>
+                  ))}
+                </ul>
                 <div className="mt-3 rounded-lg border border-border/60 bg-background/60 p-3">
                   <div className="text-[11px] font-bold uppercase tracking-widest text-primary">Mission</div>
                   <p className="mt-1 text-sm text-foreground/90">{AKMAL.mission}</p>
@@ -351,9 +364,6 @@ function MentorshipPurchasePage() {
                   >
                     {busy ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
                     Pay ₹{payable.toLocaleString("en-IN")} with Razorpay
-                  </Button>
-                  <Button variant="outline" onClick={whatsappOnly}>
-                    <MessageCircle className="mr-1 h-4 w-4" /> Ask on WhatsApp
                   </Button>
                 </div>
               </div>
