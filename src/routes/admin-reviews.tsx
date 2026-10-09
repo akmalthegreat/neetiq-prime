@@ -1,14 +1,14 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronLeft, Eye, EyeOff, Loader2, RotateCcw, Star } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Loader2, RotateCcw, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
-import { adminListReviews, adminSetReviewStatus } from "@/lib/reviews.functions";
+import { adminDeleteReview, adminListReviews, adminSetReviewStatus } from "@/lib/reviews.functions";
 
 export const Route = createFileRoute("/admin-reviews")({
   head: () => ({ meta: [{ title: "Admin · Public reviews — NEET Track" }] }),
@@ -27,6 +27,7 @@ function AdminReviews() {
   const [busy, setBusy] = useState<string | null>(null);
   const fnList = useServerFn(adminListReviews);
   const fnSet = useServerFn(adminSetReviewStatus);
+  const fnDel = useServerFn(adminDeleteReview);
 
   useEffect(() => {
     if (loading) return;
@@ -50,6 +51,17 @@ function AdminReviews() {
     finally { setBusy(null); }
   }
 
+  async function remove(r: Row) {
+    if (!confirm(`Delete ${r.display_name}'s review permanently? Its rating will also be removed. This cannot be undone.`)) return;
+    setBusy(r.id);
+    try {
+      await fnDel({ data: { id: r.id } });
+      setRows((rs) => rs?.filter((x) => x.id !== r.id) ?? null);
+      toast.success("Review deleted");
+    } catch (e: any) { toast.error(e?.message ?? "Delete failed"); }
+    finally { setBusy(null); }
+  }
+
   const list = rows ?? [];
   const avg = list.length ? (list.reduce((a, r) => a + r.rating, 0) / list.length).toFixed(1) : "—";
 
@@ -63,7 +75,7 @@ function AdminReviews() {
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Admin</div>
         <h1 className="mt-1 text-2xl font-bold tracking-tight">Public reviews</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Reviews shown on the home page. Hide only spam or abusive text — the student's star rating still counts.
+          Reviews shown on the home page. Hide keeps the star rating but removes the text from the home page. Delete removes the review and its rating completely.
         </p>
         <p className="mt-2 text-sm"><b>{list.length}</b> reviews · avg <b>{avg}</b> ★ · <b>{list.filter((r) => r.status === "hidden").length}</b> hidden</p>
       </div>
@@ -88,11 +100,17 @@ function AdminReviews() {
                 <p className="mt-2 whitespace-pre-line text-sm">{r.body}</p>
                 <div className="mt-3 flex items-center justify-between gap-2">
                   <span className="truncate text-xs text-muted-foreground">{r.email ?? r.user_id}</span>
+                  <div className="flex shrink-0 gap-2">
+                  <Button size="sm" variant="outline" disabled={busy === r.id} onClick={() => remove(r)}
+                    className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-500/10">
+                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete
+                  </Button>
                   <Button size="sm" variant="outline" disabled={busy === r.id} onClick={() => toggle(r)}>
                     {busy === r.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : r.status === "published"
                       ? <><EyeOff className="mr-1.5 h-3.5 w-3.5" /> Hide text</>
                       : <><Eye className="mr-1.5 h-3.5 w-3.5" /> Publish</>}
                   </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

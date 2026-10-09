@@ -202,7 +202,7 @@ export function ReviewsSection({ stats }: { stats: HomeStats | null }) {
       <div className="mb-8 flex flex-col items-center text-center lg:mb-10">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Student ratings &amp; reviews</p>
         <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">What NEET students say about us</h2>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground">Real ratings from signed-in NEET Track students. Every review is shown as written.</p>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground">Ratings and reviews from signed-in NEET Track students.</p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
