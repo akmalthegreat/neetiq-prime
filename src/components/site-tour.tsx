@@ -184,7 +184,36 @@ export function SiteTour({ open, onClose }: { open: boolean; onClose: () => void
   );
 }
 
-const SEEN_KEY = "nt_tour_seen_v2";
+const SEEN_KEY = "nt_tour_seen_v3";
+const VIDEO_SRC = "/tour/how-to-use.mp4";
+const VIDEO_POSTER = "/tour/how-to-use-poster.jpg";
+
+/** Full-screen player for the narrated "how to use NEET Track" screen recording. */
+export function VideoTour({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => { window.removeEventListener("keydown", onKey); ref.current?.pause(); };
+  }, [open, onClose]);
+  if (!open || typeof document === "undefined") return null;
+  return createPortal(
+    <div className="tr-wrap" role="dialog" aria-modal="true" aria-label="How to use NEET Track" onClick={onClose}>
+      <style>{TR_CSS}</style>
+      <div className="tr-vbox" onClick={(e) => e.stopPropagation()}>
+        <header className="tr-top">
+          <img src="/brand/nt-mark.webp" alt="" className="tr-logo" />
+          <div className="tr-brand"><b>NEET <span>Track</span></b><small>How to use the app</small></div>
+          <button type="button" className="tr-x" onClick={onClose} aria-label="Close video"><X className="h-5 w-5" /></button>
+        </header>
+        <video ref={ref} className="tr-video" src={VIDEO_SRC} poster={VIDEO_POSTER}
+          controls autoPlay playsInline preload="metadata" controlsList="nodownload" />
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 /** Home page: a one-time pop-up for students who haven't seen the tour, and a replay card. */
 export function TourEntry() {
@@ -201,26 +230,29 @@ export function TourEntry() {
       <style>{TR_CSS}</style>
       <button type="button" onClick={start} className="tr-entry">
         <span className="tr-play"><Play className="h-5 w-5" /></span>
-        <span className="min-w-0 flex-1 text-left"><b>How NEET Track works</b><small>3-minute guided tour of every feature · with voice</small></span>
+        <span className="min-w-0 flex-1 text-left"><b>How to use NEET Track</b><small>Video tour of every feature · by Akmal MBBS</small></span>
         <span className="tr-entry-go">Watch</span>
       </button>
       {prompt && typeof document !== "undefined" && createPortal(
         <div className="tr-pop-wrap" onClick={() => { mark(); setPrompt(false); }}>
           <style>{TR_CSS}</style>
           <div className="tr-pop" onClick={(e) => e.stopPropagation()}>
-            <div className="tr-pop-art"><img src="/tour/practice.webp" alt="" /><span className="tr-play big"><Play className="h-8 w-8" /></span></div>
+            <div className="tr-pop-art"><img src={VIDEO_POSTER} alt="" /><span className="tr-play big"><Play className="h-8 w-8" /></span></div>
             <h3>Welcome to NEET Track 👋</h3>
-            <p>Watch this 3-minute tour and see how to use every feature to reach 700+ in NEET.</p>
+            <p>Watch this short video tour and see how to use every feature to reach 700+ in NEET.</p>
             <button type="button" onClick={start} className="tr-cta tr-cta-full">▶ Watch the tour</button>
             <button type="button" onClick={() => { mark(); setPrompt(false); }} className="tr-later">Maybe later</button>
           </div>
         </div>, document.body)}
-      <SiteTour open={open} onClose={() => setOpen(false)} />
+      <VideoTour open={open} onClose={() => setOpen(false)} />
     </>
   );
 }
 
 const TR_CSS = `
+.tr-vbox{position:relative;display:flex;flex-direction:column;width:min(480px,100vw);height:100dvh;background:#040814;color:#fff;overflow:hidden}
+@media (min-width:700px){.tr-vbox{height:min(900px,calc(100dvh - 32px));border-radius:24px;border:1px solid rgba(255,255,255,.1)}}
+.tr-video{flex:1;min-height:0;width:100%;background:#000;object-fit:contain}
 .tr-wrap{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:rgba(2,6,23,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .tr-box{position:relative;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;width:min(1000px,100vw);height:100dvh;overflow:hidden;color:#fff;background:#040814;font-family:'Poppins',system-ui,sans-serif}
 @media (min-width:700px){.tr-box{height:min(680px,calc(100dvh - 32px));border-radius:28px;border:1px solid rgba(255,255,255,.1);box-shadow:0 50px 100px -40px rgba(0,0,0,.9)}}
