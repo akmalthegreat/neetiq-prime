@@ -97,7 +97,6 @@ export function useMyReview() {
 }
 
 const MOODS = ["", "😞", "😕", "🙂", "😊", "🤩"];
-const CHIPS = ["Short notes", "Mock tests", "PYQ practice", "Important NEET questions", "Flashcards", "Explanations", "Progress tracking"];
 
 /* ───────── write / edit dialog ───────── */
 
@@ -125,14 +124,6 @@ export function ReviewDialog({ open, onOpenChange, initialRating = 0, greeting }
     else { setRating(initialRating); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, existing?.updated_at]);
-
-  function addChip(c: string) {
-    setBody((b) => {
-      if (b.toLowerCase().includes(c.toLowerCase())) return b;
-      const t = b.trim();
-      return t ? `${t}${/[.!?]$/.test(t) ? "" : ","} ${c.toLowerCase()}` : `I really like the ${c.toLowerCase()}`;
-    });
-  }
 
   async function onSave() {
     if (!rating) return toast.error("Tap a star to rate");
@@ -192,26 +183,10 @@ export function ReviewDialog({ open, onOpenChange, initialRating = 0, greeting }
               <div className="h-4 text-xs font-semibold text-muted-foreground">{shown ? LABELS[shown] : "Tap a star"}</div>
             </div>
 
-            <div>
-              <div className="mb-2 text-xs font-medium text-muted-foreground">What do you like? <span className="font-normal">(tap to add)</span></div>
-              <div className="flex flex-wrap gap-1.5">
-                {CHIPS.map((c) => {
-                  const on = body.toLowerCase().includes(c.toLowerCase());
-                  return (
-                    <button key={c} type="button" onClick={() => addChip(c)}
-                      className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-                        on ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-secondary")}>
-                      {on ? "✓ " : "+ "}{c}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
             <div className="space-y-1.5">
-              <label className="text-xs font-medium" htmlFor="rv-body">Your review</label>
-              <Textarea id="rv-body" value={body} onChange={(e) => setBody(e.target.value)} rows={4} maxLength={600}
-                placeholder="Share your experience — what helped you the most?" className="resize-none" />
+              <label className="text-xs font-medium" htmlFor="rv-body">Your review <span className="font-normal text-muted-foreground">— in your own words</span></label>
+              <Textarea id="rv-body" value={body} onChange={(e) => setBody(e.target.value)} rows={5} maxLength={600}
+                placeholder="How has NEET Track helped your preparation? What do you use most, and what should we improve?" className="resize-none" />
               <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span className="flex items-center gap-1"><Globe className="h-3 w-3" /> Shown on the home page after approval</span>
                 <span>{body.length}/600</span>
