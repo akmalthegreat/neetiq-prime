@@ -163,7 +163,6 @@ export function HomeDashboard({ top }: { top?: ReactNode }) {
         <Tools />
         <ExamSimulation mocksTaken={ex?.mocksTaken ?? 0} lastMock={snap?.mocks.last ?? null} />
         <TestBuilder snapshot={snap} />
-        <Contest contest={ex?.nextContest ?? null} loading={extras.isLoading} />
         <Mentorship />
         <MegaQuizCard />
         <Leaderboard weekly={ex?.weekly} loading={extras.isLoading} />
