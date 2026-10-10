@@ -15,7 +15,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { Toaster } from "@/components/ui/sonner";
 import { OnboardingTour } from "@/components/onboarding-tour";
-import { SupportWidget } from "@/components/support-widget";
+import { AzkaWidget } from "@/components/azka/azka-widget";
 import { AppVersionGate } from "@/components/app-version-gate";
 import { SplashIntro, INTRO_HEAD_SCRIPT, INTRO_FONTS_HREF } from "@/components/splash-intro";
 import { getPublicSupabaseConfig } from "@/integrations/supabase/config";
@@ -179,7 +179,7 @@ function RootComponent() {
                       <Outlet />
             <Toaster richColors position="top-center" />
             <OnboardingTour />
-            <SupportWidget />
+            <AzkaWidget />
             <AppVersionGate />
         </AuthProvider>
       </ThemeProvider>

@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/nuggets")({
+  validateSearch: (s: Record<string, unknown>): { chapter?: string } =>
+    typeof s.chapter === "string" || typeof s.chapter === "number" ? { chapter: String(s.chapter) } : {},
   head: () => ({ meta: [{ title: "NCERT Nuggets — NEET Track" }, { name: "description", content: "Read the most important NCERT lines, then solve NEET questions on them. Chapter-wise Biology nuggets." }] }),
   component: NuggetsPage,
 });
@@ -29,6 +31,10 @@ function NuggetsPage() {
   const [chapter, setChapter] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [cls, setCls] = useState<0 | 11 | 12>(0);
+  const { chapter: linkedChapter } = Route.useSearch();
+
+  // Deep link from Miss Azka: /nuggets?chapter=<id> opens that chapter.
+  useEffect(() => { if (linkedChapter) { setChapter(linkedChapter); setOpenId(null); } }, [linkedChapter]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -57,7 +63,7 @@ function NuggetsPage() {
 
   if (all === null) return <PageShell><DrAzkaLoader message="Opening NCERT Nuggets" /></PageShell>;
 
-  const ch = chapters.find((c) => c.id === chapter) ?? null;
+  const ch = chapters.find((c) => String(c.id) === String(chapter)) ?? null;
 
   if (ch && openId) {
     const idx = ch.items.findIndex((x) => x.id === openId);
