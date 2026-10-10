@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/flashcards")({
+  validateSearch: (s: Record<string, unknown>): { deck?: string } => (typeof s.deck === "string" && s.deck ? { deck: s.deck } : {}),
   head: () => ({
     meta: [
       { title: "Flashcards — NEET Track" },
@@ -57,6 +58,18 @@ function FlashcardsPage() {
     if (!user) return;
     loadProgress().then((p) => setLatest(p.latest as Latest)).catch(() => {});
   }, [user, loadProgress]);
+
+  // Deep link from Miss Azka: /flashcards?deck=<id> opens that deck straight away.
+  const { deck: linkedDeck } = Route.useSearch();
+  const openedLink = useRef<string | null>(null);
+  useEffect(() => {
+    if (!linkedDeck || !decks || !user || openedLink.current === linkedDeck) return;
+    const d = decks.find((x) => x.id === linkedDeck);
+    if (!d) return;
+    openedLink.current = linkedDeck;
+    setSubject(d.subject);
+    void open(d, "all");
+  }, [linkedDeck, decks, user]);
 
   // Per-deck progress from my latest ratings.
   const deckStats = useMemo(() => {

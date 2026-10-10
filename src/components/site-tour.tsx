@@ -36,6 +36,9 @@ const SCENES: Scene[] = [
     lines: ["Want to know where you stand?", "The Score Predictor estimates your NEET score from your real answers.", "And Dr. Azka, your personal NEET mentor, gives you a full report and a study plan, showing exactly where your next marks will come from."] },
   { k: "compete", tag: "MENTORSHIP · DAILY QUIZ", title: "You're never alone here", glow: "#EAB308", shots: [S("leaderboard")], href: "/mentorship", cta: "Meet a mentor",
     lines: ["You're never alone here.", "Get one-on-one mentorship, join the Daily Mega Quiz every evening at eight-thirty, and climb the weekly all-India leaderboard."] },
+  { k: "missazka", tag: "MISS AZKA · YOUR GUIDE", title: "Just ask, and it opens", glow: "#0EA5E9", href: "/dashboard", cta: "Ask Miss Azka",
+    lines: ["And whenever you're stuck, tap the round Miss Azka button in the corner of any page.", "Ask her in your own words, in English or Hinglish: short notes of Cell, flashcards for Evolution, or twenty hard questions on Chemical Bonding.", "She finds the exact chapter in our question bank and gives you a card. One tap, and it opens.", "She can take you to any feature of NEET Track, like your mistakes, mock tests or study path."],
+    art: <div className="tr-azk"><div className="tr-azk-h"><img src="/azka-avatar.webp" alt="" />Miss Azka<span>online</span></div><p className="tr-azk-me">20 hard questions on Chemical Bonding</p><p className="tr-azk-her">Done! Tap to start ✨</p><div className="tr-azk-card"><b>🎯 Quiz · Chemical Bonding</b><small>20 questions · hard</small><em>Start quiz</em></div></div> },
   { k: "end", tag: "START TODAY", title: "That white coat will be yours", glow: "#10B981", href: "/dashboard", cta: "Start my journey",
     lines: ["So that's NEET Track: practice, tests, revision and analysis, all in one place, and free for your first twenty-one days.", "Start today, stay consistent, and that white coat will be yours.", "This app is made with love by Akmal MBBS, for every NEET aspirant.", "All the best, doctors!"],
     art: <div className="tr-end"><img src="/brand/nt-mark.webp" alt="" /><b>700<sup>+</sup></b><span>Practice · Revise · Fix · Test</span><div className="tr-sign">Made with <i>♥</i> by <strong>Akmal MBBS</strong></div></div> },
@@ -296,6 +299,16 @@ const TR_CSS = `
 .tr-intro b{display:block;margin-top:18px;font-size:34px;font-weight:800;animation:tr-up .8s .3s both}.tr-intro b span{color:#2DD4BF}
 .tr-intro em{display:block;font-style:normal;font-size:12px;letter-spacing:.22em;color:rgba(255,255,255,.65);animation:tr-up .8s .5s both}
 @keyframes tr-pulse{50%{box-shadow:0 0 0 18px rgba(255,255,255,.02),0 0 90px rgba(56,189,248,.8)}}
+.tr-azk{width:min(330px,100%);padding:14px;border-radius:22px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);display:flex;flex-direction:column;gap:8px}
+.tr-azk-h{display:flex;align-items:center;gap:8px;font-weight:900;font-size:14px}
+.tr-azk-h img{width:32px;height:32px;border-radius:999px;object-fit:cover;box-shadow:0 0 0 2px #0EA5E9}
+.tr-azk-h span{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#4ADE80}
+.tr-azk p{margin:0;padding:8px 12px;border-radius:16px;font-size:13px;line-height:1.4;max-width:85%;opacity:0;animation:tr-up .5s forwards}
+.tr-azk-me{align-self:flex-end;background:linear-gradient(135deg,#0EA5E9,#6366F1);animation-delay:.4s!important}
+.tr-azk-her{align-self:flex-start;background:rgba(255,255,255,.12);animation-delay:1.2s!important}
+.tr-azk-card{display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:16px;background:linear-gradient(135deg,#7C3AED,#6366F1 45%,#0EA5E9);opacity:0;animation:tr-up .5s 1.9s forwards}
+.tr-azk-card b{font-size:14px}.tr-azk-card small{font-size:11.5px;opacity:.85}
+.tr-azk-card em{margin-top:8px;align-self:stretch;text-align:center;font-style:normal;font-weight:900;font-size:13px;padding:8px;border-radius:10px;background:#fff;color:#4338CA}
 .tr-nug,.tr-todo{width:min(340px,100%);padding:16px;border-radius:22px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
 .tr-nug-h,.tr-todo-h{display:flex;justify-content:space-between;margin-bottom:10px;font-size:11px;font-weight:900;letter-spacing:.16em;color:#FDE68A}
 .tr-todo-h{color:#86EFAC}.tr-todo-h span{letter-spacing:0;color:rgba(255,255,255,.7)}
