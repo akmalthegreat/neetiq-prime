@@ -2,6 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import { InlineMath, BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import { cn } from "@/lib/utils";
+import { decodeEntities } from "@/lib/html-entities";
 import { Tikz } from "@/components/tikz";
 import { Mermaid } from "@/components/mermaid";
 import { JSDELIVR_CDN_BASE, RAW_GITHUB_CDN_BASE, QUESTION_IMAGE_CDN_BASE } from "@/lib/cdn";
@@ -21,17 +22,132 @@ import { JSDELIVR_CDN_BASE, RAW_GITHUB_CDN_BASE, QUESTION_IMAGE_CDN_BASE } from 
 export function RichText({ children, className }: { children?: string | null; className?: string }) {
   if (!children) return null;
   try {
-    const normalized = normalizeRichText(children);
     return (
       <span className={cn("inline-block max-w-full break-words leading-relaxed whitespace-pre-wrap", className)}>
-        {renderBlocks(normalized)}
+        {renderWithMatching(children)}
       </span>
     );
   } catch (error) {
     console.error("[rich-text] render failed", error);
-    return <span className={cn("break-words whitespace-pre-wrap", className)}>{children}</span>;
+    return <span className={cn("break-words whitespace-pre-wrap", className)}>{toPlainText(children)}</span>;
   }
 }
+
+/**
+ * Plain-text version of a stored question, for previews and one-line summaries
+ * (strips markup, decodes entities, keeps statement/column content readable).
+ */
+export function toPlainText(src?: string | null): string {
+  if (!src) return "";
+  return decodeEntities(
+    src
+      .replace(MATCHING_RE, (_all, left?: string, right?: string) => {
+        const parts = [left, right].map((x) => (x ?? "").trim()).filter(Boolean);
+        return parts.length ? ` ${parts.join(" | ")}` : "";
+      })
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<[^>]+>/g, ""),
+  )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Questions imported from the bank keep statement pairs and match-the-column
+// lists in this wrapper: <div class="matching-question"><div class="column-left">…</div><div class="column-right">…</div></div>
+// (sometimes empty). Column contents never contain nested <div>s.
+const MATCHING_RE =
+  /<div\s+class=["']matching-question["']\s*>\s*(?:<div\s+class=["']column-left["']\s*>([\s\S]*?)<\/div>)?\s*(?:<div\s+class=["']column-right["']\s*>([\s\S]*?)<\/div>)?\s*<\/div>/gi;
+
+function renderWithMatching(src: string): ReactNode[] {
+  const out: ReactNode[] = [];
+  const re = new RegExp(MATCHING_RE.source, "gi");
+  let last = 0;
+  let k = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(src))) {
+    const before = src.slice(last, m.index);
+    if (before.trim()) out.push(<Fragment key={k++}>{renderBlocks(normalizeRichText(before).replace(/\s+$/, ""))}</Fragment>);
+    const left = m[1] ?? "";
+    const right = m[2] ?? "";
+    if (stripTags(left) || stripTags(right)) {
+      out.push(<MatchingBlock key={k++} left={left} right={right} stem={src.slice(0, m.index)} />);
+    }
+    last = m.index + m[0].length;
+  }
+  const rest = src.slice(last);
+  if (rest.trim() || out.length === 0) out.push(<Fragment key={k++}>{renderBlocks(normalizeRichText(rest))}</Fragment>);
+  return out;
+}
+
+function stripTags(s: string): string {
+  return decodeEntities(s.replace(/<(?!img\b)[^>]+>/gi, "")).trim();
+}
+
+function splitLines(s: string): string[] {
+  return s
+    .split(/<br\s*\/?>|\n/i)
+    .map((l) => l.trim())
+    .filter((l) => stripTags(l).length > 0);
+}
+
+// "A. …", "(a) …", "i) …", "P. …", "1. …" — a labelled list item in a match column.
+const ITEM_LABEL = /^\s*(?:\(?[A-Za-z]{1,4}\)|[A-Za-z]{1,4}\.|\(?\d{1,2}[.)])\s*/;
+// The content already names itself ("Statement I: …", "Assertion: …", "I. …").
+const SELF_LABELLED = /^\s*(?:statement|assertion|reason)\b|^\s*(?:\(?[IVX]{1,4}[.:)]|[AB][.:)])\s/i;
+
+function statementLabels(stem: string): [string, string] {
+  if (/assertion/i.test(stem)) return ["Assertion (A)", "Reason (R)"];
+  if (/statement[\s-]*(?:I|1)\b/i.test(stem)) return ["Statement I", "Statement II"];
+  return ["Statement A", "Statement B"];
+}
+
+function MatchingBlock({ left, right, stem }: { left: string; right: string; stem: string }) {
+  const leftItems = splitLines(left);
+  const rightItems = splitLines(right);
+  const isColumns =
+    (leftItems.length >= 2 || rightItems.length >= 2) &&
+    [...leftItems, ...rightItems].filter((l) => ITEM_LABEL.test(stripTags(l))).length >= Math.max(2, leftItems.length);
+
+  if (isColumns) {
+    const rows = Math.max(leftItems.length, rightItems.length);
+    return (
+      <span className="my-3 block overflow-x-auto whitespace-normal">
+        <span className="grid min-w-[16rem] grid-cols-2 overflow-hidden rounded-xl border border-border text-[0.95em]">
+          <span className="border-b border-r border-border bg-secondary/60 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">Column I</span>
+          <span className="border-b border-border bg-secondary/60 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">Column II</span>
+          {Array.from({ length: rows }, (_, i) => (
+            <Fragment key={i}>
+              <span className={cn("border-r border-border px-3 py-2", i < rows - 1 && "border-b")}>
+                {leftItems[i] ? renderBlocks(normalizeRichText(leftItems[i])) : null}
+              </span>
+              <span className={cn("px-3 py-2", i < rows - 1 && "border-b border-border")}>
+                {rightItems[i] ? renderBlocks(normalizeRichText(rightItems[i])) : null}
+              </span>
+            </Fragment>
+          ))}
+        </span>
+      </span>
+    );
+  }
+
+  const labels = statementLabels(stem);
+  const items = [left, right].filter((s) => stripTags(s));
+  return (
+    <span className="my-3 block space-y-2 whitespace-normal">
+      {items.map((s, i) => {
+        const body = normalizeRichText(s).trim();
+        const named = items.length < 2 || SELF_LABELLED.test(stripTags(s));
+        return (
+          <span key={i} className="block rounded-xl border border-border bg-secondary/40 px-3 py-2">
+            {!named && <span className="mb-0.5 block text-xs font-bold uppercase tracking-wide text-primary">{labels[i]}</span>}
+            <span className="block whitespace-pre-wrap">{renderBlocks(body)}</span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 
 export function formatCdnUrl(path: string): string {
   const clean = path.replace(/^\/+/, "");
@@ -157,6 +273,9 @@ function normalizeRichText(src: string): string {
 
   // Collapse 3+ newlines to max 2
   s = s.replace(/\n{3,}/g, "\n\n");
+
+  // &nbsp;, &rarr;, &deg; … stored by the old editor
+  s = decodeEntities(s);
 
   return s;
 }

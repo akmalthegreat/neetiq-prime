@@ -2,6 +2,7 @@
 import { Fragment, type ReactNode } from "react";
 import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
+import { decodeEntities } from "@/lib/html-entities";
 
 const TOKEN = /\$([^$]+?)\$|<(b|i|sub|sup|strong|em)>([\s\S]*?)<\/\2>|<br\s*\/?>/gi;
 
@@ -37,5 +38,5 @@ function parse(src: string, depth = 0): ReactNode[] {
 
 export function CardText({ children, className }: { children?: string | null; className?: string }) {
   if (!children) return null;
-  return <span className={`whitespace-pre-wrap break-words [&_.katex]:text-[1.02em] [&_sub]:text-[0.72em] [&_sup]:text-[0.72em] ${className ?? ""}`}>{parse(children)}</span>;
+  return <span className={`whitespace-pre-wrap break-words [&_.katex]:text-[1.02em] [&_sub]:text-[0.72em] [&_sup]:text-[0.72em] ${className ?? ""}`}>{parse(decodeEntities(children))}</span>;
 }
