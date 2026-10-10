@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { getContestDetail } from "@/lib/contests.functions";
 import { cn } from "@/lib/utils";
+import { RichText, toPlainText } from "@/components/rich-text";
 
 export const Route = createFileRoute("/contest/$contestId/results")({
   head: () => ({ meta: [{ title: "Contest results — NEET Track" }] }),
@@ -277,7 +278,7 @@ function SolutionItem({
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
             {index + 1}
           </span>
-          <span className="line-clamp-2 text-xs">{q.text}</span>
+          <span className="line-clamp-2 text-xs">{toPlainText(q.text)}</span>
         </span>
         <ChevronDown
           className={cn(
@@ -304,14 +305,14 @@ function SolutionItem({
                 ) : (
                   <XCircle className="h-3.5 w-3.5 text-muted-foreground/40" />
                 )}
-                <span>{opt}</span>
+                <span className="min-w-0 flex-1"><RichText>{opt}</RichText></span>
               </div>
             ))}
           </div>
           {q.explanation && (
             <div className="mt-3 rounded-lg bg-secondary/40 p-2.5 text-[11px] leading-relaxed text-muted-foreground">
               <span className="font-bold text-foreground">Explanation: </span>
-              {q.explanation}
+              <RichText>{q.explanation}</RichText>
             </div>
           )}
         </div>

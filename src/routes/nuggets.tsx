@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, BookOpenCheck, Check, ChevronRight, Lightbulb, R
 import { PageShell } from "@/components/page-shell";
 import { DrAzkaLoader } from "@/components/dr-akza-loader";
 import { CardText } from "@/components/card-text";
+import { RichText } from "@/components/rich-text";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -224,7 +225,7 @@ function Player({ meta, index, count, user, onBack, onNext, onSaved }: {
             <span>Question {qi + 1} of {qs!.length}</span>
             <span className="flex gap-1">{qs!.map((x, i) => <i key={x.id} className={cn("ng-dot", i === qi && "cur", picked[x.id] !== undefined && (picked[x.id] === x.correct_index ? "ok" : "bad"))} />)}</span>
           </div>
-          <div className="text-[16.5px] font-semibold leading-relaxed"><CardText>{q.text}</CardText></div>
+          <div className="text-[16.5px] font-semibold leading-relaxed"><RichText>{q.text}</RichText></div>
           <div className="mt-4 space-y-2">
             {q.options.map((o, i) => {
               const sel = picked[q.id]; const shown = sel !== undefined;
@@ -232,7 +233,7 @@ function Player({ meta, index, count, user, onBack, onNext, onSaved }: {
               return (
                 <button key={i} type="button" disabled={shown} onClick={() => setPicked((p) => ({ ...p, [q.id]: i }))} className={cn("ng-opt", state)}>
                   <span className="ng-ol">{shown && i === q.correct_index ? <Check className="h-4 w-4" /> : shown && i === sel ? <X className="h-4 w-4" /> : String.fromCharCode(65 + i)}</span>
-                  <span className="min-w-0 flex-1 text-left"><CardText>{o}</CardText></span>
+                  <span className="min-w-0 flex-1 text-left"><RichText>{o}</RichText></span>
                 </button>
               );
             })}

@@ -539,15 +539,15 @@ function QuestionCard({ q, chapter, extra, fixed }: { q: Q; chapter?: string; ex
         {q.difficulty && <span className="rounded-full bg-secondary px-2 py-0.5 capitalize text-muted-foreground">{q.difficulty.toLowerCase()}</span>}
         {fixed && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 font-semibold text-emerald-600 dark:text-emerald-400">Fixed ✓</span>}
       </div>
-      <div className={cn("text-sm leading-relaxed", !open && "line-clamp-3")}><RichText content={q.text} /></div>
+      <div className={cn("text-sm leading-relaxed", !open && "line-clamp-3")}><RichText>{q.text}</RichText></div>
       {open && (
         <div className="mt-3 space-y-1.5">
           {(q.options ?? []).map((o, i) => (
             <div key={i} className={cn("flex gap-2 rounded-xl border px-3 py-2 text-sm", i === q.correct_index ? "border-emerald-500/50 bg-emerald-500/10" : "border-border")}>
-              <b className="text-muted-foreground">{String.fromCharCode(65 + i)}.</b><div className="min-w-0 flex-1"><RichText content={o} /></div>{i === q.correct_index && <Check className="h-4 w-4 shrink-0 text-emerald-500" />}
+              <b className="text-muted-foreground">{String.fromCharCode(65 + i)}.</b><div className="min-w-0 flex-1"><RichText>{o}</RichText></div>{i === q.correct_index && <Check className="h-4 w-4 shrink-0 text-emerald-500" />}
             </div>
           ))}
-          {q.explanation && <div className="rounded-xl bg-secondary/50 p-3 text-sm"><div className="mb-1 text-xs font-bold text-muted-foreground">Solution</div><RichText content={q.explanation} /></div>}
+          {q.explanation && <div className="rounded-xl bg-secondary/50 p-3 text-sm"><div className="mb-1 text-xs font-bold text-muted-foreground">Solution</div><RichText>{q.explanation}</RichText></div>}
         </div>
       )}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
