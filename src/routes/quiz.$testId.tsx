@@ -166,6 +166,7 @@ function QuizPlayer() {
   const justAnswered = useRef<string | null>(null);
   const startedAt = useRef<number>(Date.now());
   const paletteRef = useRef<HTMLDivElement>(null);
+  const cbtPaletteRef = useRef<HTMLDivElement>(null);
   const isContest = test?.type === "contest";
   const isMock = test?.type === "mock";
 
@@ -709,7 +710,6 @@ function QuizPlayer() {
     return () => document.removeEventListener("visibilitychange", onVis);
   }, [idx, questions, flushQuestionTime]);
 
-  const cbtSaveAndNext = () => setIdx((i) => Math.min(total - 1, i + 1));
   const cbtClearResponse = () => {
     if (!q) return;
     setAnswers((prev) => {
@@ -722,15 +722,6 @@ function QuizPlayer() {
       n.delete(q.id);
       return n;
     });
-  };
-  const cbtSaveAndMark = (advance: boolean) => {
-    if (!q) return;
-    setMarkedForReview((m) => {
-      const n = new Set(m);
-      n.add(q.id);
-      return n;
-    });
-    if (advance) setIdx((i) => Math.min(total - 1, i + 1));
   };
 
   const setAnswer = (i: number) => {
@@ -1037,6 +1028,24 @@ function QuizPlayer() {
     setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; });
     setIdx(Math.max(0, Math.min(total - 1, i)));
   };
+  // Save & Next: save the chosen option (if any), clear any review mark, move on.
+  const cbtSaveNext = () => {
+    cbtCommit();
+    setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; });
+    if (idx >= total - 1) setConfirmSubmit(true); else cbtGo(idx + 1);
+  };
+  // Mark for Review & Next: the chosen option is SAVED too (answered + marked is
+  // evaluated, as in NEET), and the question is flagged so the student can come back.
+  const cbtMarkNext = () => {
+    const saved = cbtCommit();
+    setMarkedForReview((m) => { const n = new Set(m); n.add(q.id); return n; });
+    if (idx >= total - 1) toast(saved ? "Answer saved and marked for review" : "Marked for review", { description: "Tap Submit at the top when you're ready." });
+    else cbtGo(idx + 1);
+  };
+  const cbtClearPick = () => {
+    setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; });
+    cbtClearResponse();
+  };
   const cbtCounts = questions.reduce(
     (acc, _qq, i) => { acc[cbtStatus(i)]++; return acc; },
     { not_visited: 0, not_answered: 0, answered: 0, marked: 0, answered_marked: 0 } as Record<CbtStatus, number>,
@@ -1068,9 +1077,7 @@ function QuizPlayer() {
     else if (k === "arrowleft") { e.preventDefault(); if (isCbt) cbtGo(idx - 1); else setIdx((i) => Math.max(0, i - 1)); }
     else if (k === "enter" && isCbt) {
       e.preventDefault();
-      cbtCommit();
-      setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; });
-      if (idx >= total - 1) setConfirmSubmit(true); else cbtGo(idx + 1);
+      cbtSaveNext();
     }
   };
   const cbtPanel = (
@@ -1148,8 +1155,8 @@ function QuizPlayer() {
           <AntiCheatGate mode="contest" scopeId={testId} onAccept={() => {}} onCancel={() => nav({ to: "/contests" })} />
         )}
         {/* Candidate info */}
-        <div className="flex items-start gap-4 border-b border-slate-200 bg-white px-4 py-3 sm:px-8">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-500 sm:h-16 sm:w-16">
+        <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-3 py-3 sm:gap-4 sm:px-8">
+          <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-500 sm:flex sm:h-16 sm:w-16">
             <User className="h-9 w-9" />
           </div>
           <table className="text-sm sm:text-[15px]">
@@ -1159,6 +1166,10 @@ function QuizPlayer() {
               <tr><td className="pr-4 text-slate-600">Subject</td><td className="font-semibold text-[#e8590c]">: {subjectGroups.length > 1 ? "Mixed" : subjName || "Mixed"}</td></tr>
             </tbody>
           </table>
+          <button type="button" className={cn(cbtBtn, "ml-auto h-11 shrink-0 self-center border-[#237a35] bg-[#2f9e44] px-5 text-white hover:bg-[#2b8a3e] sm:px-8")}
+            disabled={submitting} onClick={() => { cbtCommit(); setConfirmSubmit(true); }}>
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
+          </button>
         </div>
 
         <div className="mx-auto flex max-w-[1400px] flex-col gap-4 p-3 sm:p-5 lg:flex-row">
@@ -1187,7 +1198,7 @@ function QuizPlayer() {
                 <span className="flex items-center gap-2 text-sm font-semibold">
                   <span className="hidden sm:inline">Time:</span>
                   <span className={cn("rounded-[3px] px-2.5 py-1 font-mono text-sm font-bold tabular-nums", lowTime ? "animate-pulse bg-[#c92a2a] text-white" : "bg-white text-[#c2410c]")}>{hh}:{mm}:{ss}</span>
-                  <button type="button" onClick={() => setPaletteOpen(true)} aria-label="Question palette"
+                  <button type="button" onClick={() => cbtPaletteRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })} aria-label="Go to question palette"
                     className="flex h-8 items-center gap-1 rounded-[3px] bg-white/15 px-2 text-xs font-bold uppercase lg:hidden">
                     <LayoutGrid className="h-4 w-4" /> {Object.keys(answers).length}/{total}
                   </button>
@@ -1243,43 +1254,74 @@ function QuizPlayer() {
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button className={cn(cbtBtn, "border-[#237a35] bg-[#2f9e44] text-white hover:bg-[#2b8a3e]")}
-                onClick={() => {
-                  cbtCommit();
-                  setMarkedForReview((m) => { const n = new Set(m); n.delete(q.id); return n; });
-                  if (idx >= total - 1) setConfirmSubmit(true); else cbtGo(idx + 1);
-                }}>
-                Save &amp; Next
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { setCbtPick((p) => { const n = { ...p }; delete n[q.id]; return n; }); cbtClearResponse(); }}>
-                Clear
-              </button>
-              <button className={cn(cbtBtn, "inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-700 hover:bg-slate-50")}
-                onClick={() => { if (cbtCommit()) toast.success("Response saved"); else toast("Select an option first"); }}>
-                <Bookmark className="h-4 w-4" /> Save
-              </button>
-              <button className={cn(cbtBtn, "border-[#e0a800] bg-[#fab005] text-white hover:bg-[#f59f00]")}
-                onClick={() => { if (!cbtCommit()) { toast("Select an option to Save & Mark"); return; } cbtSaveAndMark(false); }}>
-                Save &amp; Mark
-              </button>
-              <button className={cn(cbtBtn, "border-[#1864ab] bg-[#1c7ed6] text-white hover:bg-[#1971c2]")}
-                onClick={() => { cbtSaveAndMark(false); cbtGo(idx + 1); }}>
-                Mark &amp; Next
-              </button>
+            {cbtSelected !== undefined && (
+              <div className="mt-2 flex justify-end">
+                <button type="button" onClick={cbtClearPick} className="text-xs font-semibold text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline">
+                  Clear response
+                </button>
+              </div>
+            )}
+
+            {/* Action buttons: the two that matter */}
+            <div className="sticky bottom-0 z-20 -mx-3 mt-3 border-t border-slate-200 bg-white/95 px-3 pb-[calc(10px+env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-6px_16px_-10px_rgba(15,23,42,.25)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
+              <div className="flex gap-2">
+                <button type="button" className={cn(cbtBtn, "h-12 flex-1 border-[#5f3dc4] bg-[#7048e8] px-2 text-[13px] leading-tight text-white hover:bg-[#6741d9] sm:flex-none sm:px-5 sm:text-sm")}
+                  onClick={cbtMarkNext}>
+                  Mark for Review &amp; Next
+                </button>
+                <button type="button" className={cn(cbtBtn, "h-12 flex-1 border-[#237a35] bg-[#2f9e44] px-2 text-[15px] text-white hover:bg-[#2b8a3e] sm:ml-auto sm:flex-none sm:px-10")}
+                  onClick={cbtSaveNext}>
+                  {idx >= total - 1 ? "Save & Finish" : "Save & Next"}
+                </button>
+              </div>
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === 0} onClick={() => cbtGo(idx - 1)}>
-                &lt;&lt; Back
-              </button>
-              <button className={cn(cbtBtn, "border-slate-300 bg-white text-slate-600 hover:bg-slate-50")} disabled={idx === total - 1} onClick={() => cbtGo(idx + 1)}>
-                Next &gt;&gt;
-              </button>
-              <button className={cn(cbtBtn, "ml-auto border-[#237a35] bg-[#2f9e44] px-7 text-white hover:bg-[#2b8a3e]")} disabled={submitting} onClick={() => { cbtCommit(); setConfirmSubmit(true); }}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
-              </button>
+            <p className="mt-2 text-[11.5px] leading-snug text-slate-500">
+              Marked questions that have an answer are evaluated. Use the palette to jump to any question.
+            </p>
+
+            {/* Question palette (phones & tablets; desktop has it on the right) */}
+            <div ref={cbtPaletteRef} className="mt-4 scroll-mt-2 rounded-xl border border-slate-200 bg-slate-50 p-3 lg:hidden">
+              <div className="mb-2.5 flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Question Palette</span>
+                <span className="text-[11px] font-semibold text-slate-500">{Object.keys(answers).length}/{total} answered</span>
+              </div>
+              <div className="mb-3 flex flex-wrap gap-x-3 gap-y-1.5">
+                {([
+                  ["answered", "Answered"],
+                  ["not_answered", "Not answered"],
+                  ["marked", "Marked"],
+                  ["answered_marked", "Answered & marked"],
+                  ["not_visited", "Not visited"],
+                ] as [CbtStatus, string][]).map(([k, label]) => (
+                  <span key={k} className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600">
+                    <span className={cn("relative h-3.5 w-3.5 border", cbtTile[k])}>
+                      {k === "answered_marked" && <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400" />}
+                    </span>
+                    {label} <b className="text-slate-800">{cbtCounts[k]}</b>
+                  </span>
+                ))}
+              </div>
+              {subjectGroups.map((g, gi) => (
+                <div key={g.name + gi} className={cn(gi > 0 && "mt-3")}>
+                  {subjectGroups.length > 1 && <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">{g.name}</div>}
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(42px,1fr))] gap-2">
+                    {g.indices.map((i) => {
+                      const st = cbtStatus(i);
+                      return (
+                        <button key={questions[i].id} type="button" onClick={() => { cbtGo(i); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          aria-label={`Question ${i + 1}`} aria-current={i === idx ? "true" : undefined}
+                          className={cn("relative flex h-10 items-center justify-center border text-xs font-bold transition-transform active:scale-95", cbtTile[st], i === idx && "z-10 ring-2 ring-[#1c7ed6] ring-offset-2 ring-offset-slate-50")}>
+                          {i + 1}
+                          {st === "answered_marked" && (
+                            <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white bg-emerald-500 text-[8px] font-black text-white">✓</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+              <Link to="/dashboard" className="mt-4 block text-center text-xs font-medium text-slate-500 hover:text-slate-800 hover:underline">Exit test</Link>
             </div>
           </div>
 
@@ -1289,16 +1331,6 @@ function QuizPlayer() {
             <Link to="/dashboard" className="block text-right text-xs font-medium text-slate-500 hover:text-slate-800 hover:underline">Exit test</Link>
           </aside>
         </div>
-        <Sheet open={paletteOpen} onOpenChange={setPaletteOpen}>
-          <SheetContent side="bottom" className="light max-h-[85vh] overflow-y-auto bg-white text-slate-800">
-            <SheetHeader><SheetTitle>Question palette</SheetTitle></SheetHeader>
-            <div className="mt-3 space-y-3">{cbtPanel}</div>
-            <div className="mt-4 flex gap-2">
-              <button className={cn(cbtBtn, "flex-1 border-[#237a35] bg-[#2f9e44] text-white")} onClick={() => { setPaletteOpen(false); cbtCommit(); setConfirmSubmit(true); }}>Submit</button>
-              <Link to="/dashboard" className={cn(cbtBtn, "flex flex-1 items-center justify-center border-slate-300 bg-white text-slate-600")}>Exit test</Link>
-            </div>
-          </SheetContent>
-        </Sheet>
         {cbtSubmitDialog}
       </div>
     );
